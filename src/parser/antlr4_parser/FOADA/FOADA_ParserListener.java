@@ -20,16 +20,6 @@ public interface FOADA_ParserListener extends ParseTreeListener {
 	 */
 	void exitAutomaton(FOADA_Parser.AutomatonContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#title}.
-	 * @param ctx the parse tree
-	 */
-	void enterTitle(FOADA_Parser.TitleContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#title}.
-	 * @param ctx the parse tree
-	 */
-	void exitTitle(FOADA_Parser.TitleContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link FOADA_Parser#initial_def}.
 	 * @param ctx the parse tree
 	 */
@@ -69,6 +59,16 @@ public interface FOADA_ParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExpression(FOADA_Parser.ExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link FOADA_Parser#integer}.
+	 * @param ctx the parse tree
+	 */
+	void enterInteger(FOADA_Parser.IntegerContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FOADA_Parser#integer}.
+	 * @param ctx the parse tree
+	 */
+	void exitInteger(FOADA_Parser.IntegerContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link FOADA_Parser#list_finals}.
 	 * @param ctx the parse tree

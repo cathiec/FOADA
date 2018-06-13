@@ -37,6 +37,7 @@ public class ParserFOADA {
         FOADA_Lexer lexer = new FOADA_Lexer(new ANTLRInputStream(istream));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         FOADA_Parser parser = new FOADA_Parser(tokens);
+        
         // Launch the parser
         parser.automaton();
         

@@ -6,11 +6,7 @@ options {
 }
 
 automaton
-: LP DEFAUTO title initial_def list_finals_def list_transitions_def RP EOF
-;
-
-title
-: ID
+: LP DEFAUTO ID (initial_def | list_finals_def | list_transitions_def)* RP EOF
 ;
 
 initial_def
@@ -28,10 +24,32 @@ list_transitions_def
 expression
 : TRUE
 | FALSE
+| LP NOT expression RP
+| LP DISTINCT expression expression RP
+| LP AND expression (expression)+ RP
+| LP OR expression (expression)+ RP
+| LP EXISTS LP list_arguments RP expression RP
+| LP FORALL LP list_arguments RP expression RP
+| LP GT integer integer RP
+| LP LT integer integer RP
+| LP GEQ integer integer RP
+| LP LEQ integer integer RP
+| LP EQUALS integer integer RP
+| ID
+| LP ID (ID)+ RP
+;
+
+integer
+: INTEGER
+| LP PLUS integer (integer)+ RP
+| LP MINUS integer integer RP
+| LP TIMES integer (integer)+ RP
+| LP SLASH integer integer RP
+| ID
 ;
 
 list_finals
-: ID ( ID )*
+: ID (ID)*
 ;
 
 list_transitions
