@@ -26,6 +26,6 @@ public class FOADA {
 	
 	public static void main(String[] args)
 	{  
-		
+
 	}
 }

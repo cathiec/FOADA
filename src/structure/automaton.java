@@ -22,6 +22,6 @@
 
 package structure;
 
-public class automaton {
+public class Automaton {
 
 }

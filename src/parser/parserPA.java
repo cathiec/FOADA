@@ -22,6 +22,6 @@
 
 package parser;
 
-public class parserPA {
+public class ParserPA {
 
 }

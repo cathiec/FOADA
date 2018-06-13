@@ -22,6 +22,6 @@
 
 package structure;
 
-public class state {
+public class State {
 
 }

@@ -22,6 +22,6 @@
 
 package parser;
 
-public class parserFOADA {
+public class ParserFOADA {
 
 }

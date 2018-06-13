@@ -22,6 +22,6 @@
 
 package closure;
 
-public class complement {
+public class Complement {
 
 }

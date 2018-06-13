@@ -22,6 +22,6 @@
 
 package closure;
 
-public class union {
+public class Union {
 
 }
