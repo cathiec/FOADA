@@ -22,6 +22,23 @@
 
 package parser;
 
-public class ParserFOADA {
+import org.antlr.v4.runtime.*;
+import java.io.*;
 
+import parser.antlr4_parser.FOADA.*;
+
+public class ParserFOADA {
+	
+	public static void test(String input) throws Exception {
+
+        InputStream istream = new FileInputStream(input);
+        
+        // Instantiate lexer and parser, connected together:
+        FOADA_Lexer lexer = new FOADA_Lexer(new ANTLRInputStream(istream));
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+        FOADA_Parser parser = new FOADA_Parser(tokens);
+        // Launch the parser
+        parser.automaton();
+        
+    }
 }

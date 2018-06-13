@@ -25,7 +25,12 @@ package run;
 public class FOADA {
 	
 	public static void main(String[] args)
-	{  
-
+	{
+		try {
+			parser.ParserFOADA.test("automaton.smt");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

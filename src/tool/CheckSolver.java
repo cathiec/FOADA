@@ -22,28 +22,71 @@
 
 package tool;
 
-import org.sosy_lab.common.NativeLibraries;
-import org.sosy_lab.common.ShutdownManager;
-import org.sosy_lab.common.configuration.Configuration;
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
-import org.sosy_lab.common.log.BasicLogManager;
-import org.sosy_lab.common.log.LogManager;
 import org.sosy_lab.java_smt.SolverContextFactory;
 import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
-import org.sosy_lab.java_smt.api.SolverContext;
+
+import utility.ConsoleColors;
 
 public class CheckSolver {
 	
+	public static boolean checkZ3() throws InvalidConfigurationException
+	{
+	    try {
+	    SolverContextFactory.createSolverContext(Solvers.Z3);
+	    }
+	    catch(Exception e) {
+	    	System.out.println("[JavaSMT] Check of the solver < Z3 > has " + ConsoleColors.RED + "failed." + ConsoleColors.RESET);
+	    	return false;
+	    }
+	    System.out.println("[JavaSMT] Check of the solver < Z3 > has " + ConsoleColors.GREEN + "succeeded." + ConsoleColors.RESET);
+	    return true;
+	}
+	
+	public static boolean checkMATHSAT5() throws InvalidConfigurationException
+	{
+	    try {
+	    	SolverContextFactory.createSolverContext(Solvers.MATHSAT5);
+	    }
+	    catch(Exception e) {
+	    	System.out.println("[JavaSMT] Check of the solver < MATHSAT5 > has " + ConsoleColors.RED + "failed." + ConsoleColors.RESET);
+	    	return false;
+	    }
+	    System.out.println("[JavaSMT] Check of the solver < MATHSAT5 > has " + ConsoleColors.GREEN + "succeeded." + ConsoleColors.RESET);
+	    return true;
+	}
+	
+	public static boolean checkSMTINTERPOL() throws InvalidConfigurationException
+	{
+	    try {
+	    SolverContextFactory.createSolverContext(Solvers.SMTINTERPOL);
+	    }
+	    catch(Exception e) {
+	    	System.out.println("[JavaSMT] Check of the solver < SMTINTERPOL > has " + ConsoleColors.RED + "failed." + ConsoleColors.RESET);
+	    	return false;
+	    }
+	    System.out.println("[JavaSMT] Check of the solver < SMTINTERPOL > has " + ConsoleColors.GREEN + "succeeded." + ConsoleColors.RESET);
+	    return true;
+	}
+	
+	public static boolean checkPRINCESS() throws InvalidConfigurationException
+	{
+	    try {
+	    SolverContextFactory.createSolverContext(Solvers.PRINCESS);
+	    }
+	    catch(Exception e) {
+	    	System.out.println("[JavaSMT] Check of the solver < PRINCESS > has " + ConsoleColors.RED + "failed." + ConsoleColors.RESET);
+	    	return false;
+	    }
+	    System.out.println("[JavaSMT] Check of the solver < PRINCESS > has " + ConsoleColors.GREEN + "succeeded." + ConsoleColors.RESET);
+	    return true;
+	}
+	
 	public static void main(String[] args) throws InvalidConfigurationException
 	{  
-		System.out.println(NativeLibraries.getNativeLibraryPath());
-		
-		Configuration config = Configuration.fromCmdLineArguments(args);
-	    LogManager logger = BasicLogManager.create(config);
-	    ShutdownManager shutdown = ShutdownManager.create();
-	    
-	    // check if SMTINTERPOL works
-	    SolverContext context = SolverContextFactory.createSolverContext(
-	            config, logger, shutdown.getNotifier(), Solvers.Z3);
+		checkZ3();
+		checkMATHSAT5();
+		checkSMTINTERPOL();
+		checkPRINCESS();
 	}
 }	
