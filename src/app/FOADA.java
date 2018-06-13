@@ -29,28 +29,38 @@ import utility.ConsoleColors;
 
 public class FOADA {
 	
+	// no argument
 	private static void welcome()
 	{
-		System.out.println("[" + ConsoleColors.CYAN + "FOADA" + ConsoleColors.RESET + "] FOADA Version 1.0" + ConsoleColors.RESET);
+		System.out.println("------------------------------");
+		System.out.println("      FOADA Version 1.0");
+		System.out.println("------------------------------");
+		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "[Options]");
+		System.out.println("\t-cs \t\t check all the solvers");
+		System.out.println("\t-p <input> \t parse an input file to check its grammar");
+		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
 	}
 	
+	// -cs
 	private static void checkSolvers() throws InvalidConfigurationException
 	{
+		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Start checking all the solvers...");
 		CheckSolver.checkSMTINTERPOL();
 		CheckSolver.checkZ3();
 		CheckSolver.checkMATHSAT5();
 		CheckSolver.checkPRINCESS();
+		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
 	}
 	
-	private static void parse(String input)
+	// -p <input>
+	private static void parse(String input) throws Exception
 	{
-		try {
-			parser.ParserFOADA.test(input);
-		}
-		catch (Exception e) {}
+		System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Parsing and checking the grammar of the input...");
+		parser.ParserFOADA.test(input);
+		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
 	}
 	
-	public static void main(String[] args) throws InvalidConfigurationException
+	public static void main(String[] args) throws Exception
 	{
 		if(args.length == 0) {
 			welcome();
