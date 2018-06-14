@@ -26,20 +26,26 @@ import org.antlr.v4.runtime.*;
 import java.io.*;
 
 import parser.antlr4_parser.FOADA.*;
+import utility.ConsoleColors;
 
-public class ParserFOADA {
+public class ParserFOADA extends Parser {
 	
-	public static void test(String input) throws Exception {
-
-        InputStream istream = new FileInputStream(input);
-        
-        // Instantiate lexer and parser, connected together:
-        FOADA_Lexer lexer = new FOADA_Lexer(new ANTLRInputStream(istream));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        FOADA_Parser parser = new FOADA_Parser(tokens);
-        
-        // Launch the parser
-        parser.automaton();
-        
+	public void checkGrammar(String input) throws Exception {
+		try {
+	        InputStream istream = new FileInputStream(input);
+	        // Instantiate lexer and parser, connected together:
+	        System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Parsing and checking the grammar of the input...");
+	        FOADA_Lexer lexer = new FOADA_Lexer(new ANTLRInputStream(istream));
+	        CommonTokenStream tokens = new CommonTokenStream(lexer);
+	        FOADA_Parser parser = new FOADA_Parser(tokens);
+	        // Launch the parser
+	        parser.automaton();
+		}
+		catch(FileNotFoundException e) {
+			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Input file cannot be found.");
+		}
+        catch(IOException e) {
+        	System.out.println(ConsoleColors.CYAN + "Java > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " IO Exception.");
+        }
     }
 }

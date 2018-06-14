@@ -22,6 +22,22 @@
 
 package parser;
 
-public class ParserADA {
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
+import utility.ConsoleColors;
+
+public class ParserADA extends Parser {
+
+	public void checkGrammar(String input) throws Exception {
+		try {
+	        InputStream istream = new FileInputStream(input);
+	        System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Parsing and checking the grammar of the input...");
+		}
+		catch(FileNotFoundException e) {
+			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Input file cannot be found.");
+		}
+    }
 
 }

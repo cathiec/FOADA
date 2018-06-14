@@ -35,9 +35,10 @@ public class FOADA {
 		System.out.println("------------------------------");
 		System.out.println("      FOADA Version 1.0");
 		System.out.println("------------------------------");
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "[Options]");
+		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Showing all the options...");
 		System.out.println("\t-cs \t\t check all the solvers");
-		System.out.println("\t-p <input> \t parse an input file to check its grammar");
+		System.out.println("\t-g <input> \t parse an input file to check its grammar");
+		System.out.println("\t-r <input> \t run an SMT-like input file");
 		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
 	}
 	
@@ -52,13 +53,49 @@ public class FOADA {
 		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
 	}
 	
-	// -p <input>
-	private static void parse(String input) throws Exception
+	// -g <input>
+	private static void checkGrammar(String input) throws Exception
 	{
-		System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Parsing and checking the grammar of the input...");
-		parser.ParserFOADA.test(input);
+		int strLength = input.length();
+		int inputType = 0;
+		parser.Parser parser;
+		if(input.substring(strLength - 3, strLength).equals(".pa")) {
+			inputType = 1;
+			parser = new parser.ParserPA();
+			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type of the input file is " + ConsoleColors.YELLOW + "*.pa" + ConsoleColors.RESET);
+		}
+		else if(input.substring(strLength - 4, strLength).equals(".ada")) {
+			inputType = 2;
+			parser = new parser.ParserADA();
+			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type of the input file is " + ConsoleColors.YELLOW + "*.ada" + ConsoleColors.RESET);
+		}
+		else if(input.substring(strLength - 4, strLength).equals(".smt")) {
+			inputType = 3;
+			parser = new parser.ParserSMT();
+			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type of the input file is " + ConsoleColors.YELLOW + "*.smt" + ConsoleColors.RESET);
+		}
+		else if(input.substring(strLength - 6, strLength).equals(".foada")) {
+			inputType = 4;
+			parser = new parser.ParserFOADA();
+			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type of the input file is " + ConsoleColors.YELLOW + "*.foada" + ConsoleColors.RESET);
+		}
+		else {
+			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Unknown type of the input file.");
+			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
+			return;
+		}
+		parser.checkGrammar(input);
 		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
 	}
+	
+	// -r <input>
+		private static void run(String input) throws Exception
+		{
+			parser.ParserSMT parser = new parser.ParserSMT();
+			System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Parsing and checking the grammar of the input...");
+			parser.run(input);
+			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
+		}
 	
 	public static void main(String[] args) throws Exception
 	{
@@ -68,8 +105,11 @@ public class FOADA {
 		else if(args[0].equals("-cs")) {
 			checkSolvers();
 		}
-		else if(args[0].equals("-p")) {
-			parse(args[1]);
+		else if(args[0].equals("-g")) {
+			checkGrammar(args[1]);
+		}
+		else if(args[0].equals("-r")) {
+			run(args[1]);
 		}
 	}
 }
