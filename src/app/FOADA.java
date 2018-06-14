@@ -25,7 +25,7 @@ package app;
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
 
 import tool.*;
-import utility.ConsoleColors;
+import utility.*;
 
 public class FOADA {
 	

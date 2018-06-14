@@ -33,7 +33,7 @@ public class CheckSolver {
 	public static boolean checkZ3()
 		throws InvalidConfigurationException
 	{
-	    try {
+	    /*try {
 	    SolverContextFactory.createSolverContext(Solvers.Z3);
 	    }
 	    catch(Exception e) {
@@ -43,7 +43,9 @@ public class CheckSolver {
 	    }
 	    System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
     	System.out.println("Check of the solver " + ConsoleColors.GREEN + "Z3" + ConsoleColors.RESET + " has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
-    	return true;
+    	return true;*/
+		SolverContextFactory.createSolverContext(Solvers.Z3);
+		return true;
 	}
 	
 	public static boolean checkMATHSAT5()
