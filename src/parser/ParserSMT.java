@@ -23,6 +23,8 @@
 package parser;
 
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+
 import java.io.*;
 
 import parser.antlr4_parser.SMT.*;
@@ -30,37 +32,77 @@ import utility.ConsoleColors;
 
 public class ParserSMT extends Parser {
 	
+	public ParserSMT()
+	{
+		type = ParserType.SMT;
+	}
+	
+	@SuppressWarnings("deprecation")
 	public void checkGrammar(String input) {
 		try {
 	        InputStream istream = new FileInputStream(input);
 	        // Instantiate lexer and parser, connected together:
 	        System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Parsing and checking the grammar of the input...");
 	        SMT_Lexer lexer = new SMT_Lexer(new ANTLRInputStream(istream));
+	        lexer.removeErrorListeners();
+			lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);
 	        CommonTokenStream tokens = new CommonTokenStream(lexer);
 	        SMT_Parser parser = new SMT_Parser(tokens);
+	        parser.removeErrorListeners();
+	        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
 	        // Launch the parser
 	        parser.run();
+	        istream.close();
+		}
+		catch(ParseCancellationException e) {
+			System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " " + e.getMessage());
+			return;
 		}
 		catch(FileNotFoundException e) {
 			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Input file cannot be found.");
+			return;
 		}
         catch(IOException e) {
         	System.out.println(ConsoleColors.CYAN + "Java > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " IO Exception.");
+        	return;
         }
     }
 	
-	public void run(String input) throws Exception {
-
-        InputStream istream = new FileInputStream(input);
-        
-        // Instantiate lexer and parser, connected together:
-        SMT_Lexer lexer = new SMT_Lexer(new ANTLRInputStream(istream));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        SMT_Parser parser = new SMT_Parser(tokens);
-        
-        // Launch the parser
-        parser.run();
-        
+	@SuppressWarnings("deprecation")
+	public void run(String input) {
+		ParserType type = tool.SelectParser.determineType(input);
+		if(type != ParserType.SMT) {
+			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Input file is not runnable.");
+			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Entry " + ConsoleColors.YELLOW + "-h" + ConsoleColors.RESET + " for the help.");
+			return;
+		}
+		try {
+	        InputStream istream = new FileInputStream(input);
+	        // Instantiate lexer and parser, connected together:
+	        System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Parsing and checking the grammar of the input...");
+	        SMT_Lexer lexer = new SMT_Lexer(new ANTLRInputStream(istream));
+	        lexer.removeErrorListeners();
+			lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);
+	        CommonTokenStream tokens = new CommonTokenStream(lexer);
+	        SMT_Parser parser = new SMT_Parser(tokens);
+	        parser.removeErrorListeners();
+	        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
+	        // Launch the parser
+	        parser.run();
+	        istream.close();
+		}
+		catch(ParseCancellationException e) {
+			System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " " + e.getMessage());
+			return;
+		}
+		catch(FileNotFoundException e) {
+			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Input file cannot be found.");
+			return;
+		}
+        catch(IOException e) {
+        	System.out.println(ConsoleColors.CYAN + "Java > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " IO Exception.");
+        	return;
+        }
     }
 
 }

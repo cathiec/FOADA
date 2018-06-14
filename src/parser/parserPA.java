@@ -28,9 +28,16 @@ import utility.ConsoleColors;
 
 public class ParserPA extends Parser {
 	
-	public void checkGrammar(String input) throws Exception {
+	public ParserPA()
+	{
+		type = ParserType.PA;
+	}
+	
+	@SuppressWarnings("resource")
+	public void checkGrammar(String input) {
 		try {
-	        InputStream istream = new FileInputStream(input);
+	        @SuppressWarnings("unused")
+			InputStream istream = new FileInputStream(input);
 	        System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Parsing and checking the grammar of the input...");
 		}
 		catch(FileNotFoundException e) {

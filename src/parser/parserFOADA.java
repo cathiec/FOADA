@@ -23,29 +23,48 @@
 package parser;
 
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+
 import java.io.*;
 
 import parser.antlr4_parser.FOADA.*;
 import utility.ConsoleColors;
 
 public class ParserFOADA extends Parser {
+
+	public ParserFOADA()
+	{
+		type = ParserType.FOADA;
+	}
 	
-	public void checkGrammar(String input) throws Exception {
+	@SuppressWarnings("deprecation")
+	public void checkGrammar(String input){
 		try {
 	        InputStream istream = new FileInputStream(input);
 	        // Instantiate lexer and parser, connected together:
 	        System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Parsing and checking the grammar of the input...");
-	        FOADA_Lexer lexer = new FOADA_Lexer(new ANTLRInputStream(istream));
+			FOADA_Lexer lexer = new FOADA_Lexer(new ANTLRInputStream(istream));
+			lexer.removeErrorListeners();
+			lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);
 	        CommonTokenStream tokens = new CommonTokenStream(lexer);
 	        FOADA_Parser parser = new FOADA_Parser(tokens);
+	        parser.removeErrorListeners();
+	        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
 	        // Launch the parser
 	        parser.automaton();
+	        istream.close();
+		}
+		catch(ParseCancellationException e) {
+			System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " " + e.getMessage());
+			return;
 		}
 		catch(FileNotFoundException e) {
 			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Input file cannot be found.");
+			return;
 		}
         catch(IOException e) {
         	System.out.println(ConsoleColors.CYAN + "Java > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " IO Exception.");
+        	return;
         }
     }
 }

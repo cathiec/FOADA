@@ -24,6 +24,10 @@ package parser;
 
 public abstract class Parser {
 	
-	public abstract void checkGrammar(String input) throws Exception;
+	public enum ParserType {ADA, FOADA, PA, SMT, UNKNOWN}
+	
+	public ParserType type;
+	
+	public abstract void checkGrammar(String input);
 
 }

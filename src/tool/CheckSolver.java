@@ -30,7 +30,8 @@ import utility.ConsoleColors;
 
 public class CheckSolver {
 	
-	public static boolean checkZ3() throws InvalidConfigurationException
+	public static boolean checkZ3()
+		throws InvalidConfigurationException
 	{
 	    try {
 	    SolverContextFactory.createSolverContext(Solvers.Z3);
@@ -45,7 +46,8 @@ public class CheckSolver {
     	return true;
 	}
 	
-	public static boolean checkMATHSAT5() throws InvalidConfigurationException
+	public static boolean checkMATHSAT5()
+		throws InvalidConfigurationException
 	{
 		try {
 		    SolverContextFactory.createSolverContext(Solvers.MATHSAT5);
@@ -60,7 +62,8 @@ public class CheckSolver {
 		return true;
 	}
 	
-	public static boolean checkSMTINTERPOL() throws InvalidConfigurationException
+	public static boolean checkSMTINTERPOL()
+		throws InvalidConfigurationException
 	{
 		try {
 		    SolverContextFactory.createSolverContext(Solvers.SMTINTERPOL);
@@ -75,7 +78,8 @@ public class CheckSolver {
 		return true;
 	}
 	
-	public static boolean checkPRINCESS() throws InvalidConfigurationException
+	public static boolean checkPRINCESS()
+		throws InvalidConfigurationException
 	{
 		try {
 		    SolverContextFactory.createSolverContext(Solvers.PRINCESS);

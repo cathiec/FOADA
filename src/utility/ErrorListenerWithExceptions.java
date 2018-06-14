@@ -20,29 +20,20 @@
     If you have any questions, please contact Xiao XU <xiao.xu.cathiec@gmail.com>.
 */
 
-package parser;
+package utility;
 
-import java.io.*;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
 
-import utility.ConsoleColors;
+public class ErrorListenerWithExceptions extends BaseErrorListener {
 
-public class ParserADA extends Parser {
+	public static final ErrorListenerWithExceptions listener = new ErrorListenerWithExceptions();
 	
-	public ParserADA()
+	@Override
+	public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e)
+		throws ParseCancellationException
 	{
-		type = ParserType.ADA;
+		throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);
 	}
-
-	@SuppressWarnings("resource")
-	public void checkGrammar(String input) {
-		try {
-			@SuppressWarnings("unused")
-			InputStream istream = new FileInputStream(input);
-	        System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Parsing and checking the grammar of the input...");
-		}
-		catch(FileNotFoundException e) {
-			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Input file cannot be found.");
-		}
-    }
-
+	
 }

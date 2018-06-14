@@ -75,15 +75,14 @@ public class FOADA {
 		parser.Parser parser = tool.SelectParser.selectParser(input);
 		if(parser != null) {
 			parser.checkGrammar(input);
-			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
 		}
+		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
 	}
 	
 	// -r <input>
 	private static void run(String input) throws Exception
 	{
 		parser.ParserSMT parser = new parser.ParserSMT();
-		System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Parsing and checking the grammar of the input...");
 		parser.run(input);
 		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
 	}
@@ -99,7 +98,7 @@ public class FOADA {
 	private static void unknown()
 	{
 		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Unknown option.");
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type " + ConsoleColors.YELLOW + "-h" + ConsoleColors.RESET + " for the help.");
+		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Entry " + ConsoleColors.YELLOW + "-h" + ConsoleColors.RESET + " for the help.");
 		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");	
 	}
 	
@@ -117,7 +116,7 @@ public class FOADA {
 		else if(args[0].equals("-g")) {
 			if(args.length < 2) {
 				System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " No input file.");
-				System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type " + ConsoleColors.YELLOW + "-h" + ConsoleColors.RESET + " for the help.");
+				System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Entry " + ConsoleColors.YELLOW + "-h" + ConsoleColors.RESET + " for the help.");
 				System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
 			}
 			else {
@@ -127,7 +126,7 @@ public class FOADA {
 		else if(args[0].equals("-r")) {
 			if(args.length < 2) {
 				System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " No input file.");
-				System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type " + ConsoleColors.YELLOW + "-h" + ConsoleColors.RESET + " for the help.");
+				System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Entry " + ConsoleColors.YELLOW + "-h" + ConsoleColors.RESET + " for the help.");
 				System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
 			}
 			else {

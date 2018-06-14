@@ -23,33 +23,47 @@
 package tool;
 
 import utility.ConsoleColors;
+import parser.Parser.*;
 
 public class SelectParser {
 	
-	public static parser.Parser selectParser(String input)
+	public static ParserType determineType(String input)
 	{
 		int strLength = input.length();
-		parser.Parser parser;
 		if(strLength >= 3 && input.substring(strLength - 3, strLength).equals(".pa")) {
-			parser = new parser.ParserPA();
 			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type of the input file is " + ConsoleColors.YELLOW + "*.pa" + ConsoleColors.RESET);
+			return ParserType.PA;
 		}
 		else if(strLength >= 4 && input.substring(strLength - 4, strLength).equals(".ada")) {
-			parser = new parser.ParserADA();
 			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type of the input file is " + ConsoleColors.YELLOW + "*.ada" + ConsoleColors.RESET);
+			return ParserType.ADA;
 		}
 		else if(strLength >= 4 && input.substring(strLength - 4, strLength).equals(".smt")) {
-			parser = new parser.ParserSMT();
 			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type of the input file is " + ConsoleColors.YELLOW + "*.smt" + ConsoleColors.RESET);
+			return ParserType.SMT;
 		}
 		else if(strLength >= 6 && input.substring(strLength - 6, strLength).equals(".foada")) {
-			parser = new parser.ParserFOADA();
 			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type of the input file is " + ConsoleColors.YELLOW + "*.foada" + ConsoleColors.RESET);
+			return ParserType.FOADA;
 		}
 		else {
 			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Unknown type of the input file.");
-			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
-			return null;
+			return ParserType.UNKNOWN;
+		}
+	}
+	
+	public static parser.Parser selectParser(String input)
+	{
+		ParserType type = determineType(input);
+		parser.Parser parser;
+		switch(type)
+		{
+		case PA: parser = new parser.ParserPA(); break;
+		case ADA: parser = new parser.ParserADA(); break;
+		case SMT: parser = new parser.ParserSMT(); break;
+		case FOADA: parser = new parser.ParserFOADA(); break;
+		case UNKNOWN: return null;
+		default: return null;
 		}
 		return parser;
 	}
