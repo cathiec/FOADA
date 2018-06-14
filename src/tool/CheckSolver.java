@@ -39,6 +39,7 @@ public class CheckSolver {
 	    catch(Exception e) {
 	    	System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
 	    	System.out.println("Check of the solver " + ConsoleColors.RED + "Z3" + ConsoleColors.RESET + " has " + ConsoleColors.RED + "failed" + ConsoleColors.RESET + ".");
+	    	System.out.println(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET + e.getMessage());
 	    	return false;
 	    }
 	    System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
@@ -55,6 +56,7 @@ public class CheckSolver {
 		catch(Exception e) {
 			System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
 			System.out.println("Check of the solver " + ConsoleColors.RED + "MATHSAT5" + ConsoleColors.RESET + " has " + ConsoleColors.RED + "failed" + ConsoleColors.RESET + ".");
+			System.out.println(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET + e.getMessage());
 			return false;
 		}
 		System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
@@ -71,6 +73,7 @@ public class CheckSolver {
 		catch(Exception e) {
 			System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
 			System.out.println("Check of the solver " + ConsoleColors.RED + "SMTINTERPOL" + ConsoleColors.RESET + " has " + ConsoleColors.RED + "failed" + ConsoleColors.RESET + ".");
+			System.out.println(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET + e.getMessage());
 			return false;
 		}
 		System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
@@ -87,6 +90,7 @@ public class CheckSolver {
 		catch(Exception e) {
 			System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
 			System.out.println("Check of the solver " + ConsoleColors.RED + "PRINCESS" + ConsoleColors.RESET + " has " + ConsoleColors.RED + "failed" + ConsoleColors.RESET + ".");
+			System.out.println(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET + e.getMessage());
 			return false;
 		}
 		System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
