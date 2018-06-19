@@ -22,7 +22,8 @@
 
 package tool;
 
-import utility.ConsoleColors;
+import utility.*;
+import utility.ConsolePrint.ConsoleType;
 import parser.Parser.*;
 
 public class SelectParser {
@@ -31,23 +32,23 @@ public class SelectParser {
 	{
 		int strLength = input.length();
 		if(strLength >= 3 && input.substring(strLength - 3, strLength).equals(".pa")) {
-			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type of the input file is " + ConsoleColors.YELLOW + "*.pa" + ConsoleColors.RESET);
+			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW + "*.pa" + ConsoleColors.RESET + " >.");
 			return ParserType.PA;
 		}
 		else if(strLength >= 4 && input.substring(strLength - 4, strLength).equals(".ada")) {
-			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type of the input file is " + ConsoleColors.YELLOW + "*.ada" + ConsoleColors.RESET);
+			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW + "*.ada" + ConsoleColors.RESET + " >.");
 			return ParserType.ADA;
 		}
 		else if(strLength >= 4 && input.substring(strLength - 4, strLength).equals(".smt")) {
-			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type of the input file is " + ConsoleColors.YELLOW + "*.smt" + ConsoleColors.RESET);
+			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW + "*.smt" + ConsoleColors.RESET + " >.");
 			return ParserType.SMT;
 		}
 		else if(strLength >= 6 && input.substring(strLength - 6, strLength).equals(".foada")) {
-			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Type of the input file is " + ConsoleColors.YELLOW + "*.foada" + ConsoleColors.RESET);
+			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW + "*.foada" + ConsoleColors.RESET + " >.");
 			return ParserType.FOADA;
 		}
 		else {
-			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Unknown type of the input file.");
+			ConsolePrint.printError(ConsoleType.FOADA, "Unknown type of the input file.");
 			return ParserType.UNKNOWN;
 		}
 	}

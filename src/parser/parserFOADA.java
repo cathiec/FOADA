@@ -47,7 +47,7 @@ public class ParserFOADA extends Parser {
 		try {
 	        InputStream istream = new FileInputStream(input);
 	        // Instantiate lexer and parser, connected together:
-	        System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Parsing and checking the grammar of the input...");
+	        ConsolePrint.printInfo(ConsoleType.ANTLR4, "Parsing and checking the grammar of the input...");
 			FOADA_Lexer lexer = new FOADA_Lexer(new ANTLRInputStream(istream));
 			lexer.removeErrorListeners();
 			lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);
@@ -70,4 +70,11 @@ public class ParserFOADA extends Parser {
         }
 		ConsolePrint.printInfo(ConsoleType.ANTLR4, "Grammar check has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
     }
+	
+	public void checkType(String input)
+			throws FOADAException
+	{
+		
+	}
+	
 }

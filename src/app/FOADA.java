@@ -41,18 +41,21 @@ public class FOADA {
 	}
 	
 	// -h
+	// show all the options
 	private static void help()
 	{
 		ConsolePrint.printInfo(ConsoleType.FOADA, "Showing all the options...");
 		System.out.println("\t-h \t\t show all the options");
 		System.out.println("\t-cs \t\t check all the solvers");
-		System.out.println("\t-g <input> \t parse an input file to check its grammar");
+		System.out.println("\t-g <input> \t parse an input file to check grammar errors");
+		System.out.println("\t-t <input> \t parse an input file to check type errors");
 		System.out.println("\t-r <input> \t run an SMT-like input file");
 		System.out.println("\t-v \t\t show the version of FOADA");
 		ConsolePrint.printFOADAEndOfSession();
 	}
 	
 	// -cs
+	// check all the solvers
 	private static void checkSolvers()
 	{
 		ConsolePrint.printInfo(ConsoleType.FOADA, "Start checking all the solvers...");
@@ -64,9 +67,11 @@ public class FOADA {
 	}
 	
 	// -g <input>
+	// check grammar errors in the input file
 	private static void checkGrammar(String input)
 			throws FOADAException
 	{
+		ConsolePrint.printInfo(ConsoleType.FOADA, "Reading the input file < " + input + " >...");
 		parser.Parser parser = tool.SelectParser.selectParser(input);
 		if(parser != null) {
 			parser.checkGrammar(input);
@@ -74,16 +79,31 @@ public class FOADA {
 		ConsolePrint.printFOADAEndOfSession();
 	}
 	
-	// -r <input>
-	private static void run(String input)
-			throws Exception
+	// -t
+	// check type errors in the input file
+	private static void checkType(String input)
+			throws FOADAException
 	{
+		ConsolePrint.printInfo(ConsoleType.FOADA, "Reading the input file < " + input + " >...");
+		parser.Parser parser = tool.SelectParser.selectParser(input);
+		if(parser != null) {
+			parser.checkType(input);
+		}
+		ConsolePrint.printFOADAEndOfSession();
+	}
+	
+	// -r <input>
+	// run the SMT-like input file
+	private static void run(String input)
+	{
+		ConsolePrint.printInfo(ConsoleType.FOADA, "Reading the input file < " + input + " >...");
 		parser.ParserSMT parser = new parser.ParserSMT();
 		parser.run(input);
 		ConsolePrint.printFOADAEndOfSession();
 	}
 		
 	// -v
+	// show the current version of FOADA
 	private static void version()
 	{
 		ConsolePrint.printInfo(ConsoleType.FOADA, "Version " + version);
@@ -93,15 +113,19 @@ public class FOADA {
 	public static void main(String[] args)
 	{
 		try {
+			// no argument
 			if(args.length == 0) {
 				welcome();
 			}
+			// show all the options
 			else if(args[0].equals("-h")) {
 				help();
 			}
+			// check all the solvers
 			else if(args[0].equals("-cs")) {
 				checkSolvers();
 			}
+			// check grammar errors in the input file
 			else if(args[0].equals("-g")) {
 				if(args.length < 2) {
 					throw new NoInputFileException();
@@ -110,17 +134,29 @@ public class FOADA {
 					checkGrammar(args[1]);
 				}
 			}
+			// check type errors in the input file
+			else if(args[0].equals("-t")) {
+				if(args.length < 2) {
+					throw new NoInputFileException();
+				}
+				else {
+					checkType(args[1]);
+				}
+			}
+			// run the SMT-like input file
 			else if(args[0].equals("-r")) {
 				if(args.length < 2) {
 					throw new NoInputFileException();
 				}
 				else {
-					//run(args[1]);
+					run(args[1]);
 				}
 			}
+			// show the current version of FOADA
 			else if(args[0].equals("-v")) {
 				version();
 			}
+			// unknown option
 			else {
 				throw new UnknownConsoleOptionException();
 			}

@@ -24,7 +24,8 @@ package parser;
 
 import java.io.*;
 
-import utility.ConsoleColors;
+import exception.*;
+import utility.*;
 
 public class ParserADA extends Parser {
 	
@@ -35,6 +36,7 @@ public class ParserADA extends Parser {
 
 	@SuppressWarnings("resource")
 	public void checkGrammar(String input)
+			throws FOADAException
 	{
 		try {
 			@SuppressWarnings("unused")
@@ -46,5 +48,11 @@ public class ParserADA extends Parser {
 		}
 		System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Grammar check has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
     }
+	
+	public void checkType(String input)
+			throws FOADAException
+	{
+		
+	}
 
 }
