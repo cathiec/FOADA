@@ -66,6 +66,7 @@ public class ParserSMT extends Parser {
         	System.out.println(ConsoleColors.CYAN + "Java > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " IO Exception.");
         	return;
         }
+		System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Grammar check has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
     }
 	
 	@SuppressWarnings("deprecation")
@@ -103,6 +104,6 @@ public class ParserSMT extends Parser {
         	System.out.println(ConsoleColors.CYAN + "Java > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " IO Exception.");
         	return;
         }
-    }
+	}
 
 }

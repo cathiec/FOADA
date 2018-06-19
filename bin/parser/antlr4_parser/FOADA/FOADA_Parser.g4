@@ -5,7 +5,11 @@ options {
     tokenVocab = FOADA_Lexer;
 }
 
-automaton
+@header {
+    import structure.*;
+}
+
+automaton returns [Automaton tree]
 : LP DEFAUTO ID (initial_def | list_finals_def | list_transitions_def)* RP EOF
 ;
 

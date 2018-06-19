@@ -43,6 +43,7 @@ public class ParserPA extends Parser {
 		catch(FileNotFoundException e) {
 			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Input file cannot be found.");
 		}
+		System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Grammar check has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
     }
 
 }
