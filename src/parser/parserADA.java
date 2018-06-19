@@ -22,10 +22,9 @@
 
 package parser;
 
-import java.io.*;
-
 import exception.*;
 import utility.*;
+import utility.ConsolePrint.ConsoleType;
 
 public class ParserADA extends Parser {
 	
@@ -33,26 +32,17 @@ public class ParserADA extends Parser {
 	{
 		type = ParserType.ADA;
 	}
-
-	@SuppressWarnings("resource")
+	
 	public void checkGrammar(String input)
 			throws FOADAException
 	{
-		try {
-			@SuppressWarnings("unused")
-			InputStream istream = new FileInputStream(input);
-	        System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Parsing and checking the grammar of the input...");
-		}
-		catch(FileNotFoundException e) {
-			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Input file cannot be found.");
-		}
-		System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Grammar check has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
-    }
+		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE + "The ADA parser is currently not available." + ConsoleColors.RESET);
+	}
 	
 	public void checkType(String input)
 			throws FOADAException
 	{
-		
+		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE + "The ADA parser is currently not available." + ConsoleColors.RESET);
 	}
 
 }

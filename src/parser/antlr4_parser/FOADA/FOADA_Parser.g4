@@ -14,20 +14,20 @@ automaton returns [Automaton tree]
 		$tree = new Automaton($ID.text);
 	}
 	(initial_def {
-		$tree.addInitial($initial_def);
+		$tree.addInitial($initial_def.tree);
 	}
 	| list_finals_def {
-		$tree.addFinals($list_finals_def);
+		$tree.addFinals($list_finals_def.tree);
 	}
 	| transition_def {
-		$tree.addTransition($transition_def);
+		$tree.addTransition($transition_def.tree);
 	}
 	)* RP EOF
 ;
 
 initial_def returns [Expression tree]
 : LP INIT expression {
-		$tree = new Expression();
+		$tree = $expression.tree;
 	}
 	RP
 ;

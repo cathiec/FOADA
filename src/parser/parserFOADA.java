@@ -47,7 +47,7 @@ public class ParserFOADA extends Parser {
 		try {
 	        InputStream istream = new FileInputStream(input);
 	        // Instantiate lexer and parser, connected together:
-	        ConsolePrint.printInfo(ConsoleType.ANTLR4, "Parsing and checking the grammar of the input...");
+	        ConsolePrint.printInfo(ConsoleType.ANTLR4, "Parsing and checking the grammar in the input...");
 			FOADA_Lexer lexer = new FOADA_Lexer(new ANTLRInputStream(istream));
 			lexer.removeErrorListeners();
 			lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);
@@ -71,10 +71,36 @@ public class ParserFOADA extends Parser {
 		ConsolePrint.printInfo(ConsoleType.ANTLR4, "Grammar check has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
     }
 	
+	@SuppressWarnings("deprecation")
 	public void checkType(String input)
 			throws FOADAException
 	{
-		
+		try {
+	        InputStream istream = new FileInputStream(input);
+	        // Instantiate lexer and parser, connected together:
+	        ConsolePrint.printInfo(ConsoleType.ANTLR4, "Parsing and checking the type in the input...");
+			FOADA_Lexer lexer = new FOADA_Lexer(new ANTLRInputStream(istream));
+			lexer.removeErrorListeners();
+			lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);
+	        CommonTokenStream tokens = new CommonTokenStream(lexer);
+	        FOADA_Parser parser = new FOADA_Parser(tokens);
+	        parser.removeErrorListeners();
+	        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
+	        // Launch the parser
+	        Automaton a = parser.automaton().tree;
+	        a.checkType();
+	        istream.close();
+		}
+		catch(ParseCancellationException e) {
+			throw new ANTLR4ParseCancellationException(e);
+		}
+		catch(FileNotFoundException e) {
+			throw new InputFileNotFoundException(input);
+		}
+        catch(IOException e) {
+        	throw new JavaIOException(e);
+        }
+		ConsolePrint.printInfo(ConsoleType.ANTLR4, "Type check has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
 	}
 	
 }

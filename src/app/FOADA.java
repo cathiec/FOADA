@@ -95,6 +95,7 @@ public class FOADA {
 	// -r <input>
 	// run the SMT-like input file
 	private static void run(String input)
+			throws FOADAException
 	{
 		ConsolePrint.printInfo(ConsoleType.FOADA, "Reading the input file < " + input + " >...");
 		parser.ParserSMT parser = new parser.ParserSMT();

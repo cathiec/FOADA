@@ -23,6 +23,8 @@
 package structure;
 
 import exception.*;
+import utility.ConsolePrint;
+import utility.ConsolePrint.ConsoleType;
 
 public class Automaton {
 	
@@ -51,6 +53,11 @@ public class Automaton {
 		else {
 			throw new InitialRedundancyException();
 		}
+	}
+	
+	public void checkType()
+	{
+		ConsolePrint.printInfo(ConsoleType.FOADA, " $$$$$$$$$$ ");
 	}
 
 }

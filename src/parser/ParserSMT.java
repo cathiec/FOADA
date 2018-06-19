@@ -28,7 +28,6 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import java.io.*;
 
 import parser.antlr4_parser.SMT.*;
-import structure.*;
 import utility.*;
 import utility.ConsolePrint.ConsoleType;
 import exception.*;
@@ -47,7 +46,7 @@ public class ParserSMT extends Parser {
 		try {
 	        InputStream istream = new FileInputStream(input);
 	        // Instantiate lexer and parser, connected together:
-	        ConsolePrint.printInfo(ConsoleType.ANTLR4, "Parsing and checking the grammar of the input...");
+	        ConsolePrint.printInfo(ConsoleType.ANTLR4, "Parsing and checking the grammar in the input...");
 	        SMT_Lexer lexer = new SMT_Lexer(new ANTLRInputStream(istream));
 	        lexer.removeErrorListeners();
 			lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);
@@ -74,11 +73,13 @@ public class ParserSMT extends Parser {
 	public void checkType(String input)
 			throws FOADAException
 	{
-		
+		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE + "The SMT type check is currently not available." + ConsoleColors.RESET);
 	}
 	
-	public void run(String input) {
-		
+	public void run(String input)
+			throws FOADAException
+	{
+		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE + "The SMT-like run is currently not available." + ConsoleColors.RESET);
 	}
 
 }
