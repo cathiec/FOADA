@@ -28,7 +28,10 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import java.io.*;
 
 import parser.antlr4_parser.FOADA.*;
-import utility.ConsoleColors;
+import structure.*;
+import utility.*;
+import utility.ConsolePrint.ConsoleType;
+import exception.*;
 
 public class ParserFOADA extends Parser {
 
@@ -38,7 +41,9 @@ public class ParserFOADA extends Parser {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void checkGrammar(String input){
+	public void checkGrammar(String input)
+			throws FOADAException
+	{
 		try {
 	        InputStream istream = new FileInputStream(input);
 	        // Instantiate lexer and parser, connected together:
@@ -55,17 +60,14 @@ public class ParserFOADA extends Parser {
 	        istream.close();
 		}
 		catch(ParseCancellationException e) {
-			System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " " + e.getMessage());
-			return;
+			throw new ANTLR4ParseCancellationException(e);
 		}
 		catch(FileNotFoundException e) {
-			System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Input file cannot be found.");
-			return;
+			throw new InputFileNotFoundException(input);
 		}
         catch(IOException e) {
-        	System.out.println(ConsoleColors.CYAN + "Java > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " IO Exception.");
-        	return;
+        	throw new JavaIOException(e);
         }
-		System.out.println(ConsoleColors.CYAN + "ANTLR4 > " + ConsoleColors.RESET + "Grammar check has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
+		ConsolePrint.printInfo(ConsoleType.ANTLR4, "Grammar check has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
     }
 }

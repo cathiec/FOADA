@@ -22,80 +22,65 @@
 
 package tool;
 
-import org.sosy_lab.common.configuration.InvalidConfigurationException;
 import org.sosy_lab.java_smt.SolverContextFactory;
 import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
 
 import utility.ConsoleColors;
+import utility.ConsolePrint;
+import utility.ConsolePrint.ConsoleType;
 
 public class CheckSolver {
 	
-	public static boolean checkZ3()
-		throws InvalidConfigurationException
+	public static void checkZ3()
 	{
 	    try {
-	    SolverContextFactory.createSolverContext(Solvers.Z3);
+	    	SolverContextFactory.createSolverContext(Solvers.Z3);
 	    }
 	    catch(Exception e) {
-	    	System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
-	    	System.out.println("Check of the solver " + ConsoleColors.RED + "Z3" + ConsoleColors.RESET + " has " + ConsoleColors.RED + "failed" + ConsoleColors.RESET + ".");
-	    	System.out.println(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET + e.getMessage());
-	    	return false;
+	    	ConsolePrint.printError(ConsoleType.JavaSMT, "The solver " + ConsoleColors.RED + "Z3 failed" + ConsoleColors.RESET + ".");
+	    	ConsolePrint.printInfo(ConsoleType.JavaSMT, e.getMessage());
+	    	return;
 	    }
-	    System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
-    	System.out.println("Check of the solver " + ConsoleColors.GREEN + "Z3" + ConsoleColors.RESET + " has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
-    	return true;
+	    ConsolePrint.printInfo(ConsoleType.JavaSMT, "The solver " + ConsoleColors.GREEN + "Z3 succeeded" + ConsoleColors.RESET + ".");
 	}
 	
-	public static boolean checkMATHSAT5()
-		throws InvalidConfigurationException
+	public static void checkMATHSAT5()
 	{
 		try {
-		    SolverContextFactory.createSolverContext(Solvers.MATHSAT5);
-		}
-		catch(Exception e) {
-			System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
-			System.out.println("Check of the solver " + ConsoleColors.RED + "MATHSAT5" + ConsoleColors.RESET + " has " + ConsoleColors.RED + "failed" + ConsoleColors.RESET + ".");
-			System.out.println(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET + e.getMessage());
-			return false;
-		}
-		System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
-		System.out.println("Check of the solver " + ConsoleColors.GREEN + "MATHSAT5" + ConsoleColors.RESET + " has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
-		return true;
+	    	SolverContextFactory.createSolverContext(Solvers.MATHSAT5);
+	    }
+	    catch(Exception e) {
+	    	ConsolePrint.printError(ConsoleType.JavaSMT, "The solver " + ConsoleColors.RED + "MATHSAT5 failed" + ConsoleColors.RESET + ".");
+	    	ConsolePrint.printInfo(ConsoleType.JavaSMT, e.getMessage());
+	    	return;
+	    }
+	    ConsolePrint.printInfo(ConsoleType.JavaSMT, "The solver " + ConsoleColors.GREEN + "MATHSAT5 succeeded" + ConsoleColors.RESET + ".");
 	}
 	
-	public static boolean checkSMTINTERPOL()
-		throws InvalidConfigurationException
+	public static void checkSMTINTERPOL()
 	{
 		try {
-		    SolverContextFactory.createSolverContext(Solvers.SMTINTERPOL);
-		}
-		catch(Exception e) {
-			System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
-			System.out.println("Check of the solver " + ConsoleColors.RED + "SMTINTERPOL" + ConsoleColors.RESET + " has " + ConsoleColors.RED + "failed" + ConsoleColors.RESET + ".");
-			System.out.println(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET + e.getMessage());
-			return false;
-		}
-		System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
-		System.out.println("Check of the solver " + ConsoleColors.GREEN + "SMTINTERPOL" + ConsoleColors.RESET + " has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
-		return true;
+	    	SolverContextFactory.createSolverContext(Solvers.SMTINTERPOL);
+	    }
+	    catch(Exception e) {
+	    	ConsolePrint.printError(ConsoleType.JavaSMT, "The solver " + ConsoleColors.RED + "SMTINTERPOL failed" + ConsoleColors.RESET + ".");
+	    	ConsolePrint.printInfo(ConsoleType.JavaSMT, e.getMessage());
+	    	return;
+	    }
+	    ConsolePrint.printInfo(ConsoleType.JavaSMT, "The solver " + ConsoleColors.GREEN + "SMTINTERPOL succeeded" + ConsoleColors.RESET + ".");
 	}
 	
-	public static boolean checkPRINCESS()
-		throws InvalidConfigurationException
+	public static void checkPRINCESS()
 	{
 		try {
-		    SolverContextFactory.createSolverContext(Solvers.PRINCESS);
-		}
-		catch(Exception e) {
-			System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
-			System.out.println("Check of the solver " + ConsoleColors.RED + "PRINCESS" + ConsoleColors.RESET + " has " + ConsoleColors.RED + "failed" + ConsoleColors.RESET + ".");
-			System.out.println(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET + e.getMessage());
-			return false;
-		}
-		System.out.print(ConsoleColors.CYAN + "JavaSMT > " + ConsoleColors.RESET);
-		System.out.println("Check of the solver " + ConsoleColors.GREEN + "PRINCESS" + ConsoleColors.RESET + " has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
-		return true;
+	    	SolverContextFactory.createSolverContext(Solvers.PRINCESS);
+	    }
+	    catch(Exception e) {
+	    	ConsolePrint.printError(ConsoleType.JavaSMT, "The solver " + ConsoleColors.RED + "PRINCESS failed" + ConsoleColors.RESET + ".");
+	    	ConsolePrint.printInfo(ConsoleType.JavaSMT, e.getMessage());
+	    	return;
+	    }
+	    ConsolePrint.printInfo(ConsoleType.JavaSMT, "The solver " + ConsoleColors.GREEN + "PRINCESS succeeded" + ConsoleColors.RESET + ".");
 	}
 
 }	

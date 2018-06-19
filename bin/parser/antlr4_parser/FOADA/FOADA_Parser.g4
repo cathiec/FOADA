@@ -10,19 +10,30 @@ options {
 }
 
 automaton returns [Automaton tree]
-: LP DEFAUTO ID (initial_def | list_finals_def | list_transitions_def)* RP EOF
+: LP DEFAUTO ID {
+		$tree = new Automaton($ID.text);
+	}
+	(initial_def {
+		$tree.addInitial($initial_def);
+	}
+	| list_finals_def {
+		$tree.addFinals($list_finals_def);
+	}
+	| transition_def {
+		$tree.addTransition($transition_def);
+	}
+	)* RP EOF
 ;
 
-initial_def
-: LP INIT expression RP
+initial_def returns [Expression tree]
+: LP INIT expression {
+		$tree = new Expression();
+	}
+	RP
 ;
 
 list_finals_def
 : LP FINAL LP list_finals RP RP
-;
-
-list_transitions_def
-: list_transitions
 ;
 
 expression
@@ -56,11 +67,7 @@ list_finals
 : ID (ID)*
 ;
 
-list_transitions
-: transition (transition)*
-;
-
-transition
+transition_def
 : LP TRANS state input expression RP
 ;
 

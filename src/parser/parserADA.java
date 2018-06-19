@@ -34,7 +34,8 @@ public class ParserADA extends Parser {
 	}
 
 	@SuppressWarnings("resource")
-	public void checkGrammar(String input) {
+	public void checkGrammar(String input)
+	{
 		try {
 			@SuppressWarnings("unused")
 			InputStream istream = new FileInputStream(input);

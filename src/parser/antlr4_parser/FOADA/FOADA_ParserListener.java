@@ -2,6 +2,8 @@
 
 package parser.antlr4_parser.FOADA;
 
+import structure.*;
+
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -40,16 +42,6 @@ public interface FOADA_ParserListener extends ParseTreeListener {
 	 */
 	void exitList_finals_def(FOADA_Parser.List_finals_defContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#list_transitions_def}.
-	 * @param ctx the parse tree
-	 */
-	void enterList_transitions_def(FOADA_Parser.List_transitions_defContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#list_transitions_def}.
-	 * @param ctx the parse tree
-	 */
-	void exitList_transitions_def(FOADA_Parser.List_transitions_defContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link FOADA_Parser#expression}.
 	 * @param ctx the parse tree
 	 */
@@ -80,25 +72,15 @@ public interface FOADA_ParserListener extends ParseTreeListener {
 	 */
 	void exitList_finals(FOADA_Parser.List_finalsContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#list_transitions}.
+	 * Enter a parse tree produced by {@link FOADA_Parser#transition_def}.
 	 * @param ctx the parse tree
 	 */
-	void enterList_transitions(FOADA_Parser.List_transitionsContext ctx);
+	void enterTransition_def(FOADA_Parser.Transition_defContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#list_transitions}.
+	 * Exit a parse tree produced by {@link FOADA_Parser#transition_def}.
 	 * @param ctx the parse tree
 	 */
-	void exitList_transitions(FOADA_Parser.List_transitionsContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#transition}.
-	 * @param ctx the parse tree
-	 */
-	void enterTransition(FOADA_Parser.TransitionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#transition}.
-	 * @param ctx the parse tree
-	 */
-	void exitTransition(FOADA_Parser.TransitionContext ctx);
+	void exitTransition_def(FOADA_Parser.Transition_defContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link FOADA_Parser#state}.
 	 * @param ctx the parse tree

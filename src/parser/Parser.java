@@ -22,12 +22,14 @@
 
 package parser;
 
+import exception.*;
+
 public abstract class Parser {
 	
-	public enum ParserType {ADA, FOADA, PA, SMT, UNKNOWN}
+	public enum ParserType {ADA, FOADA, PA, SMT, UNKNOWN};
 	
 	public ParserType type;
 	
-	public abstract void checkGrammar(String input);
+	public abstract void checkGrammar(String input) throws FOADAException;
 
 }

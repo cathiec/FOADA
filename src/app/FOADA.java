@@ -22,10 +22,10 @@
 
 package app;
 
-import org.sosy_lab.common.configuration.InvalidConfigurationException;
-
+import exception.*;
 import tool.*;
 import utility.*;
+import utility.ConsolePrint.ConsoleType;
 
 public class FOADA {
 	
@@ -37,107 +37,97 @@ public class FOADA {
 		System.out.println("------------------------------");
 		System.out.println("      FOADA Version 1.0");
 		System.out.println("------------------------------");
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Showing all the options...");
-		System.out.println("\t-h \t\t show all the options");
-		System.out.println("\t-cs \t\t check all the solvers");
-		System.out.println("\t-g <input> \t parse an input file to check its grammar");
-		System.out.println("\t-r <input> \t run an SMT-like input file");
-		System.out.println("\t-v \t\t show the version of FOADA");
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
+		help();
 	}
 	
 	// -h
 	private static void help()
 	{
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Showing all the options...");
+		ConsolePrint.printInfo(ConsoleType.FOADA, "Showing all the options...");
 		System.out.println("\t-h \t\t show all the options");
 		System.out.println("\t-cs \t\t check all the solvers");
 		System.out.println("\t-g <input> \t parse an input file to check its grammar");
 		System.out.println("\t-r <input> \t run an SMT-like input file");
 		System.out.println("\t-v \t\t show the version of FOADA");
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
+		ConsolePrint.printFOADAEndOfSession();
 	}
 	
 	// -cs
-	private static void checkSolvers() throws InvalidConfigurationException
+	private static void checkSolvers()
 	{
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Start checking all the solvers...");
+		ConsolePrint.printInfo(ConsoleType.FOADA, "Start checking all the solvers...");
 		CheckSolver.checkSMTINTERPOL();
 		CheckSolver.checkZ3();
 		CheckSolver.checkMATHSAT5();
 		CheckSolver.checkPRINCESS();
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
+		ConsolePrint.printFOADAEndOfSession();
 	}
 	
 	// -g <input>
-	private static void checkGrammar(String input) throws Exception
+	private static void checkGrammar(String input)
+			throws FOADAException
 	{
 		parser.Parser parser = tool.SelectParser.selectParser(input);
 		if(parser != null) {
 			parser.checkGrammar(input);
 		}
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
+		ConsolePrint.printFOADAEndOfSession();
 	}
 	
 	// -r <input>
-	private static void run(String input) throws Exception
+	private static void run(String input)
+			throws Exception
 	{
 		parser.ParserSMT parser = new parser.ParserSMT();
 		parser.run(input);
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
+		ConsolePrint.printFOADAEndOfSession();
 	}
 		
 	// -v
 	private static void version()
 	{
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Version " + version);
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
+		ConsolePrint.printInfo(ConsoleType.FOADA, "Version " + version);
+		ConsolePrint.printFOADAEndOfSession();
 	}
 	
-	// unknown
-	private static void unknown()
+	public static void main(String[] args)
 	{
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " Unknown option.");
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Entry " + ConsoleColors.YELLOW + "-h" + ConsoleColors.RESET + " for the help.");
-		System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");	
-	}
-	
-	public static void main(String[] args) throws Exception
-	{
-		if(args.length == 0) {
-			welcome();
-		}
-		else if(args[0].equals("-h")) {
-			help();
-		}
-		else if(args[0].equals("-cs")) {
-			checkSolvers();
-		}
-		else if(args[0].equals("-g")) {
-			if(args.length < 2) {
-				System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " No input file.");
-				System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Entry " + ConsoleColors.YELLOW + "-h" + ConsoleColors.RESET + " for the help.");
-				System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
+		try {
+			if(args.length == 0) {
+				welcome();
+			}
+			else if(args[0].equals("-h")) {
+				help();
+			}
+			else if(args[0].equals("-cs")) {
+				checkSolvers();
+			}
+			else if(args[0].equals("-g")) {
+				if(args.length < 2) {
+					throw new NoInputFileException();
+				}
+				else {
+					checkGrammar(args[1]);
+				}
+			}
+			else if(args[0].equals("-r")) {
+				if(args.length < 2) {
+					throw new NoInputFileException();
+				}
+				else {
+					//run(args[1]);
+				}
+			}
+			else if(args[0].equals("-v")) {
+				version();
 			}
 			else {
-				checkGrammar(args[1]);
+				throw new UnknownConsoleOptionException();
 			}
 		}
-		else if(args[0].equals("-r")) {
-			if(args.length < 2) {
-				System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " No input file.");
-				System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "Entry " + ConsoleColors.YELLOW + "-h" + ConsoleColors.RESET + " for the help.");
-				System.out.println(ConsoleColors.CYAN + "FOADA > " + ConsoleColors.RESET + "End of session.\n");
-			}
-			else {
-				run(args[1]);
-			}
-		}
-		else if(args[0].equals("-v")) {
-			version();
-		}
-		else {
-			unknown();
+		catch(FOADAException e) {
+			e.printErrorMessage();
+			ConsolePrint.printFOADAEndOfSession();
 		}
 	}
 }

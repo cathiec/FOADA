@@ -2,6 +2,9 @@
 
 package parser.antlr4_parser.FOADA;
 
+import structure.*;
+
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -53,18 +56,6 @@ public class FOADA_ParserBaseListener implements FOADA_ParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterList_transitions_def(FOADA_Parser.List_transitions_defContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitList_transitions_def(FOADA_Parser.List_transitions_defContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterExpression(FOADA_Parser.ExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -101,25 +92,13 @@ public class FOADA_ParserBaseListener implements FOADA_ParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterList_transitions(FOADA_Parser.List_transitionsContext ctx) { }
+	@Override public void enterTransition_def(FOADA_Parser.Transition_defContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitList_transitions(FOADA_Parser.List_transitionsContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTransition(FOADA_Parser.TransitionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTransition(FOADA_Parser.TransitionContext ctx) { }
+	@Override public void exitTransition_def(FOADA_Parser.Transition_defContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
