@@ -48,5 +48,25 @@ public class Input extends Expression {
 		Input x = new Input(id, listOfArguments);
 		return x;
 	}
+	
+	public String toSMTString()
+	{
+		String x = "(" + id + " (";
+		for(Argument i : listOfArguments) {
+			x = x + i.toSMTString() + " ";
+		}
+		x = x.substring(0, x.length() - 1) + ')' + ')';
+		return x;
+	}
+	
+	public String toStandardString()
+	{
+		String x = id + "(";
+		for(Argument i : listOfArguments) {
+			x = x + i.toStandardString() + ",";
+		}
+		x = x.substring(0, x.length() - 1) + ')';
+		return x;
+	}
 
 }

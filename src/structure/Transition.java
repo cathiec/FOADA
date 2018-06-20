@@ -48,4 +48,14 @@ public class Transition extends Expression {
 		return x;
 	}
 	
+	public String toSMTString()
+	{
+		return state.toSMTString() + " " + event.toSMTString() + " " + result.toSMTString();
+	}
+	
+	public String toStandardString()
+	{
+		return state.toStandardString() + " --- " + event.toStandardString() + " --> " + result.toStandardString();
+	}
+	
 }

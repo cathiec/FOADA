@@ -42,5 +42,15 @@ public class GEQ extends BooleanExpression {
 		GEQ x = new GEQ(left, right);
 		return x;
 	}
+	
+	public String toSMTString()
+	{	
+		return "(>= " + left.toSMTString() + " " + right.toSMTString() + ")";
+	}
+	
+	public String toStandardString()
+	{
+		return left.toStandardString() + " >= " + right.toStandardString();
+	}
 
 }

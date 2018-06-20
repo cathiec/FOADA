@@ -47,5 +47,25 @@ public class Exists extends BooleanExpression {
 		Exists x = new Exists(listOfArguments, sub);
 		return x;
 	}
+	
+	public String toSMTString()
+	{
+		String x = "(exists (";
+		for(Argument i : listOfArguments) {
+			x = x + i.toSMTString() + " ";
+		}
+		x = x.substring(0, x.length() - 1) + ") " + sub.toSMTString() + ')';
+		return x;
+	}
+	
+	public String toStandardString()
+	{
+		String x = "exists ";
+		for(Argument i : listOfArguments) {
+			x = x + i.toStandardString() + ",";
+		}
+		x = x.substring(0, x.length() - 1) + " : " + sub.toStandardString();
+		return x;
+	}
 
 }

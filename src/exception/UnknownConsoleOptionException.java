@@ -25,14 +25,17 @@ package exception;
 @SuppressWarnings("serial")
 public class UnknownConsoleOptionException extends FOADAException {
 
-	public UnknownConsoleOptionException()
+	String option;
+	
+	public UnknownConsoleOptionException(String s)
 	{
 		type = ExceptionType.UnknownConsoleOption;
+		option = s;
 	}
 	
 	public String getInfo()
 	{
-		return "Unknown option.";
+		return "Unknown option < " + option + " >.";
 	}
 	
 }

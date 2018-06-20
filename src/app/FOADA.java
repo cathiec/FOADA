@@ -159,7 +159,7 @@ public class FOADA {
 			}
 			// unknown option
 			else {
-				throw new UnknownConsoleOptionException();
+				throw new UnknownConsoleOptionException(args[0]);
 			}
 		}
 		catch(FOADAException e) {

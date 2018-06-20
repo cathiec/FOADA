@@ -49,5 +49,25 @@ public class BooleanConstant extends BooleanExpression {
 		BooleanConstant x = new BooleanConstant(value);
 		return x;
 	}
+	
+	public String toSMTString()
+	{
+		if(value) {
+			return "true";
+		}
+		else {
+			return "false";
+		}
+	}
+	
+	public String toStandardString()
+	{
+		if(value) {
+			return "true";
+		}
+		else {
+			return "false";
+		}
+	}
 
 }

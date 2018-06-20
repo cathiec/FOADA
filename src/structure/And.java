@@ -52,5 +52,25 @@ public class And extends BooleanExpression {
 		And x = new And(sub);
 		return x;
 	}
+	
+	public String toSMTString()
+	{
+		String x = "(and ";
+		for(BooleanExpression i : sub) {
+			x = x + i.toSMTString() + " ";
+		}
+		x = x.substring(0, x.length() - 1) + ')';
+		return x;
+	}
+	
+	public String toStandardString()
+	{
+		String x = "(";
+		for(BooleanExpression i : sub) {
+			x = x + i.toStandardString() + " /\\ ";
+		}
+		x = x.substring(0, x.length() - 4) + ')';
+		return x;
+	}
 
 }

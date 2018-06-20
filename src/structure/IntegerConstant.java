@@ -44,5 +44,15 @@ public class IntegerConstant extends IntegerExpression {
 		IntegerConstant x = new IntegerConstant(value);
 		return x;
 	}
+	
+	public String toSMTString()
+	{
+		return Integer.toString(value);
+	}
+	
+	public String toStandardString()
+	{
+		return Integer.toString(value);
+	}
 
 }

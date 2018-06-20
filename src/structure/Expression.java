@@ -33,5 +33,9 @@ public abstract class Expression {
 	public ExpressionType exprType;
 	
 	public abstract Expression copy();
+	
+	public abstract String toSMTString();
+	
+	public abstract String toStandardString();
 
 }

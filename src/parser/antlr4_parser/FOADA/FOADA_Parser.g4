@@ -104,7 +104,7 @@ boolexpr returns [BooleanExpression tree]
 		$tree = new BooleanFunction($id.text);
 	}
 	(id2=ID {
-		(BooleanFunction)$tree.addArgument($id2.text);
+		((BooleanFunction)$tree).addArgument($id2.text);
 	}
 	)+
 	RP

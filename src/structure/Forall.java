@@ -47,5 +47,25 @@ public class Forall extends BooleanExpression {
 		Forall x = new Forall(listOfArguments, sub);
 		return x;
 	}
+	
+	public String toSMTString()
+	{
+		String x = "(forall (";
+		for(Argument i : listOfArguments) {
+			x = x + i.toSMTString() + " ";
+		}
+		x = x.substring(0, x.length() - 1) + ") " + sub.toSMTString() + ')';
+		return x;
+	}
+	
+	public String toStandardString()
+	{
+		String x = "forall ";
+		for(Argument i : listOfArguments) {
+			x = x + i.toStandardString() + ",";
+		}
+		x = x.substring(0, x.length() - 1) + " : " + sub.toStandardString();
+		return x;
+	}
 
 }

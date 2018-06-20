@@ -39,5 +39,15 @@ public class Not extends BooleanExpression {
 		x.sub = sub.copy();
 		return x;
 	}
+	
+	public String toSMTString()
+	{	
+		return "(not " + sub.toSMTString() + ")";
+	}
+	
+	public String toStandardString()
+	{
+		return "!" + sub.toStandardString();
+	}
 
 }

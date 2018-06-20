@@ -32,12 +32,9 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
 
-import exception.FinalRedundancyException;
-import exception.InitialRedundancyException;
+import exception.*;
 
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
+import java.util.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class FOADA_Parser extends Parser {

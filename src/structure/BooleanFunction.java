@@ -68,5 +68,25 @@ public class BooleanFunction extends BooleanExpression {
 		BooleanFunction x = new BooleanFunction(id, listOfArguments);
 		return x;
 	}
+	
+	public String toSMTString()
+	{
+		String x = "(" + id + " ";
+		for(String i : listOfArguments) {
+			x = x + i + " ";
+		}
+		x = x.substring(0, x.length() - 1) + ')';
+		return x;
+	}
+	
+	public String toStandardString()
+	{
+		String x = id + "(";
+		for(String i : listOfArguments) {
+			x = x + i + ",";
+		}
+		x = x.substring(0, x.length() - 1) + ')';
+		return x;
+	}
 
 }

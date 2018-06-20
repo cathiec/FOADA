@@ -38,5 +38,15 @@ public class IntegerVariable extends IntegerExpression {
 		IntegerVariable x = new IntegerVariable(id);
 		return x;
 	}
+	
+	public String toSMTString()
+	{
+		return id;
+	}
+	
+	public String toStandardString()
+	{
+		return id;
+	}
 
 }

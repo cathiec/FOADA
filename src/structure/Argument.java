@@ -43,5 +43,29 @@ public class Argument extends Expression {
 		Argument x = new Argument(id, type);
 		return x;
 	}
+	
+	@SuppressWarnings("incomplete-switch")
+	public String toSMTString()
+	{
+		String x = "(" + id;
+		switch(type)
+		{
+		case Integer: x = x + " Int)"; break;
+		case Boolean: x = x + " Bool)"; break;
+		}
+		return x;
+	}
+	
+	@SuppressWarnings("incomplete-switch")
+	public String toStandardString()
+	{
+		String x = "";
+		switch(type)
+		{
+		case Integer: x = "int " + id; break;
+		case Boolean: x = "bool " + id; break;
+		}
+		return x;
+	}
 
 }

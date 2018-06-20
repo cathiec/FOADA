@@ -28,7 +28,7 @@ import exception.*;
 import utility.ConsolePrint;
 import utility.ConsolePrint.ConsoleType;
 
-public class Automaton {
+public class Automaton extends Expression{
 	
 	// name(ID) of the automaton
 	String id;
@@ -77,9 +77,42 @@ public class Automaton {
 		listOfTransitions.add(t.copy());
 	}
 	
-	public void checkType()
+	public Automaton copy()
 	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, " $$$$$$$$$$ ");
+		Automaton x = new Automaton(id);
+		x.initial = initial.copy();
+		x.listOfIDFinals.addAll(listOfIDFinals);
+		for(Transition i : listOfTransitions) {
+			x.addTransition(i);
+		}
+		return x;
+	}
+	
+	public String toSMTString()
+	{
+		String x = "(define-automaton " + id + "\n\t(init " + initial.toSMTString() + ")\n\t(final (";
+		for(String i : listOfIDFinals) {
+			x = x + i + " ";
+		}
+		x = x.substring(0, x.length() - 1) + "))\n";
+		for(Transition i : listOfTransitions) {
+			x = x + "\t(trans " + i.toSMTString() + ")\n";
+		}
+		x = x + ')';
+		return x;
+	}
+	
+	public String toStandardString()
+	{
+		String x = "Automaton " + id + "\n\tinitial = " + initial.toStandardString() + "\n\tfinal = {";
+		for(String i : listOfIDFinals) {
+			x = x + i + ",";
+		}
+		x = x.substring(0, x.length() - 1) + "}\n";
+		for(Transition i : listOfTransitions) {
+			x = x + "\t" + i.toStandardString() + "\n";
+		}
+		return x;
 	}
 
 }

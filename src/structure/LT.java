@@ -42,5 +42,15 @@ public class LT extends BooleanExpression {
 		LT x = new LT(left, right);
 		return x;
 	}
+	
+	public String toSMTString()
+	{	
+		return "(< " + left.toSMTString() + " " + right.toSMTString() + ")";
+	}
+	
+	public String toStandardString()
+	{
+		return left.toStandardString() + " < " + right.toStandardString();
+	}
 
 }

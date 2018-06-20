@@ -52,4 +52,24 @@ public class Times extends IntegerExpression {
 		Times x = new Times(sub);
 		return x;
 	}
+	
+	public String toSMTString()
+	{
+		String x = "(* ";
+		for(IntegerExpression i : sub) {
+			x = x + i.toSMTString() + " ";
+		}
+		x = x.substring(0, x.length() - 1) + ')';
+		return x;
+	}
+	
+	public String toStandardString()
+	{
+		String x = "(";
+		for(IntegerExpression i : sub) {
+			x = x + i.toStandardString() + " * ";
+		}
+		x = x.substring(0, x.length() - 4) + ')';
+		return x;
+	}
 }
