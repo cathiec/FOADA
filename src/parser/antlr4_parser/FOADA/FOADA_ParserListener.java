@@ -1,8 +1,26 @@
-// Generated from FOADA_Parser.g4 by ANTLR 4.7.1
+/*
+	FOADA
+    Copyright (C) 2018  Xiao XU & Radu IOSIF
+
+	This file is part of FOADA.
+
+    FOADA is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+    
+    If you have any questions, please contact Xiao XU <xiao.xu.cathiec@gmail.com>.
+*/
 
 package parser.antlr4_parser.FOADA;
-
-import structure.*;
 
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -42,36 +60,6 @@ public interface FOADA_ParserListener extends ParseTreeListener {
 	 */
 	void exitList_finals_def(FOADA_Parser.List_finals_defContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterExpression(FOADA_Parser.ExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitExpression(FOADA_Parser.ExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#integer}.
-	 * @param ctx the parse tree
-	 */
-	void enterInteger(FOADA_Parser.IntegerContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#integer}.
-	 * @param ctx the parse tree
-	 */
-	void exitInteger(FOADA_Parser.IntegerContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#list_finals}.
-	 * @param ctx the parse tree
-	 */
-	void enterList_finals(FOADA_Parser.List_finalsContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#list_finals}.
-	 * @param ctx the parse tree
-	 */
-	void exitList_finals(FOADA_Parser.List_finalsContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link FOADA_Parser#transition_def}.
 	 * @param ctx the parse tree
 	 */
@@ -82,15 +70,35 @@ public interface FOADA_ParserListener extends ParseTreeListener {
 	 */
 	void exitTransition_def(FOADA_Parser.Transition_defContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#state}.
+	 * Enter a parse tree produced by {@link FOADA_Parser#boolexpr}.
 	 * @param ctx the parse tree
 	 */
-	void enterState(FOADA_Parser.StateContext ctx);
+	void enterBoolexpr(FOADA_Parser.BoolexprContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#state}.
+	 * Exit a parse tree produced by {@link FOADA_Parser#boolexpr}.
 	 * @param ctx the parse tree
 	 */
-	void exitState(FOADA_Parser.StateContext ctx);
+	void exitBoolexpr(FOADA_Parser.BoolexprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link FOADA_Parser#intexpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterIntexpr(FOADA_Parser.IntexprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FOADA_Parser#intexpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitIntexpr(FOADA_Parser.IntexprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link FOADA_Parser#list_finals}.
+	 * @param ctx the parse tree
+	 */
+	void enterList_finals(FOADA_Parser.List_finalsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FOADA_Parser#list_finals}.
+	 * @param ctx the parse tree
+	 */
+	void exitList_finals(FOADA_Parser.List_finalsContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link FOADA_Parser#list_arguments}.
 	 * @param ctx the parse tree

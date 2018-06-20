@@ -32,7 +32,7 @@ public class InitialRedundancyException extends FOADAException {
 	
 	public String getInfo()
 	{
-		return "The initial state had already been set. It cannot be reset anymore.";
+		return "The initial configuration had already been set. It cannot be reset anymore.";
 	}
 
 }

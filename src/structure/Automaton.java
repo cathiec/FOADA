@@ -22,29 +22,35 @@
 
 package structure;
 
+import java.util.*;
+
 import exception.*;
 import utility.ConsolePrint;
 import utility.ConsolePrint.ConsoleType;
 
 public class Automaton {
 	
+	// name(ID) of the automaton
 	String id;
 	
-	Expression initial;
+	// initial configuration
+	BooleanExpression initial;
 	
-	public Automaton()
-	{
-		id = null;
-		initial = null;
-	}
+	// list of names(IDs) of the final states
+	List<String> listOfIDFinals;
+	
+	// list of transitions
+	List<Transition> listOfTransitions;
 	
 	public Automaton(String s)
 	{
 		id = s;
 		initial = null;
+		listOfIDFinals = new ArrayList<String>();
+		listOfTransitions = new ArrayList<Transition>();
 	}
 	
-	public void addInitial(Expression e)
+	public void setInitial(BooleanExpression e)
 			throws InitialRedundancyException
 	{
 		if(initial == null) {
@@ -53,6 +59,22 @@ public class Automaton {
 		else {
 			throw new InitialRedundancyException();
 		}
+	}
+	
+	public void setFinals(List<String> l)
+			throws FinalRedundancyException
+	{
+		if(listOfIDFinals.size() == 0) {
+			listOfIDFinals.addAll(l);
+		}
+		else {
+			throw new FinalRedundancyException();
+		}
+	}
+	
+	public void addTransition(Transition t)
+	{
+		listOfTransitions.add(t.copy());
 	}
 	
 	public void checkType()

@@ -30,6 +30,7 @@ public abstract class FOADAException extends Throwable{
 	
 	public enum ExceptionType {
 		InitialRedundancy,
+		FinalRedundancy,
 		UnknownConsoleOption,
 		NoInputFile,
 		InputFileNotFound,

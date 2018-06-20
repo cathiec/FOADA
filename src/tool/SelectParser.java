@@ -49,7 +49,7 @@ public class SelectParser {
 		}
 		else {
 			ConsolePrint.printError(ConsoleType.FOADA, "Unknown type of the input file.");
-			return ParserType.UNKNOWN;
+			return ParserType.Unknown;
 		}
 	}
 	
@@ -63,7 +63,7 @@ public class SelectParser {
 		case ADA: parser = new parser.ParserADA(); break;
 		case SMT: parser = new parser.ParserSMT(); break;
 		case FOADA: parser = new parser.ParserFOADA(); break;
-		case UNKNOWN: return null;
+		case Unknown: return null;
 		default: return null;
 		}
 		return parser;

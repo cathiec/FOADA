@@ -1,9 +1,26 @@
-// Generated from FOADA_Parser.g4 by ANTLR 4.7.1
+/*
+	FOADA
+    Copyright (C) 2018  Xiao XU & Radu IOSIF
+
+	This file is part of FOADA.
+
+    FOADA is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+    
+    If you have any questions, please contact Xiao XU <xiao.xu.cathiec@gmail.com>.
+*/
 
 package parser.antlr4_parser.FOADA;
-
-import structure.*;
-
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -56,42 +73,6 @@ public class FOADA_ParserBaseListener implements FOADA_ParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpression(FOADA_Parser.ExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpression(FOADA_Parser.ExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterInteger(FOADA_Parser.IntegerContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitInteger(FOADA_Parser.IntegerContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterList_finals(FOADA_Parser.List_finalsContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitList_finals(FOADA_Parser.List_finalsContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterTransition_def(FOADA_Parser.Transition_defContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -104,13 +85,37 @@ public class FOADA_ParserBaseListener implements FOADA_ParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterState(FOADA_Parser.StateContext ctx) { }
+	@Override public void enterBoolexpr(FOADA_Parser.BoolexprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitState(FOADA_Parser.StateContext ctx) { }
+	@Override public void exitBoolexpr(FOADA_Parser.BoolexprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIntexpr(FOADA_Parser.IntexprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIntexpr(FOADA_Parser.IntexprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterList_finals(FOADA_Parser.List_finalsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitList_finals(FOADA_Parser.List_finalsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

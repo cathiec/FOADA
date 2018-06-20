@@ -22,11 +22,16 @@
 
 package structure;
 
-public class Expression {
+public abstract class Expression {
 	
-	public Expression()
-	{
-		
-	}
+	public enum ExpressionClass {Boolean, Integer, Other};
+	
+	public enum ExpressionType {Constant, Variable, Function, Not, Distinct, And, Or, Exists, Forall, GT, LT, GEQ, LEQ, Equals, Plus, Minus, Times, Slash, Other};
+	
+	public ExpressionClass exprClass;
+	
+	public ExpressionType exprType;
+	
+	public abstract Expression copy();
 
 }

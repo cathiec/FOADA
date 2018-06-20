@@ -26,7 +26,7 @@ import exception.*;
 
 public abstract class Parser {
 	
-	public enum ParserType {ADA, FOADA, PA, SMT, UNKNOWN};
+	public enum ParserType {ADA, FOADA, PA, SMT, Unknown};
 	
 	public ParserType type;
 	

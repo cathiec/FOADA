@@ -87,8 +87,7 @@ public class ParserFOADA extends Parser {
 	        parser.removeErrorListeners();
 	        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
 	        // Launch the parser
-	        Automaton a = parser.automaton().tree;
-	        a.checkType();
+	        parser.automaton().tree.checkType();
 	        istream.close();
 		}
 		catch(ParseCancellationException e) {
