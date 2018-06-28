@@ -957,7 +957,7 @@ public class FOADA_Parser extends Parser {
 				setState(217);
 				((IntexprContext)_localctx).ID = match(ID);
 
-						((IntexprContext)_localctx).tree =  new IntegerVariable((((IntexprContext)_localctx).ID!=null?((IntexprContext)_localctx).ID.getText():null));
+						((IntexprContext)_localctx).tree =  new IntegerFunction((((IntexprContext)_localctx).ID!=null?((IntexprContext)_localctx).ID.getText():null));
 					
 				}
 				break;

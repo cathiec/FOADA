@@ -22,6 +22,8 @@
 
 package app;
 
+import java.io.IOException;
+
 import exception.*;
 import tool.*;
 import utility.*;
@@ -46,15 +48,28 @@ public class FOADA {
 	{
 		ConsolePrint.printInfo(ConsoleType.FOADA, "Showing all the options...");
 		System.out.println("\t-h \t\t show all the options");
-		System.out.println("\t-cs \t\t check all the solvers");
-		System.out.println("\t-g <input> \t parse an input file to check grammar errors");
-		System.out.println("\t-t <input> \t parse an input file to check type errors");
+		System.out.println("\t-c \t\t check all the solvers");
+		System.out.println("\t-s <input> \t parse an input file to check syntax errors");
 		System.out.println("\t-r <input> \t run an SMT-like input file");
 		System.out.println("\t-v \t\t show the version of FOADA");
 		ConsolePrint.printFOADAEndOfSession();
 	}
 	
-	// -cs
+	// -is
+	// install all the solvers
+	private static void installZ3()
+	{
+		try {
+			System.out.println(System.getProperty("os.name"));
+			Runtime.getRuntime().exec("ls");
+			//Runtime.getRuntime().exec("cp ./lib_solvers/libz3.dylib /usr/local/lib/libz3.dylib");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	// -c
 	// check all the solvers
 	private static void checkSolvers()
 	{
@@ -66,8 +81,8 @@ public class FOADA {
 		ConsolePrint.printFOADAEndOfSession();
 	}
 	
-	// -g <input>
-	// check grammar errors in the input file
+	// -s <input>
+	// check syntax errors in the input file
 	private static void checkGrammar(String input)
 			throws FOADAException
 	{
@@ -75,19 +90,6 @@ public class FOADA {
 		parser.Parser parser = tool.SelectParser.selectParser(input);
 		if(parser != null) {
 			parser.checkGrammar(input);
-		}
-		ConsolePrint.printFOADAEndOfSession();
-	}
-	
-	// -t
-	// check type errors in the input file
-	private static void checkType(String input)
-			throws FOADAException
-	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, "Reading the input file < " + input + " >...");
-		parser.Parser parser = tool.SelectParser.selectParser(input);
-		if(parser != null) {
-			parser.checkType(input);
 		}
 		ConsolePrint.printFOADAEndOfSession();
 	}
@@ -122,26 +124,21 @@ public class FOADA {
 			else if(args[0].equals("-h")) {
 				help();
 			}
+			// install all the solvers
+			else if(args[0].equals("-is")) {
+				installZ3();
+			}
 			// check all the solvers
-			else if(args[0].equals("-cs")) {
+			else if(args[0].equals("-c")) {
 				checkSolvers();
 			}
-			// check grammar errors in the input file
-			else if(args[0].equals("-g")) {
+			// check syntax errors in the input file
+			else if(args[0].equals("-s")) {
 				if(args.length < 2) {
 					throw new NoInputFileException();
 				}
 				else {
 					checkGrammar(args[1]);
-				}
-			}
-			// check type errors in the input file
-			else if(args[0].equals("-t")) {
-				if(args.length < 2) {
-					throw new NoInputFileException();
-				}
-				else {
-					checkType(args[1]);
 				}
 			}
 			// run the SMT-like input file

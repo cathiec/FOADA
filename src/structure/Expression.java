@@ -26,7 +26,7 @@ public abstract class Expression {
 	
 	public enum ExpressionClass {Boolean, Integer, Other};
 	
-	public enum ExpressionType {Constant, Variable, Function, Not, Distinct, And, Or, Exists, Forall, GT, LT, GEQ, LEQ, Equals, Plus, Minus, Times, Slash, Other};
+	public enum ExpressionType {Constant, Function, Not, Distinct, And, Or, Exists, Forall, GT, LT, GEQ, LEQ, Equals, Plus, Minus, Times, Slash, Other};
 	
 	public ExpressionClass exprClass;
 	

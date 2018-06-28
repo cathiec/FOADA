@@ -31,7 +31,5 @@ public abstract class Parser {
 	public ParserType type;
 	
 	public abstract void checkGrammar(String input) throws FOADAException;
-	
-	public abstract void checkType(String input) throws FOADAException;
 
 }

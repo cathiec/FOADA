@@ -71,36 +71,4 @@ public class ParserFOADA extends Parser {
 		ConsolePrint.printInfo(ConsoleType.ANTLR4, "Grammar check has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
     }
 	
-	@SuppressWarnings("deprecation")
-	public void checkType(String input)
-			throws FOADAException
-	{
-		try {
-	        InputStream istream = new FileInputStream(input);
-	        // Instantiate lexer and parser, connected together:
-	        ConsolePrint.printInfo(ConsoleType.ANTLR4, "Parsing and checking the type in the input...");
-			FOADA_Lexer lexer = new FOADA_Lexer(new ANTLRInputStream(istream));
-			lexer.removeErrorListeners();
-			lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);
-	        CommonTokenStream tokens = new CommonTokenStream(lexer);
-	        FOADA_Parser parser = new FOADA_Parser(tokens);
-	        parser.removeErrorListeners();
-	        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
-	        // Launch the parser
-	        System.out.println(parser.automaton().tree.copy().toSMTString());
-	        //System.out.println(parser.automaton().tree.copy().toStandardString());
-	        istream.close();
-		}
-		catch(ParseCancellationException e) {
-			throw new ANTLR4ParseCancellationException(e);
-		}
-		catch(FileNotFoundException e) {
-			throw new InputFileNotFoundException(input);
-		}
-        catch(IOException e) {
-        	throw new JavaIOException(e);
-        }
-		ConsolePrint.printInfo(ConsoleType.ANTLR4, "Type check has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
-	}
-	
 }

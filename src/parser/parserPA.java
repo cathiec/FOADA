@@ -38,11 +38,5 @@ public class ParserPA extends Parser {
 	{
 		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE + "The PA parser is currently not available." + ConsoleColors.RESET);
 	}
-	
-	public void checkType(String input)
-			throws FOADAException
-	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE + "The PA parser is currently not available." + ConsoleColors.RESET);
-	}
 
 }

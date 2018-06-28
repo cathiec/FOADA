@@ -70,12 +70,6 @@ public class ParserSMT extends Parser {
 		ConsolePrint.printInfo(ConsoleType.ANTLR4, "Grammar check has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
 	}
 	
-	public void checkType(String input)
-			throws FOADAException
-	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE + "The SMT type check is currently not available." + ConsoleColors.RESET);
-	}
-	
 	public void run(String input)
 			throws FOADAException
 	{

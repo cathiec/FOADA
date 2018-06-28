@@ -38,11 +38,5 @@ public class ParserADA extends Parser {
 	{
 		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE + "The ADA parser is currently not available." + ConsoleColors.RESET);
 	}
-	
-	public void checkType(String input)
-			throws FOADAException
-	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE + "The ADA parser is currently not available." + ConsoleColors.RESET);
-	}
 
 }

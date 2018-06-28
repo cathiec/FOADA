@@ -29,22 +29,25 @@ public class BooleanFunction extends BooleanExpression {
 	// name(ID) of the function
 	public String id;
 		
+	// list of arguments IDs of the function
+	public List<String> listOfArgumentsID;
+	
 	// list of arguments of the function
-	public List<String> listOfArguments;
+	public List<Expression> listOfArguments;
 	
 	public BooleanFunction(String s)
 	{
 		id = s;
-		listOfArguments = new ArrayList<String>();
+		listOfArgumentsID = new ArrayList<String>();
 		exprType = ExpressionType.Function;
 	}
 	
 	public BooleanFunction(String s, List<String> ls)
 	{
 		id = s;
-		listOfArguments = new ArrayList<String>();
+		listOfArgumentsID = new ArrayList<String>();
 		for(String i : ls) {
-			listOfArguments.add(i);
+			listOfArgumentsID.add(i);
 		}
 		exprType = ExpressionType.Function;
 	}
@@ -52,27 +55,27 @@ public class BooleanFunction extends BooleanExpression {
 	public void addArgument(String... ss)
 	{
 		for(String i : ss) {
-			listOfArguments.add(i);
+			listOfArgumentsID.add(i);
 		}
 	}
 	
 	public void addArgument(List<String> ls)
 	{
 		for(String i : ls) {
-			listOfArguments.add(i);
+			listOfArgumentsID.add(i);
 		}
 	}
 	
 	public BooleanFunction copy()
 	{
-		BooleanFunction x = new BooleanFunction(id, listOfArguments);
+		BooleanFunction x = new BooleanFunction(id, listOfArgumentsID);
 		return x;
 	}
 	
 	public String toSMTString()
 	{
 		String x = "(" + id + " ";
-		for(String i : listOfArguments) {
+		for(String i : listOfArgumentsID) {
 			x = x + i + " ";
 		}
 		x = x.substring(0, x.length() - 1) + ')';
@@ -82,7 +85,7 @@ public class BooleanFunction extends BooleanExpression {
 	public String toStandardString()
 	{
 		String x = id + "(";
-		for(String i : listOfArguments) {
+		for(String i : listOfArgumentsID) {
 			x = x + i + ",";
 		}
 		x = x.substring(0, x.length() - 1) + ')';

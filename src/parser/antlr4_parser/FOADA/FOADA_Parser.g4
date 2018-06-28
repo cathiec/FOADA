@@ -6,73 +6,79 @@ options {
 }
 
 @header {
+	package parser.antlr4_parser.FOADA;
     import structure.*;
     import structure.Expression.*;
 }
 
 automaton returns [Automaton tree]
-	: LP DEFAUTO ID {
+:
+	LP DEFAUTO ID {
 		$tree = new Automaton($ID.text);
 	}
-	(initial_def {
-		$tree.setInitial($initial_def.tree);
-	}
-	| list_finals_def {
-		$tree.setFinals($list_finals_def.tree);
-	}
-	| transition_def {
-		$tree.addTransition($transition_def.tree);
-	}
+	(	initial_def {
+			$tree.setInitial($initial_def.tree);
+		}
+		| list_finals_def {
+			$tree.setFinals($list_finals_def.tree);
+		}
+		| transition_def {
+			$tree.addTransition($transition_def.tree);
+		}
 	)*
 	RP EOF
 ;
 
 initial_def returns [BooleanExpression tree]
-	: LP INIT boolexpr {
+:
+	LP INIT boolexpr {
 		$tree = $boolexpr.tree;
 	}
 	RP
 ;
 
 list_finals_def returns [List<String> tree]
-	: LP FINAL LP list_finals {
+:
+	LP FINAL LP list_finals {
 		$tree = $list_finals.tree;
 	}
 	RP RP
 ;
 
 transition_def returns [Transition tree]
-	: LP TRANS i=input i2=input boolexpr RP {
+:
+	LP TRANS i=input i2=input boolexpr RP {
 		$tree = new Transition($i.tree, $i2.tree, $boolexpr.tree);
 	}
 ;
 
 boolexpr returns [BooleanExpression tree]
-	: TRUE {
+:
+	TRUE {
 		$tree = new BooleanConstant(true);
 	}
-	| FALSE {
-		$tree = new BooleanConstant(false);
-	}
-	| LP NOT boolexpr RP {
-		$tree = new Not($boolexpr.tree);
-	}
-	| LP AND b=boolexpr {
-		$tree = $b.tree; 
-	}
-	(b2=boolexpr {
-		$tree = new And($tree, $b2.tree);
-	}
-	)+
-	RP
-	| LP OR b=boolexpr {
-		$tree = $b.tree;
-	}
-	(b2=boolexpr {
-		$tree = new Or($tree, $b2.tree);
-	}
-	)+
-	RP
+	|	FALSE {
+			$tree = new BooleanConstant(false);
+		}
+	|	LP NOT boolexpr RP {
+			$tree = new Not($boolexpr.tree);
+		}
+	|	LP AND b=boolexpr {
+			$tree = $b.tree; 
+		}
+		(b2=boolexpr {
+			$tree = new And($tree, $b2.tree);
+		}
+		)+
+		RP
+	|	LP OR b=boolexpr {
+			$tree = $b.tree;
+		}
+		(b2=boolexpr {
+			$tree = new Or($tree, $b2.tree);
+		}
+		)+
+		RP
 	| LP EXISTS LP list_arguments RP boolexpr RP {
 		$tree = new Exists($list_arguments.tree, $boolexpr.tree);
 	}

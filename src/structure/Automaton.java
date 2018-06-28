@@ -88,6 +88,11 @@ public class Automaton extends Expression{
 		return x;
 	}
 	
+	public void checkType()
+	{
+		ConsolePrint.printInfo(ConsoleType.FOADA, "+ + + + + + + + + +");
+	}
+	
 	public String toSMTString()
 	{
 		String x = "(define-automaton " + id + "\n\t(init " + initial.toSMTString() + ")\n\t(final (";
