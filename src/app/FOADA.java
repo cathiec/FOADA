@@ -43,33 +43,31 @@ public class FOADA {
 	}
 	
 	// -h
+	// --help
 	// show all the options
 	private static void help()
 	{
 		ConsolePrint.printInfo(ConsoleType.FOADA, "Showing all the options...");
-		System.out.println("\t-h \t\t show all the options");
-		System.out.println("\t-c \t\t check all the solvers");
-		System.out.println("\t-s <input> \t parse an input file to check syntax errors");
-		System.out.println("\t-r <input> \t run an SMT-like input file");
-		System.out.println("\t-v \t\t show the version of FOADA");
+		// -h , --help
+		System.out.println("\t-h");
+		System.out.println("\t--help \t\t\t show all the options");
+		// -c , --check
+		System.out.println("\t-c");
+		System.out.println("\t--check \t\t check all the solvers");
+		// -s , --syntax
+		System.out.println("\t-s <input> \t\t check syntax errors in an input file");
+		System.out.println("\t--syntax <input> \t check syntax errors in an input file");
+		// -r , --run
+		System.out.println("\t-r <input> \t\t run a SMT-like input file");
+		System.out.println("\t--run <input> \t\t run a SMT-like input file");
+		// -v , --version
+		System.out.println("\t-v \t\t\t show the current version of FOADA");
+		System.out.println("\t--version \t\t show the current version of FOADA");
 		ConsolePrint.printFOADAEndOfSession();
 	}
 	
-	// -is
-	// install all the solvers
-	private static void installZ3()
-	{
-		try {
-			System.out.println(System.getProperty("os.name"));
-			Runtime.getRuntime().exec("ls");
-			//Runtime.getRuntime().exec("cp ./lib_solvers/libz3.dylib /usr/local/lib/libz3.dylib");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
 	// -c
+	// --check
 	// check all the solvers
 	private static void checkSolvers()
 	{
@@ -82,7 +80,8 @@ public class FOADA {
 	}
 	
 	// -s <input>
-	// check syntax errors in the input file
+	// --syntax <input>
+	// check syntax errors in an input file
 	private static void checkGrammar(String input)
 			throws FOADAException
 	{
@@ -95,7 +94,8 @@ public class FOADA {
 	}
 	
 	// -r <input>
-	// run the SMT-like input file
+	// --run <input>
+	// run a SMT-like input file
 	private static void run(String input)
 			throws FOADAException
 	{
@@ -106,6 +106,7 @@ public class FOADA {
 	}
 		
 	// -v
+	// --version
 	// show the current version of FOADA
 	private static void version()
 	{
@@ -113,6 +114,7 @@ public class FOADA {
 		ConsolePrint.printFOADAEndOfSession();
 	}
 	
+	// main function
 	public static void main(String[] args)
 	{
 		try {
@@ -121,19 +123,15 @@ public class FOADA {
 				welcome();
 			}
 			// show all the options
-			else if(args[0].equals("-h")) {
+			else if(args[0].equals("-h") || args[0].equals("--help")) {
 				help();
 			}
-			// install all the solvers
-			else if(args[0].equals("-is")) {
-				installZ3();
-			}
 			// check all the solvers
-			else if(args[0].equals("-c")) {
+			else if(args[0].equals("-c") || args[0].equals("--check")) {
 				checkSolvers();
 			}
-			// check syntax errors in the input file
-			else if(args[0].equals("-s")) {
+			// check syntax errors in an input file
+			else if(args[0].equals("-s") || args[0].equals("--syntax")) {
 				if(args.length < 2) {
 					throw new NoInputFileException();
 				}
@@ -141,8 +139,8 @@ public class FOADA {
 					checkGrammar(args[1]);
 				}
 			}
-			// run the SMT-like input file
-			else if(args[0].equals("-r")) {
+			// run a SMT-like input file
+			else if(args[0].equals("-r") || args[0].equals("--run")) {
 				if(args.length < 2) {
 					throw new NoInputFileException();
 				}
@@ -151,7 +149,7 @@ public class FOADA {
 				}
 			}
 			// show the current version of FOADA
-			else if(args[0].equals("-v")) {
+			else if(args[0].equals("-v") || args[0].equals("--version")) {
 				version();
 			}
 			// unknown option
