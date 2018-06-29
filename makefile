@@ -25,5 +25,6 @@ else ifeq ($(ARCH), Linux)
 	rm /usr/lib/libz3.so
 	rm -r /usr/bin/foadalib
 	rm /usr/bin/foada
+	rm /usr/local/bin/foada
 
 endif
