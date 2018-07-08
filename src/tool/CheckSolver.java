@@ -37,11 +37,11 @@ public class CheckSolver {
 	    	SolverContextFactory.createSolverContext(Solvers.Z3);
 	    }
 	    catch(Exception e) {
-	    	ConsolePrint.printError(ConsoleType.JavaSMT, "The solver " + ConsoleColors.RED + "Z3 failed" + ConsoleColors.RESET + ".");
-	    	ConsolePrint.printInfo(ConsoleType.JavaSMT, e.getMessage());
+	    	ConsolePrint.printError(ConsoleType.JavaSMT, "The solver Z3 failed.");
+	    	ConsolePrint.printError(ConsoleType.JavaSMT, e.getMessage());
 	    	return;
 	    }
-	    ConsolePrint.printInfo(ConsoleType.JavaSMT, "The solver " + ConsoleColors.GREEN + "Z3 succeeded" + ConsoleColors.RESET + ".");
+	    ConsolePrint.printInfo(ConsoleType.JavaSMT, "The solver " + ConsoleColors.GREEN_BRIGHT + "Z3 succeeded" + ConsoleColors.RESET + ".");
 	}
 	
 	public static void checkMATHSAT5()
@@ -50,11 +50,11 @@ public class CheckSolver {
 	    	SolverContextFactory.createSolverContext(Solvers.MATHSAT5);
 	    }
 	    catch(Exception e) {
-	    	ConsolePrint.printError(ConsoleType.JavaSMT, "The solver " + ConsoleColors.RED + "MATHSAT5 failed" + ConsoleColors.RESET + ".");
-	    	ConsolePrint.printInfo(ConsoleType.JavaSMT, e.getMessage());
+	    	ConsolePrint.printError(ConsoleType.JavaSMT, "The solver MATHSAT5 failed.");
+	    	ConsolePrint.printError(ConsoleType.JavaSMT, e.getMessage());
 	    	return;
 	    }
-	    ConsolePrint.printInfo(ConsoleType.JavaSMT, "The solver " + ConsoleColors.GREEN + "MATHSAT5 succeeded" + ConsoleColors.RESET + ".");
+	    ConsolePrint.printInfo(ConsoleType.JavaSMT, "The solver " + ConsoleColors.GREEN_BRIGHT + "MATHSAT5 succeeded" + ConsoleColors.RESET + ".");
 	}
 	
 	public static void checkSMTINTERPOL()
@@ -63,11 +63,11 @@ public class CheckSolver {
 	    	SolverContextFactory.createSolverContext(Solvers.SMTINTERPOL);
 	    }
 	    catch(Exception e) {
-	    	ConsolePrint.printError(ConsoleType.JavaSMT, "The solver " + ConsoleColors.RED + "SMTINTERPOL failed" + ConsoleColors.RESET + ".");
-	    	ConsolePrint.printInfo(ConsoleType.JavaSMT, e.getMessage());
+	    	ConsolePrint.printError(ConsoleType.JavaSMT, "The solver SMTINTERPOL failed.");
+	    	ConsolePrint.printError(ConsoleType.JavaSMT, e.getMessage());
 	    	return;
 	    }
-	    ConsolePrint.printInfo(ConsoleType.JavaSMT, "The solver " + ConsoleColors.GREEN + "SMTINTERPOL succeeded" + ConsoleColors.RESET + ".");
+	    ConsolePrint.printInfo(ConsoleType.JavaSMT, "The solver " + ConsoleColors.GREEN_BRIGHT + "SMTINTERPOL succeeded" + ConsoleColors.RESET + ".");
 	}
 	
 	public static void checkPRINCESS()
@@ -76,11 +76,11 @@ public class CheckSolver {
 	    	SolverContextFactory.createSolverContext(Solvers.PRINCESS);
 	    }
 	    catch(Exception e) {
-	    	ConsolePrint.printError(ConsoleType.JavaSMT, "The solver " + ConsoleColors.RED + "PRINCESS failed" + ConsoleColors.RESET + ".");
-	    	ConsolePrint.printInfo(ConsoleType.JavaSMT, e.getMessage());
+	    	ConsolePrint.printError(ConsoleType.JavaSMT, "The solver PRINCESS failed.");
+	    	ConsolePrint.printError(ConsoleType.JavaSMT, e.getMessage());
 	    	return;
 	    }
-	    ConsolePrint.printInfo(ConsoleType.JavaSMT, "The solver " + ConsoleColors.GREEN + "PRINCESS succeeded" + ConsoleColors.RESET + ".");
+	    ConsolePrint.printInfo(ConsoleType.JavaSMT, "The solver " + ConsoleColors.GREEN_BRIGHT + "PRINCESS succeeded" + ConsoleColors.RESET + ".");
 	}
 
 }	

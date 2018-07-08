@@ -25,16 +25,14 @@ package structure;
 import java.util.*;
 
 import exception.*;
-import utility.ConsolePrint;
-import utility.ConsolePrint.ConsoleType;
 
-public class Automaton extends Expression{
+public class Automaton extends BasicObject {
 	
 	// name(ID) of the automaton
 	String id;
 	
 	// initial configuration
-	BooleanExpression initial;
+	Expression initial;
 	
 	// list of names(IDs) of the final states
 	List<String> listOfIDFinals;
@@ -50,7 +48,7 @@ public class Automaton extends Expression{
 		listOfTransitions = new ArrayList<Transition>();
 	}
 	
-	public void setInitial(BooleanExpression e)
+	public void setInitial(Expression e)
 			throws InitialRedundancyException
 	{
 		if(initial == null) {
@@ -77,31 +75,48 @@ public class Automaton extends Expression{
 		listOfTransitions.add(t.copy());
 	}
 	
+	public void checkType()
+	{
+		System.out.println(toSMTString());
+	}
+	
+	public boolean checkEmpty()
+	{
+		return false;
+	}
+	
 	public Automaton copy()
 	{
 		Automaton x = new Automaton(id);
 		x.initial = initial.copy();
 		x.listOfIDFinals.addAll(listOfIDFinals);
-		for(Transition i : listOfTransitions) {
-			x.addTransition(i);
+		for(Transition t : listOfTransitions) {
+			x.addTransition(t);
 		}
 		return x;
 	}
 	
-	public void checkType()
-	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, "+ + + + + + + + + +");
-	}
-	
 	public String toSMTString()
 	{
-		String x = "(define-automaton " + id + "\n\t(init " + initial.toSMTString() + ")\n\t(final (";
-		for(String i : listOfIDFinals) {
-			x = x + i + " ";
+		String x = "(define-automaton " + id + "\n";
+		if(initial != null) {
+			x = x + "\t(init " + initial.toSMTString() + ")\n";
 		}
-		x = x.substring(0, x.length() - 1) + "))\n";
-		for(Transition i : listOfTransitions) {
-			x = x + "\t(trans " + i.toSMTString() + ")\n";
+		else {
+			x = x + "\t(init)\n";
+		}
+		if(listOfIDFinals.size() == 0) {
+			x = x + "\t(final)\n";
+		}
+		else {
+			x = x + "\t(final (";
+			for(String s : listOfIDFinals) {
+				x = x + s + " ";
+			}
+			x = x.substring(0, x.length() - 1) + "))\n";
+		}
+		for(Transition t : listOfTransitions) {
+			x = x + "\t" + t.toSMTString() + "\n";
 		}
 		x = x + ')';
 		return x;
@@ -109,15 +124,7 @@ public class Automaton extends Expression{
 	
 	public String toStandardString()
 	{
-		String x = "Automaton " + id + "\n\tinitial = " + initial.toStandardString() + "\n\tfinal = {";
-		for(String i : listOfIDFinals) {
-			x = x + i + ",";
-		}
-		x = x.substring(0, x.length() - 1) + "}\n";
-		for(Transition i : listOfTransitions) {
-			x = x + "\t" + i.toStandardString() + "\n";
-		}
-		return x;
+		return "";
 	}
 
 }

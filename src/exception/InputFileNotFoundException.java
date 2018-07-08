@@ -35,7 +35,12 @@ public class InputFileNotFoundException extends FOADAException {
 	
 	public String getInfo()
 	{
-		return "The file < " + filename + " > cannot be found.";
+		if(filename == null) {
+			return "No input file is given.";
+		}
+		else {
+			return "The file < " + filename + " > cannot be found.";
+		}
 	}
 
 }

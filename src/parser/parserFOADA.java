@@ -28,12 +28,11 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import java.io.*;
 
 import parser.antlr4_parser.FOADA.*;
-import structure.*;
 import utility.*;
 import utility.ConsolePrint.ConsoleType;
 import exception.*;
 
-public class ParserFOADA extends Parser {
+public class ParserFOADA extends AutomatonParser {
 
 	public ParserFOADA()
 	{
@@ -41,13 +40,13 @@ public class ParserFOADA extends Parser {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void checkGrammar(String input)
+	public void checkSyntax(String input)
 			throws FOADAException
 	{
 		try {
 	        InputStream istream = new FileInputStream(input);
 	        // Instantiate lexer and parser, connected together:
-	        ConsolePrint.printInfo(ConsoleType.ANTLR4, "Parsing and checking the grammar in the input...");
+	        ConsolePrint.printInfo(ConsoleType.ANTLR4, "Parsing and checking the syntax in the input...");
 			FOADA_Lexer lexer = new FOADA_Lexer(new ANTLRInputStream(istream));
 			lexer.removeErrorListeners();
 			lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);
@@ -56,7 +55,7 @@ public class ParserFOADA extends Parser {
 	        parser.removeErrorListeners();
 	        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
 	        // Launch the parser
-	        parser.automaton();
+	        parser.automaton().tree.checkType();
 	        istream.close();
 		}
 		catch(ParseCancellationException e) {
@@ -68,7 +67,38 @@ public class ParserFOADA extends Parser {
         catch(IOException e) {
         	throw new JavaIOException(e);
         }
-		ConsolePrint.printInfo(ConsoleType.ANTLR4, "Grammar check has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
+		ConsolePrint.printInfo(ConsoleType.ANTLR4, "Syntax check has " + ConsoleColors.GREEN_BRIGHT + "succeeded" + ConsoleColors.RESET + ".");
+    }
+	
+	@SuppressWarnings("deprecation")
+	public boolean checkEmpty(String input)
+			throws FOADAException
+	{
+		try {
+	        InputStream istream = new FileInputStream(input);
+	        // Instantiate lexer and parser, connected together:
+	        ConsolePrint.printInfo(ConsoleType.ANTLR4, "Parsing and checking the syntax in the input...");
+			FOADA_Lexer lexer = new FOADA_Lexer(new ANTLRInputStream(istream));
+			lexer.removeErrorListeners();
+			lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);
+	        CommonTokenStream tokens = new CommonTokenStream(lexer);
+	        FOADA_Parser parser = new FOADA_Parser(tokens);
+	        parser.removeErrorListeners();
+	        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
+	        // Launch the parser
+	        boolean isEmpty = parser.automaton().tree.checkEmpty();
+	        istream.close();
+	        return isEmpty;
+		}
+		catch(ParseCancellationException e) {
+			throw new ANTLR4ParseCancellationException(e);
+		}
+		catch(FileNotFoundException e) {
+			throw new InputFileNotFoundException(input);
+		}
+        catch(IOException e) {
+        	throw new JavaIOException(e);
+        }
     }
 	
 }

@@ -22,40 +22,77 @@
 
 package structure;
 
-public class Transition extends Expression {
+import java.util.*;
 
-	// input state
-	public Input state;
+import structure.Expression.*;
+
+public class Transition extends BasicObject {
 	
-	// input event
-	public Input event;
+	public String from;
 	
-	// right part of the transition
-	public BooleanExpression result;
+	public Map<String, ExpressionCategory> argumentsOfFrom;
 	
-	public Transition(Input i1, Input i2, BooleanExpression be)
+	public String event;
+	
+	public Map<String, ExpressionCategory> argumentsOfEvent;
+	
+	public Expression to;
+	
+	public Transition(String s1, Map<String, ExpressionCategory> m1, String s2, Map<String, ExpressionCategory> m2, Expression e)
 	{
-		state = i1.copy();
-		event = i2.copy();
-		result = be.copy();
-		exprClass = ExpressionClass.Other;
-		exprType = ExpressionType.Other;
+		from = s1;
+		argumentsOfFrom = new HashMap<String, ExpressionCategory>();
+		argumentsOfFrom.putAll(m1);
+		event = s2;
+		argumentsOfEvent = new HashMap<String, ExpressionCategory>();
+		argumentsOfEvent.putAll(m2);
+		to = e.copy();
+	}
+	
+	public Transition(Transition another)
+	{
+		from = another.from;
+		argumentsOfFrom = new HashMap<String, ExpressionCategory>();
+		argumentsOfFrom.putAll(another.argumentsOfFrom);
+		event = another.event;
+		argumentsOfEvent = new HashMap<String, ExpressionCategory>();
+		argumentsOfEvent.putAll(another.argumentsOfEvent);
+		to = another.to.copy();
 	}
 	
 	public Transition copy()
 	{
-		Transition x = new Transition(state, event, result);
+		Transition x = new Transition(this);
 		return x;
 	}
 	
 	public String toSMTString()
 	{
-		return state.toSMTString() + " " + event.toSMTString() + " " + result.toSMTString();
+		String x = "(trans (" + from + " (";
+		for(String s : argumentsOfFrom.keySet()) {
+			if(argumentsOfFrom.get(s) == ExpressionCategory.Boolean) {
+				x = x + '(' + s + " Bool) ";
+			}
+			else if(argumentsOfFrom.get(s) == ExpressionCategory.Integer) {
+				x = x + '(' + s + " Int) ";
+			}
+		}
+		x = x.substring(0, x.length() - 1) + ")) (" + event + " (";
+		for(String s : argumentsOfEvent.keySet()) {
+			if(argumentsOfEvent.get(s) == ExpressionCategory.Boolean) {
+				x = x + '(' + s + " Bool) ";
+			}
+			else if(argumentsOfEvent.get(s) == ExpressionCategory.Integer) {
+				x = x + '(' + s + " Int) ";
+			}
+		}
+		x = x.substring(0, x.length() - 1) + ")) " + to.toSMTString() + ')';
+		return x;
 	}
 	
 	public String toStandardString()
 	{
-		return state.toStandardString() + " --- " + event.toStandardString() + " --> " + result.toStandardString();
+		return "";
 	}
-	
+
 }

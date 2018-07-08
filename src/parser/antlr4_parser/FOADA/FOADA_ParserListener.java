@@ -22,6 +22,11 @@
 
 package parser.antlr4_parser.FOADA;
 
+import java.util.*;
+import structure.*;
+import structure.Transition;
+import structure.Expression.*;
+
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -70,25 +75,15 @@ public interface FOADA_ParserListener extends ParseTreeListener {
 	 */
 	void exitTransition_def(FOADA_Parser.Transition_defContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#boolexpr}.
+	 * Enter a parse tree produced by {@link FOADA_Parser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterBoolexpr(FOADA_Parser.BoolexprContext ctx);
+	void enterExpr(FOADA_Parser.ExprContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#boolexpr}.
+	 * Exit a parse tree produced by {@link FOADA_Parser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitBoolexpr(FOADA_Parser.BoolexprContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#intexpr}.
-	 * @param ctx the parse tree
-	 */
-	void enterIntexpr(FOADA_Parser.IntexprContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#intexpr}.
-	 * @param ctx the parse tree
-	 */
-	void exitIntexpr(FOADA_Parser.IntexprContext ctx);
+	void exitExpr(FOADA_Parser.ExprContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link FOADA_Parser#list_finals}.
 	 * @param ctx the parse tree
@@ -110,16 +105,6 @@ public interface FOADA_ParserListener extends ParseTreeListener {
 	 */
 	void exitList_arguments(FOADA_Parser.List_argumentsContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#argument}.
-	 * @param ctx the parse tree
-	 */
-	void enterArgument(FOADA_Parser.ArgumentContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#argument}.
-	 * @param ctx the parse tree
-	 */
-	void exitArgument(FOADA_Parser.ArgumentContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link FOADA_Parser#type}.
 	 * @param ctx the parse tree
 	 */
@@ -129,14 +114,4 @@ public interface FOADA_ParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitType(FOADA_Parser.TypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#input}.
-	 * @param ctx the parse tree
-	 */
-	void enterInput(FOADA_Parser.InputContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#input}.
-	 * @param ctx the parse tree
-	 */
-	void exitInput(FOADA_Parser.InputContext ctx);
 }

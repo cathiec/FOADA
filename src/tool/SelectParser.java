@@ -25,46 +25,71 @@ package tool;
 import utility.*;
 import utility.ConsolePrint.ConsoleType;
 import parser.Parser.*;
+import exception.*;
 
 public class SelectParser {
 	
-	public static ParserType determineType(String input)
+	public static ParserCategory determineCategory(String input)
+			throws FOADAException
 	{
 		int strLength = input.length();
 		if(strLength >= 3 && input.substring(strLength - 3, strLength).equals(".pa")) {
-			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW + "*.pa" + ConsoleColors.RESET + " >.");
+			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW_BRIGHT + "*.pa" + ConsoleColors.RESET + " >.");
+			return ParserCategory.Automaton;
+		}
+		else if(strLength >= 4 && input.substring(strLength - 4, strLength).equals(".ada")) {
+			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW_BRIGHT + "*.ada" + ConsoleColors.RESET + " >.");
+			return ParserCategory.Automaton;
+		}
+		else if(strLength >= 4 && input.substring(strLength - 4, strLength).equals(".smt")) {
+			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW_BRIGHT + "*.smt" + ConsoleColors.RESET + " >.");
+			return ParserCategory.Script;
+		}
+		else if(strLength >= 6 && input.substring(strLength - 6, strLength).equals(".foada")) {
+			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW_BRIGHT + "*.foada" + ConsoleColors.RESET + " >.");
+			return ParserCategory.Automaton;
+		}
+		else {
+			throw new UnknownTypeOfInputException();
+		}
+	}
+	
+	public static ParserType determineType(String input)
+			throws FOADAException
+	{
+		int strLength = input.length();
+		if(strLength >= 3 && input.substring(strLength - 3, strLength).equals(".pa")) {
+			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW_BRIGHT + "*.pa" + ConsoleColors.RESET + " >.");
 			return ParserType.PA;
 		}
 		else if(strLength >= 4 && input.substring(strLength - 4, strLength).equals(".ada")) {
-			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW + "*.ada" + ConsoleColors.RESET + " >.");
+			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW_BRIGHT + "*.ada" + ConsoleColors.RESET + " >.");
 			return ParserType.ADA;
 		}
 		else if(strLength >= 4 && input.substring(strLength - 4, strLength).equals(".smt")) {
-			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW + "*.smt" + ConsoleColors.RESET + " >.");
+			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW_BRIGHT + "*.smt" + ConsoleColors.RESET + " >.");
 			return ParserType.SMT;
 		}
 		else if(strLength >= 6 && input.substring(strLength - 6, strLength).equals(".foada")) {
-			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW + "*.foada" + ConsoleColors.RESET + " >.");
+			ConsolePrint.printInfo(ConsoleType.FOADA, "Type of the input file is < " + ConsoleColors.YELLOW_BRIGHT + "*.foada" + ConsoleColors.RESET + " >.");
 			return ParserType.FOADA;
 		}
 		else {
-			ConsolePrint.printError(ConsoleType.FOADA, "Unknown type of the input file.");
-			return ParserType.Unknown;
+			throw new UnknownTypeOfInputException();
 		}
 	}
 	
 	public static parser.Parser selectParser(String input)
+			throws FOADAException
 	{
 		ParserType type = determineType(input);
-		parser.Parser parser;
+		parser.Parser parser = null;
 		switch(type)
 		{
-		case PA: parser = new parser.ParserPA(); break;
-		case ADA: parser = new parser.ParserADA(); break;
-		case SMT: parser = new parser.ParserSMT(); break;
-		case FOADA: parser = new parser.ParserFOADA(); break;
-		case Unknown: return null;
-		default: return null;
+		case PA:	parser = new parser.ParserPA();	break;
+		case ADA:	parser = new parser.ParserADA(); break;
+		case SMT:	parser = new parser.ParserSMT(); break;
+		case FOADA:	parser = new parser.ParserFOADA(); break;
 		}
 		return parser;
 	}

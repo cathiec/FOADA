@@ -32,10 +32,12 @@ public abstract class FOADAException extends Throwable{
 		InitialRedundancy,
 		FinalRedundancy,
 		UnknownConsoleOption,
-		NoInputFile,
 		InputFileNotFound,
 		JavaIO,
-		ANTLR4ParseCancellation
+		ANTLR4ParseCancellation,
+		UnknownTypeOfInput,
+		InputFileNotScript,
+		InputFileNotAutomaton
 	};
 	
 	public ExceptionType type;

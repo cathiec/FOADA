@@ -26,17 +26,24 @@ import exception.*;
 import utility.*;
 import utility.ConsolePrint.ConsoleType;
 
-public class ParserPA extends Parser {
+public class ParserPA extends AutomatonParser {
 	
 	public ParserPA()
 	{
 		type = ParserType.PA;
 	}
 	
-	public void checkGrammar(String input)
+	public void checkSyntax(String input)
 			throws FOADAException
 	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE + "The PA parser is currently not available." + ConsoleColors.RESET);
+		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE_BRIGHT + "The PA parser is currently not available." + ConsoleColors.RESET);
+	}
+	
+	public boolean checkEmpty(String input)
+			throws FOADAException
+	{
+		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE_BRIGHT + "The PA parser is currently not available." + ConsoleColors.RESET);
+		return false;
 	}
 
 }

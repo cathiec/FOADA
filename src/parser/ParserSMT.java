@@ -22,58 +22,27 @@
 
 package parser;
 
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-
-import java.io.*;
-
-import parser.antlr4_parser.SMT.*;
+import exception.*;
 import utility.*;
 import utility.ConsolePrint.ConsoleType;
-import exception.*;
 
-public class ParserSMT extends Parser {
+public class ParserSMT extends ScriptParser {
 	
 	public ParserSMT()
 	{
 		type = ParserType.SMT;
 	}
 	
-	@SuppressWarnings("deprecation")
-	public void checkGrammar(String input)
+	public void checkSyntax(String input)
 			throws FOADAException
 	{
-		try {
-	        InputStream istream = new FileInputStream(input);
-	        // Instantiate lexer and parser, connected together:
-	        ConsolePrint.printInfo(ConsoleType.ANTLR4, "Parsing and checking the grammar in the input...");
-	        SMT_Lexer lexer = new SMT_Lexer(new ANTLRInputStream(istream));
-	        lexer.removeErrorListeners();
-			lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);
-	        CommonTokenStream tokens = new CommonTokenStream(lexer);
-	        SMT_Parser parser = new SMT_Parser(tokens);
-	        parser.removeErrorListeners();
-	        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
-	        // Launch the parser
-	        parser.run();
-	        istream.close();
-		}
-		catch(ParseCancellationException e) {
-			throw new ANTLR4ParseCancellationException(e);
-		}
-		catch(FileNotFoundException e) {
-			throw new InputFileNotFoundException(input);
-		}
-        catch(IOException e) {
-        	throw new JavaIOException(e);
-        }
-		ConsolePrint.printInfo(ConsoleType.ANTLR4, "Grammar check has " + ConsoleColors.GREEN + "succeeded" + ConsoleColors.RESET + ".");
+		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE_BRIGHT + "The SMT parser is currently not available." + ConsoleColors.RESET);
 	}
 	
 	public void run(String input)
 			throws FOADAException
 	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE + "The SMT-like run is currently not available." + ConsoleColors.RESET);
+		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE_BRIGHT + "The SMT parser is currently not available." + ConsoleColors.RESET);
 	}
 
 }

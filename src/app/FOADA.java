@@ -22,9 +22,9 @@
 
 package app;
 
-import java.io.IOException;
-
 import exception.*;
+import parser.Parser.ParserCategory;
+import parser.Parser.ParserType;
 import tool.*;
 import utility.*;
 import utility.ConsolePrint.ConsoleType;
@@ -49,20 +49,17 @@ public class FOADA {
 	{
 		ConsolePrint.printInfo(ConsoleType.FOADA, "Showing all the options...");
 		// -h , --help
-		System.out.println("\t-h");
-		System.out.println("\t--help \t\t\t show all the options");
+		System.out.println("\t-h, --help \t\t show all the options");
 		// -c , --check
-		System.out.println("\t-c");
-		System.out.println("\t--check \t\t check all the solvers");
+		System.out.println("\t-c, --check \t\t check all the solvers");
 		// -s , --syntax
-		System.out.println("\t-s <input> \t\t check syntax errors in an input file");
-		System.out.println("\t--syntax <input> \t check syntax errors in an input file");
+		System.out.println("\t-s, --syntax <input> \t check syntax errors in an input file");
+		// -e, --empty
+		System.out.println("\t-e, --empty <input> \t check whether the automaton in an input file is empty");
 		// -r , --run
-		System.out.println("\t-r <input> \t\t run a SMT-like input file");
-		System.out.println("\t--run <input> \t\t run a SMT-like input file");
+		System.out.println("\t-r, --run <input> \t run a script input file");
 		// -v , --version
-		System.out.println("\t-v \t\t\t show the current version of FOADA");
-		System.out.println("\t--version \t\t show the current version of FOADA");
+		System.out.println("\t-v, --version \t\t show the current version of FOADA");
 		ConsolePrint.printFOADAEndOfSession();
 	}
 	
@@ -82,26 +79,42 @@ public class FOADA {
 	// -s <input>
 	// --syntax <input>
 	// check syntax errors in an input file
-	private static void checkGrammar(String input)
+	private static void checkSyntax(String input)
 			throws FOADAException
 	{
 		ConsolePrint.printInfo(ConsoleType.FOADA, "Reading the input file < " + input + " >...");
-		parser.Parser parser = tool.SelectParser.selectParser(input);
-		if(parser != null) {
-			parser.checkGrammar(input);
+		parser.Parser p = tool.SelectParser.selectParser(input);
+		p.checkSyntax(input);
+		ConsolePrint.printFOADAEndOfSession();
+	}
+	
+	// -e <input>
+	// --empty <input>
+	// check whether the automaton in an input file is empty
+	private static void checkEmpty(String input)
+		throws FOADAException
+	{
+		ConsolePrint.printInfo(ConsoleType.FOADA, "Reading the input file < " + input + " >...");
+		parser.Parser p = tool.SelectParser.selectParser(input);
+		if(p.category == ParserCategory.Script) {
+			throw new InputFileNotAutomatonException(input);
 		}
+		((parser.AutomatonParser)p).checkEmpty(input);
 		ConsolePrint.printFOADAEndOfSession();
 	}
 	
 	// -r <input>
 	// --run <input>
-	// run a SMT-like input file
+	// run a script input file
 	private static void run(String input)
 			throws FOADAException
 	{
 		ConsolePrint.printInfo(ConsoleType.FOADA, "Reading the input file < " + input + " >...");
-		parser.ParserSMT parser = new parser.ParserSMT();
-		parser.run(input);
+		parser.Parser p = tool.SelectParser.selectParser(input);
+		if(p.category == ParserCategory.Automaton) {
+			throw new InputFileNotScriptException(input);
+		}
+		((parser.ScriptParser)p).run(input);
 		ConsolePrint.printFOADAEndOfSession();
 	}
 		
@@ -133,16 +146,25 @@ public class FOADA {
 			// check syntax errors in an input file
 			else if(args[0].equals("-s") || args[0].equals("--syntax")) {
 				if(args.length < 2) {
-					throw new NoInputFileException();
+					throw new InputFileNotFoundException(null);
 				}
 				else {
-					checkGrammar(args[1]);
+					checkSyntax(args[1]);
 				}
 			}
-			// run a SMT-like input file
+			// check whether the automaton in an input file is empty
+			else if(args[0].equals("-e") || args[0].equals("--empty")) {
+				if(args.length < 2) {
+					throw new InputFileNotFoundException(null);
+				}
+				else {
+					checkEmpty(args[1]);
+				}
+			}
+			// run a script input file
 			else if(args[0].equals("-r") || args[0].equals("--run")) {
 				if(args.length < 2) {
-					throw new NoInputFileException();
+					throw new InputFileNotFoundException(null);
 				}
 				else {
 					run(args[1]);

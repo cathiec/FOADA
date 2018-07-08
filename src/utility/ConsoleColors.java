@@ -87,13 +87,13 @@ public class ConsoleColors {
     public static final String WHITE_BOLD_BRIGHT = "\033[1;97m"; // WHITE
 
     // High Intensity backgrounds
-    public static final String BLACK_BACKGROUND_BRIGHT = "\033[0;100m";// BLACK
-    public static final String RED_BACKGROUND_BRIGHT = "\033[0;101m";// RED
-    public static final String GREEN_BACKGROUND_BRIGHT = "\033[0;102m";// GREEN
-    public static final String YELLOW_BACKGROUND_BRIGHT = "\033[0;103m";// YELLOW
-    public static final String BLUE_BACKGROUND_BRIGHT = "\033[0;104m";// BLUE
-    public static final String PURPLE_BACKGROUND_BRIGHT = "\033[0;105m"; // PURPLE
-    public static final String CYAN_BACKGROUND_BRIGHT = "\033[0;106m";  // CYAN
-    public static final String WHITE_BACKGROUND_BRIGHT = "\033[0;107m";   // WHITE
+    public static final String BLACK_BACKGROUND_BRIGHT = "\033[100m";// BLACK
+    public static final String RED_BACKGROUND_BRIGHT = "\033[101m";// RED
+    public static final String GREEN_BACKGROUND_BRIGHT = "\033[102m";// GREEN
+    public static final String YELLOW_BACKGROUND_BRIGHT = "\033[103m";// YELLOW
+    public static final String BLUE_BACKGROUND_BRIGHT = "\033[104m";// BLUE
+    public static final String PURPLE_BACKGROUND_BRIGHT = "\033[105m"; // PURPLE
+    public static final String CYAN_BACKGROUND_BRIGHT = "\033[106m";  // CYAN
+    public static final String WHITE_BACKGROUND_BRIGHT = "\033[107m";   // WHITE
 
 }

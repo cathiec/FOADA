@@ -22,6 +22,12 @@
 
 package parser.antlr4_parser.FOADA;
 
+import java.util.*;
+import structure.*;
+import structure.Transition;
+import structure.Expression.*;
+
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -85,25 +91,13 @@ public class FOADA_ParserBaseListener implements FOADA_ParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBoolexpr(FOADA_Parser.BoolexprContext ctx) { }
+	@Override public void enterExpr(FOADA_Parser.ExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBoolexpr(FOADA_Parser.BoolexprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterIntexpr(FOADA_Parser.IntexprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitIntexpr(FOADA_Parser.IntexprContext ctx) { }
+	@Override public void exitExpr(FOADA_Parser.ExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -133,18 +127,6 @@ public class FOADA_ParserBaseListener implements FOADA_ParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterArgument(FOADA_Parser.ArgumentContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitArgument(FOADA_Parser.ArgumentContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterType(FOADA_Parser.TypeContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -152,18 +134,6 @@ public class FOADA_ParserBaseListener implements FOADA_ParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitType(FOADA_Parser.TypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterInput(FOADA_Parser.InputContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitInput(FOADA_Parser.InputContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

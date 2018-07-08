@@ -26,17 +26,24 @@ import exception.*;
 import utility.*;
 import utility.ConsolePrint.ConsoleType;
 
-public class ParserADA extends Parser {
+public class ParserADA extends AutomatonParser {
 	
 	public ParserADA()
 	{
 		type = ParserType.ADA;
 	}
 	
-	public void checkGrammar(String input)
+	public void checkSyntax(String input)
 			throws FOADAException
 	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE + "The ADA parser is currently not available." + ConsoleColors.RESET);
+		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE_BRIGHT + "The ADA parser is currently not available." + ConsoleColors.RESET);
+	}
+	
+	public boolean checkEmpty(String input)
+			throws FOADAException
+	{
+		ConsolePrint.printInfo(ConsoleType.FOADA, ConsoleColors.PURPLE_BRIGHT + "The ADA parser is currently not available." + ConsoleColors.RESET);
+		return false;
 	}
 
 }

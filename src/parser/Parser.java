@@ -26,10 +26,14 @@ import exception.*;
 
 public abstract class Parser {
 	
-	public enum ParserType {ADA, FOADA, PA, SMT, Unknown};
+	public enum ParserCategory {Automaton, Script};
+	
+	public enum ParserType {ADA, FOADA, PA, SMT};
+	
+	public ParserCategory category;
 	
 	public ParserType type;
 	
-	public abstract void checkGrammar(String input) throws FOADAException;
+	public abstract void checkSyntax(String input) throws FOADAException;
 
 }

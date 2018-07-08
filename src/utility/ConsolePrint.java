@@ -30,7 +30,7 @@ public class ConsolePrint {
 	
 	public static void printInfo(ConsoleType t, String m)
 	{
-		System.out.print(ConsoleColors.CYAN);
+		System.out.print(ConsoleColors.CYAN_BRIGHT);
 		String console = "";
 		switch(t)
 		{
@@ -45,7 +45,7 @@ public class ConsolePrint {
 	
 	public static void printError(ConsoleType t, String m)
 	{
-		System.out.print(ConsoleColors.CYAN);
+		System.out.print(ConsoleColors.RED_BRIGHT);
 		String console = "";
 		switch(t)
 		{
@@ -55,7 +55,7 @@ public class ConsolePrint {
 		case JavaSMT:console = "JavaSMT"; break;
 		default:console = "*"; break;
 		}
-		System.out.println(console + " > " + ConsoleColors.RED + "Error:" + ConsoleColors.RESET + " " + m);
+		System.out.println(console + " > " + ConsoleColors.RESET + m);
 	}
 	
 	// FOADA Special Console Print
@@ -72,7 +72,7 @@ public class ConsolePrint {
 	
 	public static void printFOADAHelpInfo()
 	{
-		printInfo(ConsoleType.FOADA, "Entry " + ConsoleColors.YELLOW + "-h" + ConsoleColors.RESET + " for the help.");
+		printInfo(ConsoleType.FOADA, "Entry " + ConsoleColors.YELLOW_BRIGHT + "-h" + ConsoleColors.RESET + " for the help.");
 	}
 	
 }
