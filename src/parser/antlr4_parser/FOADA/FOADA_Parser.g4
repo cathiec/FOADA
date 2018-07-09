@@ -51,7 +51,9 @@ automaton returns [Automaton tree]
 			$tree.addTransition($transition_def.tree);
 		}
 	)*
-	RP EOF
+	RP EOF {
+		$tree.finishCategory();
+	}
 ;
 
 initial_def returns [Expression tree]

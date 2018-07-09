@@ -25,7 +25,7 @@ package exception;
 @SuppressWarnings("serial")
 public class InputFileNotAutomatonException extends FOADAException {
 	
-	String filename;
+	private String filename;
 	
 	public InputFileNotAutomatonException(String s)
 	{

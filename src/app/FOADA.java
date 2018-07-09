@@ -24,7 +24,6 @@ package app;
 
 import exception.*;
 import parser.Parser.ParserCategory;
-import parser.Parser.ParserType;
 import tool.*;
 import utility.*;
 import utility.ConsolePrint.ConsoleType;

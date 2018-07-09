@@ -37,7 +37,8 @@ public abstract class FOADAException extends Throwable{
 		ANTLR4ParseCancellation,
 		UnknownTypeOfInput,
 		InputFileNotScript,
-		InputFileNotAutomaton
+		InputFileNotAutomaton,
+		CategoryConflict
 	};
 	
 	public ExceptionType type;

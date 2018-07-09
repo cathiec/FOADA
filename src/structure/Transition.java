@@ -24,6 +24,7 @@ package structure;
 
 import java.util.*;
 
+import exception.FOADAException;
 import structure.Expression.*;
 
 public class Transition extends BasicObject {
@@ -60,6 +61,22 @@ public class Transition extends BasicObject {
 		to = another.to.copy();
 	}
 	
+	public void finishCategory(Map<String, ExpressionCategory> m)
+			throws FOADAException
+	{
+		Map<String, ExpressionCategory> tableVariables = new HashMap<String, ExpressionCategory>();
+		tableVariables.putAll(m);
+		tableVariables.putAll(argumentsOfFrom);
+		tableVariables.putAll(argumentsOfEvent);
+		to.finishCategory(ExpressionCategory.Boolean, tableVariables);
+	}
+	
+	public void checkCategory()
+			throws FOADAException
+	{
+		to.checkCategory(ExpressionCategory.Boolean);
+	}
+	
 	public Transition copy()
 	{
 		Transition x = new Transition(this);
@@ -88,11 +105,6 @@ public class Transition extends BasicObject {
 		}
 		x = x.substring(0, x.length() - 1) + ")) " + to.toSMTString() + ')';
 		return x;
-	}
-	
-	public String toStandardString()
-	{
-		return "";
 	}
 
 }

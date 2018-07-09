@@ -24,6 +24,8 @@ package structure;
 
 import java.util.*;
 
+import exception.*;
+
 public class Expression extends BasicObject {
 	
 	public enum ExpressionCategory {Boolean, Integer, Unknown};
@@ -101,8 +103,8 @@ public class Expression extends BasicObject {
 		{
 		case Constant:	/* impossible call */ return;
 		case Function:	/* impossible call */ return;
-		case Distinct:	category = ExpressionCategory.Unknown; break;
-		case Equals:	category = ExpressionCategory.Unknown; break;
+		case Distinct:	category = ExpressionCategory.Boolean; break;
+		case Equals:	category = ExpressionCategory.Boolean; break;
 		case Not:		category = ExpressionCategory.Boolean; break;
 		case And:		category = ExpressionCategory.Boolean; break;
 		case Or:		category = ExpressionCategory.Boolean; break;
@@ -137,6 +139,76 @@ public class Expression extends BasicObject {
 		name = another.name;
 		variablesExistsForall = new HashMap<String, ExpressionCategory>();
 		variablesExistsForall.putAll(another.variablesExistsForall);
+	}
+	
+	public void finishCategory(ExpressionCategory ec, Map<String, ExpressionCategory> m)
+			throws FOADAException
+	{
+		Map<String, ExpressionCategory> copy = new HashMap<String, ExpressionCategory>();
+		copy.putAll(m);
+		if(type == ExpressionType.Function) {
+			if(m.get(name) != null) {
+				category = m.get(name);
+				//System.out.println(name + " ---> " + category);
+			}
+			if(category == ExpressionCategory.Unknown) {
+				category = ec;
+				//System.out.println(name + " ---> " + category);
+			}
+		}
+		if(type == ExpressionType.Exists || type == ExpressionType.Forall) {
+			copy.putAll(variablesExistsForall);
+		}
+		for(Expression e : sub) {
+			e.finishCategory(ec, copy);
+		}
+	}
+	
+	public void checkCategory(ExpressionCategory ec)
+			throws FOADAException
+	{
+		if(category != ec && ec != ExpressionCategory.Unknown) {
+			throw new CategoryConflictException(toSMTString(), ec, category);
+		}
+		ExpressionCategory subCategory = ExpressionCategory.Unknown;
+		switch(type)
+		{
+		case Constant:	return;
+		case Function:	break;
+		case Distinct:	subCategory = sub.get(0).category;
+						break;
+		case Equals:	subCategory = sub.get(0).category;
+						break;
+		case Not:		subCategory = ExpressionCategory.Boolean;
+						break;
+		case And:		subCategory = ExpressionCategory.Boolean;
+						break;
+		case Or:		subCategory = ExpressionCategory.Boolean;
+						break;
+		case Exists:	subCategory = ExpressionCategory.Boolean;
+						break;
+		case Forall:	subCategory = ExpressionCategory.Boolean;
+						break;
+		case GT:		subCategory = ExpressionCategory.Integer;
+						break;
+		case LT:		subCategory = ExpressionCategory.Integer;
+						break;
+		case GEQ:		subCategory = ExpressionCategory.Integer;
+						break;
+		case LEQ:		subCategory = ExpressionCategory.Integer;
+						break;
+		case Plus:		subCategory = ExpressionCategory.Integer;
+						break;
+		case Minus:		subCategory = ExpressionCategory.Integer;
+						break;
+		case Times:		subCategory = ExpressionCategory.Integer;
+						break;
+		case Slash:		subCategory = ExpressionCategory.Integer;
+						break;
+		}
+		for(Expression e : sub) {
+			e.checkCategory(subCategory);
+		}
 	}
 	
 	public Expression copy()
@@ -191,7 +263,7 @@ public class Expression extends BasicObject {
 								x = x + '(' + s + " Int) ";
 							}
 						}
-						x = x.substring(0, x.length() - 1) + ')' + sub.get(0).toSMTString() + ')';
+						x = x.substring(0, x.length() - 1) + ") " + sub.get(0).toSMTString() + ')';
 						return x;
 		case Forall:	x = "(forall (";
 						for(String s : variablesExistsForall.keySet()) {
@@ -202,7 +274,7 @@ public class Expression extends BasicObject {
 								x = x + '(' + s + " Int) ";
 							}
 						}
-						x = x.substring(0, x.length() - 1) + ')' + sub.get(0).toSMTString() + ')';
+						x = x.substring(0, x.length() - 1) + ") " + sub.get(0).toSMTString() + ')';
 						return x;
 		case GT:		return "(> " + sub.get(0).toSMTString() + ' ' + sub.get(1).toSMTString() + ')';
 		case LT:		return "(< " + sub.get(0).toSMTString() + ' ' + sub.get(1).toSMTString() + ')';
@@ -224,11 +296,6 @@ public class Expression extends BasicObject {
 		case Slash:		return "(/ " + sub.get(0).toSMTString() + ' ' + sub.get(1).toSMTString() + ')';
 		}
 		/* never reach here */ return "";
-	}
-	
-	public String toStandardString()
-	{
-		return "";
 	}
 
 }

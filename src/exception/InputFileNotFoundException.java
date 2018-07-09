@@ -25,7 +25,7 @@ package exception;
 @SuppressWarnings("serial")
 public class InputFileNotFoundException extends FOADAException {
 	
-	String filename;
+	private String filename;
 	
 	public InputFileNotFoundException(String s)
 	{

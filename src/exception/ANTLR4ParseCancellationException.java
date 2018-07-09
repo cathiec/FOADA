@@ -30,7 +30,7 @@ import utility.ConsolePrint.ConsoleType;
 @SuppressWarnings("serial")
 public class ANTLR4ParseCancellationException extends FOADAException {
 	
-	ParseCancellationException ANTLR4Exception;
+	private ParseCancellationException ANTLR4Exception;
 	
 	public ANTLR4ParseCancellationException(ParseCancellationException e)
 	{

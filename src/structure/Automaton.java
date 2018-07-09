@@ -25,6 +25,9 @@ package structure;
 import java.util.*;
 
 import exception.*;
+import structure.Expression.ExpressionCategory;
+import utility.ConsolePrint;
+import utility.ConsolePrint.ConsoleType;
 
 public class Automaton extends BasicObject {
 	
@@ -75,9 +78,31 @@ public class Automaton extends BasicObject {
 		listOfTransitions.add(t.copy());
 	}
 	
-	public void checkType()
+	public void finishCategory()
+			throws FOADAException
 	{
-		System.out.println(toSMTString());
+		Map<String, ExpressionCategory> tableVariables = new HashMap<String, ExpressionCategory>();
+		for(Transition t : listOfTransitions) {
+			tableVariables.put(t.from, ExpressionCategory.Boolean);
+		}
+		for(Transition t : listOfTransitions) {
+				t.finishCategory(tableVariables);
+		}
+	}
+	
+	public void checkCategory()
+			throws FOADAException
+	{
+		for(Transition t : listOfTransitions) {
+			try {
+				t.checkCategory();
+			}
+			catch(FOADAException e)
+			{
+				ConsolePrint.printError(ConsoleType.FOADA, "Type error has been found in the transition rule \"" + t.toSMTString() + "\"");
+				throw e;
+			}
+		}
 	}
 	
 	public boolean checkEmpty()
@@ -120,11 +145,6 @@ public class Automaton extends BasicObject {
 		}
 		x = x + ')';
 		return x;
-	}
-	
-	public String toStandardString()
-	{
-		return "";
 	}
 
 }

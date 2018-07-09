@@ -25,7 +25,7 @@ package exception;
 @SuppressWarnings("serial")
 public class InputFileNotScriptException extends FOADAException {
 	
-	String filename;
+	private String filename;
 	
 	public InputFileNotScriptException(String s)
 	{

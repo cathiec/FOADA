@@ -25,7 +25,7 @@ package exception;
 @SuppressWarnings("serial")
 public class UnknownConsoleOptionException extends FOADAException {
 
-	String option;
+	private String option;
 	
 	public UnknownConsoleOptionException(String s)
 	{

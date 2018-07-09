@@ -30,7 +30,7 @@ import utility.ConsolePrint.ConsoleType;
 @SuppressWarnings("serial")
 public class JavaIOException extends FOADAException {
 	
-	IOException javaException;
+	private IOException javaException;
 	
 	public JavaIOException(IOException e)
 	{

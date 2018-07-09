@@ -1,3 +1,5 @@
+// Generated from FOADA_Parser.g4 by ANTLR 4.7.1
+
 /*
 	FOADA
     Copyright (C) 2018  Xiao XU & Radu IOSIF
@@ -21,12 +23,6 @@
 */
 
 package parser.antlr4_parser.FOADA;
-
-import java.util.*;
-import structure.*;
-import structure.Transition;
-import structure.Expression.*;
-
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;

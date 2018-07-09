@@ -28,6 +28,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import java.io.*;
 
 import parser.antlr4_parser.FOADA.*;
+import structure.*;
 import utility.*;
 import utility.ConsolePrint.ConsoleType;
 import exception.*;
@@ -55,7 +56,8 @@ public class ParserFOADA extends AutomatonParser {
 	        parser.removeErrorListeners();
 	        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
 	        // Launch the parser
-	        parser.automaton().tree.checkType();
+	        Automaton x = parser.automaton().tree;
+	        x.checkCategory();
 	        istream.close();
 		}
 		catch(ParseCancellationException e) {
