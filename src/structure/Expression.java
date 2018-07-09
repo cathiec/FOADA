@@ -168,11 +168,11 @@ public class Expression extends BasicObject {
 	}
 	
 	// finish the type structure
-	public void finishType(Map<String, ExpressionType> variablesTypes, Map<String, ArrayList<ExpressionType>> variablesInputTypes)
+	public void finishType(Map<String, ExpressionType> variablesTypes, Map<String, List<ExpressionType>> variablesInputTypes)
 			throws FOADAException
 	{
-		Map<String, ExpressionType> copy = new LinkedHashMap<String, ExpressionType>();
-		copy.putAll(variablesTypes);
+		Map<String, ExpressionType> copyVariablesTypes = new LinkedHashMap<String, ExpressionType>();
+		copyVariablesTypes.putAll(variablesTypes);
 		if(subtype == ExpressionSubtype.Function) {
 			if(variablesTypes.get(name) != null) {
 				type = variablesTypes.get(name);
@@ -184,16 +184,14 @@ public class Expression extends BasicObject {
 		}
 		if(subtype == ExpressionSubtype.Exists || subtype == ExpressionSubtype.Forall) {
 			for(String s : variablesExistsForall.keySet()) {
-				if(copy.containsKey(s)) {
+				if(copyVariablesTypes.containsKey(s)) {
 					throw new AmbiguousVariableException(s);
 				}
-				else {
-					copy.put(s, variablesExistsForall.get(s));
-				}
+				copyVariablesTypes.put(s, variablesExistsForall.get(s));
 			}
 		}
 		for(Expression e : sub) {
-			e.finishType(copy, variablesInputTypes);
+			e.finishType(copyVariablesTypes, variablesInputTypes);
 		}
 	}
 	
@@ -214,7 +212,11 @@ public class Expression extends BasicObject {
 		case Constant:	return;
 		case Function:	int i = 0;
 						if(sub.size() != inputTypes.size()) {
-							throw new NumberOfArgumentsException(name, inputTypes.size(), sub.size());
+							ArrayList<ExpressionType> is = new ArrayList<ExpressionType>();
+							for(Expression e : sub) {
+								is.add(e.type);
+							}
+							throw new VariableOverriddenException(name, inputTypes, is);
 						}
 						for(Expression e : sub) {
 							e.checkType(inputTypes.get(i++));

@@ -82,14 +82,34 @@ public class Automaton extends BasicObject {
 			throws FOADAException
 	{
 		Map<String, ExpressionType> variablesTypes = new LinkedHashMap<String, ExpressionType>();
-		Map<String, ArrayList<ExpressionType>> variablesInputTypes = new LinkedHashMap<String, ArrayList<ExpressionType>>();
+		Map<String, List<ExpressionType>> variablesInputTypes = new LinkedHashMap<String, List<ExpressionType>>();
+		Map<String, List<String>> predicatesWithEvents = new LinkedHashMap<String, List<String>>();
 		for(Transition t : listOfTransitions) {
-			variablesTypes.put(t.from, ExpressionType.Boolean);
-			ArrayList<ExpressionType> x = new ArrayList<>();
+			String predicate = t.from;
+			String event = t.event;
+			List<ExpressionType> typesOfArgumentsOfPredicate = new ArrayList<ExpressionType>();
 			for(ExpressionType e : t.argumentsOfFrom.values()) {
-				x.add(e);
+				typesOfArgumentsOfPredicate.add(e);
 			}
-			variablesInputTypes.put(t.from, x);
+			if(predicatesWithEvents.containsKey(predicate)) {
+				List<ExpressionType> typesOfArgumentsOfPredicateShouldBe = variablesInputTypes.get(predicate);
+				if(!typesOfArgumentsOfPredicateShouldBe.equals(typesOfArgumentsOfPredicate)) {
+					ConsolePrint.printError(ConsoleType.FOADA, "An error has been found in the transition rule \"" + t.toSMTString() + "\"");
+					throw new VariableOverriddenException(predicate, typesOfArgumentsOfPredicateShouldBe, typesOfArgumentsOfPredicate);
+				}
+				if(predicatesWithEvents.get(predicate).contains(event)) {
+					ConsolePrint.printError(ConsoleType.FOADA, "An error has been found in the transition rule \"" + t.toSMTString() + "\"");
+					throw new TransitionOverriddenException(predicate, event);
+				}
+				predicatesWithEvents.get(predicate).add(event);
+			}
+			else {
+				List<String> x = new ArrayList<String>();
+				x.add(event);
+				predicatesWithEvents.put(predicate, x);
+				variablesTypes.put(predicate, ExpressionType.Boolean);
+				variablesInputTypes.put(t.from, typesOfArgumentsOfPredicate);
+			}
 		}
 		for(Transition t : listOfTransitions) {
 			try {
@@ -137,7 +157,7 @@ public class Automaton extends BasicObject {
 	
 	public String toSMTString()
 	{
-		String x = "(define-automaton " + id + "\n";
+		String x = "(define-automaton " + id + '\n';
 		if(initial != null) {
 			x = x + "\t(init " + initial.toSMTString() + ")\n";
 		}
@@ -150,12 +170,12 @@ public class Automaton extends BasicObject {
 		else {
 			x = x + "\t(final (";
 			for(String s : listOfIDFinals) {
-				x = x + s + " ";
+				x = x + s + ' ';
 			}
 			x = x.substring(0, x.length() - 1) + "))\n";
 		}
 		for(Transition t : listOfTransitions) {
-			x = x + "\t" + t.toSMTString() + "\n";
+			x = x + '\t' + t.toSMTString() + '\n';
 		}
 		x = x + ')';
 		return x;

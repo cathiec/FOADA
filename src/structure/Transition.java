@@ -24,6 +24,7 @@ package structure;
 
 import java.util.*;
 
+import exception.AmbiguousVariableException;
 import exception.FOADAException;
 import structure.Expression.*;
 
@@ -61,14 +62,24 @@ public class Transition extends BasicObject {
 		to = another.to.copy();
 	}
 	
-	public void finishType(Map<String, ExpressionType> variablesTypes, Map<String, ArrayList<ExpressionType>> variablesInputTypes)
+	public void finishType(Map<String, ExpressionType> variablesTypes, Map<String, List<ExpressionType>> variablesInputTypes)
 			throws FOADAException
 	{
-		Map<String, ExpressionType> tableVariables = new LinkedHashMap<String, ExpressionType>();
-		tableVariables.putAll(variablesTypes);
-		tableVariables.putAll(argumentsOfFrom);
-		tableVariables.putAll(argumentsOfEvent);
-		to.finishType(tableVariables, variablesInputTypes);
+		Map<String, ExpressionType> copyVariablesTypes = new LinkedHashMap<String, ExpressionType>();
+		copyVariablesTypes.putAll(variablesTypes);
+		for(String s : argumentsOfFrom.keySet()) {
+			if(copyVariablesTypes.containsKey(s)) {
+				throw new AmbiguousVariableException(s);
+			}
+			copyVariablesTypes.put(s, argumentsOfFrom.get(s));
+		}
+		for(String s : argumentsOfEvent.keySet()) {
+			if(copyVariablesTypes.containsKey(s)) {
+				throw new AmbiguousVariableException(s);
+			}
+			copyVariablesTypes.put(s, argumentsOfEvent.get(s));
+		}
+		to.finishType(copyVariablesTypes, variablesInputTypes);
 	}
 	
 	public void checkType()
@@ -86,24 +97,35 @@ public class Transition extends BasicObject {
 	public String toSMTString()
 	{
 		String x = "(trans (" + from + " (";
-		for(String s : argumentsOfFrom.keySet()) {
-			if(argumentsOfFrom.get(s) == ExpressionType.Boolean) {
-				x = x + '(' + s + " Bool) ";
-			}
-			else if(argumentsOfFrom.get(s) == ExpressionType.Integer) {
-				x = x + '(' + s + " Int) ";
+		if(argumentsOfFrom.size() == 0) {
+			x = x + ')';
+		}
+		else {
+			for(String s : argumentsOfFrom.keySet()) {
+				if(argumentsOfFrom.get(s) == ExpressionType.Boolean) {
+					x = x + '(' + s + " Bool) ";
+				}
+				else if(argumentsOfFrom.get(s) == ExpressionType.Integer) {
+					x = x + '(' + s + " Int) ";
+				}
 			}
 		}
 		x = x.substring(0, x.length() - 1) + ")) (" + event + " (";
-		for(String s : argumentsOfEvent.keySet()) {
-			if(argumentsOfEvent.get(s) == ExpressionType.Boolean) {
-				x = x + '(' + s + " Bool) ";
-			}
-			else if(argumentsOfEvent.get(s) == ExpressionType.Integer) {
-				x = x + '(' + s + " Int) ";
-			}
+		if(argumentsOfEvent.size() == 0) {
+			x = x + ')';
 		}
-		x = x.substring(0, x.length() - 1) + ")) " + to.toSMTString() + ')';
+		else {
+			for(String s : argumentsOfEvent.keySet()) {
+				if(argumentsOfEvent.get(s) == ExpressionType.Boolean) {
+					x = x + '(' + s + " Bool) ";
+				}
+				else if(argumentsOfEvent.get(s) == ExpressionType.Integer) {
+					x = x + '(' + s + " Int) ";
+				}
+			}
+			x = x.substring(0, x.length() - 1) + ')';
+		}
+		x = x + ") " + to.toSMTString() + ')';
 		return x;
 	}
 

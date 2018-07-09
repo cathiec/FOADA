@@ -29,19 +29,20 @@ import utility.ConsolePrint.ConsoleType;
 public abstract class FOADAException extends Throwable{
 	
 	public enum ExceptionType {
-		InitialRedundancy,
-		FinalRedundancy,
-		UnknownConsoleOption,
-		InputFileNotFound,
-		JavaIO,
-		ANTLR4ParseCancellation,
-		UnknownTypeOfInput,
-		InputFileNotScript,
-		InputFileNotAutomaton,
-		CategoryConflict,
-		VariableUndeclared,
 		AmbiguousVariable,
-		NumberOfArguments
+		ANTLR4ParseCancellation,
+		CategoryConflict,
+		FinalRedundancy,
+		InitialRedundancy,
+		InputFileNotAutomaton,
+		InputFileNotFound,
+		InputFileNotScript,
+		JavaIO,
+		TransitionOverridden,
+		UnknownConsoleOption,
+		UnknownTypeOfInput,
+		VariableOverridden,
+		VariableUndeclared
 	};
 	
 	public ExceptionType type;

@@ -23,33 +23,22 @@
 package exception;
 
 @SuppressWarnings("serial")
-public class NumberOfArgumentsException extends FOADAException {
+public class TransitionOverriddenException extends FOADAException {
 	
-	private String name;
+	private String predicate;
 	
-	private int shouldBe;
+	private String event;
 	
-	private int is;
-	
-	public NumberOfArgumentsException(String s, int i1, int i2)
+	public TransitionOverriddenException(String predicate, String event)
 	{
-		type = ExceptionType.NumberOfArguments;
-		name = s;
-		shouldBe = i1;
-		is = i2;
+		type = ExceptionType.TransitionOverridden;
+		this.predicate = predicate;
+		this.event = event;
 	}
 	
 	public String getInfo()
 	{
-		if(shouldBe == 0) {
-			return "\"" + name + "\" should have no argument but it has " + is + " argument(s).";
-		}
-		else if(is == 0) {
-			return "\"" + name + "\" should have " + shouldBe + " argument(s) but it has no argument.";
-		}
-		else {
-			return "\"" + name + "\" should have " + shouldBe + " argument(s) but it has " + is + " argument(s).";
-		}
+		return "A transition with predicate \"" + predicate + "\" and event \"" + event + "\" exists already.";
 	}
 
 }
