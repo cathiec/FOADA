@@ -109,8 +109,9 @@ public class Transition extends BasicObject {
 					x = x + '(' + s + " Int) ";
 				}
 			}
+			x = x.substring(0, x.length() - 1) + ')';
 		}
-		x = x.substring(0, x.length() - 1) + ")) (" + event + " (";
+		x = x + ") (" + event + " (";
 		if(argumentsOfEvent.size() == 0) {
 			x = x + ')';
 		}

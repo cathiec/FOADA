@@ -90,19 +90,6 @@ public class Expression extends BasicObject {
 		inputTypes.add(e.type);
 	}
 	
-	public String getCompleteTypeString()
-	{
-		String x = "" + type + '(';
-		if(inputTypes.size() == 0) {
-			x = x + ' ';
-		}
-		for(ExpressionType t : inputTypes) {
-			x = x + t + ',';
-		}
-		x = x.substring(0, x.length() - 1) + ')';
-		return x;
-	}
-	
 	// exists/forall
 	public Expression(ExpressionSubtype t, Map<String, ExpressionType> m, Expression e)
 	{

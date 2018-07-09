@@ -45,10 +45,12 @@ automaton returns [Automaton tree]
 	(	initial_def {
 			$tree.setInitial($initial_def.tree);
 		}
-		| list_finals_def {
+		|
+		list_finals_def {
 			$tree.setFinals($list_finals_def.tree);
 		}
-		| transition_def {
+		|
+		transition_def {
 			$tree.addTransition($transition_def.tree);
 		}
 	)*
@@ -189,18 +191,19 @@ expr returns [Expression tree]
 ;
 
 list_finals returns [List<String> tree]
-	: i1=ID {
+:
+	{
 		$tree = new ArrayList<String>();
-		$tree.add($i1.text);
 	}
-	(i2=ID {
-		$tree.add($i2.text);
+	(ID {
+		$tree.add($ID.text);
 	}
 	)*
 ;
 
 list_arguments returns [Map<String, ExpressionType> tree]
-	: {
+:
+	{
 		$tree = new LinkedHashMap<String, ExpressionType>();
 	}
 	(LP ID type RP {
@@ -210,10 +213,12 @@ list_arguments returns [Map<String, ExpressionType> tree]
 ;
 
 type returns [ExpressionType tree]
-	: INT {
+:
+	INT {
 		$tree = ExpressionType.Integer;
 	}
-	| BOOL {
+	|
+	BOOL {
 		$tree = ExpressionType.Boolean;
 	}
 ;

@@ -6,5 +6,5 @@
 	(trans (q1 ((x Int))) (a ((y Int))) (exists ((z Int)) (and (distinct x z) (q3 y))))
 	(trans (q2 ((x Bool))) (a ((y Int))) (forall ((z Int)) (or (= y z) (q2 (q1 y)))))
 	(trans (q3 ((x Int))) (a ()) false)
-	(trans (q3 ((x Int))) (b ()) false)
+	(trans (q4 ((x Int) (y Bool))) (b ()) y)
 )
