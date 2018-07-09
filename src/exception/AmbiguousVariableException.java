@@ -35,7 +35,7 @@ public class AmbiguousVariableException extends FOADAException {
 	
 	public String getInfo()
 	{
-		return "\"" + name + "\" cannot be declared again.";
+		return "\"" + name + "\" is ambiguous.";
 	}
 
 }
