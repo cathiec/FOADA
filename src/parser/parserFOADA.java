@@ -57,7 +57,7 @@ public class ParserFOADA extends AutomatonParser {
 	        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
 	        // Launch the parser
 	        Automaton x = parser.automaton().tree;
-	        x.checkCategory();
+	        x.checkType();
 	        istream.close();
 		}
 		catch(ParseCancellationException e) {

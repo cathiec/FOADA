@@ -31,21 +31,21 @@ public class Transition extends BasicObject {
 	
 	public String from;
 	
-	public Map<String, ExpressionCategory> argumentsOfFrom;
+	public Map<String, ExpressionType> argumentsOfFrom;
 	
 	public String event;
 	
-	public Map<String, ExpressionCategory> argumentsOfEvent;
+	public Map<String, ExpressionType> argumentsOfEvent;
 	
 	public Expression to;
 	
-	public Transition(String s1, Map<String, ExpressionCategory> m1, String s2, Map<String, ExpressionCategory> m2, Expression e)
+	public Transition(String s1, Map<String, ExpressionType> m1, String s2, Map<String, ExpressionType> m2, Expression e)
 	{
 		from = s1;
-		argumentsOfFrom = new HashMap<String, ExpressionCategory>();
+		argumentsOfFrom = new LinkedHashMap<String, ExpressionType>();
 		argumentsOfFrom.putAll(m1);
 		event = s2;
-		argumentsOfEvent = new HashMap<String, ExpressionCategory>();
+		argumentsOfEvent = new LinkedHashMap<String, ExpressionType>();
 		argumentsOfEvent.putAll(m2);
 		to = e.copy();
 	}
@@ -53,28 +53,28 @@ public class Transition extends BasicObject {
 	public Transition(Transition another)
 	{
 		from = another.from;
-		argumentsOfFrom = new HashMap<String, ExpressionCategory>();
+		argumentsOfFrom = new LinkedHashMap<String, ExpressionType>();
 		argumentsOfFrom.putAll(another.argumentsOfFrom);
 		event = another.event;
-		argumentsOfEvent = new HashMap<String, ExpressionCategory>();
+		argumentsOfEvent = new LinkedHashMap<String, ExpressionType>();
 		argumentsOfEvent.putAll(another.argumentsOfEvent);
 		to = another.to.copy();
 	}
 	
-	public void finishCategory(Map<String, ExpressionCategory> m)
+	public void finishType(Map<String, ExpressionType> variablesTypes, Map<String, ArrayList<ExpressionType>> variablesInputTypes)
 			throws FOADAException
 	{
-		Map<String, ExpressionCategory> tableVariables = new HashMap<String, ExpressionCategory>();
-		tableVariables.putAll(m);
+		Map<String, ExpressionType> tableVariables = new LinkedHashMap<String, ExpressionType>();
+		tableVariables.putAll(variablesTypes);
 		tableVariables.putAll(argumentsOfFrom);
 		tableVariables.putAll(argumentsOfEvent);
-		to.finishCategory(ExpressionCategory.Boolean, tableVariables);
+		to.finishType(tableVariables, variablesInputTypes);
 	}
 	
-	public void checkCategory()
+	public void checkType()
 			throws FOADAException
 	{
-		to.checkCategory(ExpressionCategory.Boolean);
+		to.checkType(ExpressionType.Boolean);
 	}
 	
 	public Transition copy()
@@ -87,19 +87,19 @@ public class Transition extends BasicObject {
 	{
 		String x = "(trans (" + from + " (";
 		for(String s : argumentsOfFrom.keySet()) {
-			if(argumentsOfFrom.get(s) == ExpressionCategory.Boolean) {
+			if(argumentsOfFrom.get(s) == ExpressionType.Boolean) {
 				x = x + '(' + s + " Bool) ";
 			}
-			else if(argumentsOfFrom.get(s) == ExpressionCategory.Integer) {
+			else if(argumentsOfFrom.get(s) == ExpressionType.Integer) {
 				x = x + '(' + s + " Int) ";
 			}
 		}
 		x = x.substring(0, x.length() - 1) + ")) (" + event + " (";
 		for(String s : argumentsOfEvent.keySet()) {
-			if(argumentsOfEvent.get(s) == ExpressionCategory.Boolean) {
+			if(argumentsOfEvent.get(s) == ExpressionType.Boolean) {
 				x = x + '(' + s + " Bool) ";
 			}
-			else if(argumentsOfEvent.get(s) == ExpressionCategory.Integer) {
+			else if(argumentsOfEvent.get(s) == ExpressionType.Integer) {
 				x = x + '(' + s + " Int) ";
 			}
 		}

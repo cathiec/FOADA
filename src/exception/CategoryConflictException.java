@@ -29,11 +29,11 @@ public class CategoryConflictException extends FOADAException {
 	
 	private String variableName;
 	
-	private ExpressionCategory shouldBe;
+	private ExpressionType shouldBe;
 	
-	private ExpressionCategory is;
+	private ExpressionType is;
 	
-	public CategoryConflictException(String s, ExpressionCategory ec1, ExpressionCategory ec2)
+	public CategoryConflictException(String s, ExpressionType ec1, ExpressionType ec2)
 	{
 		type = ExceptionType.CategoryConflict;
 		variableName = s;

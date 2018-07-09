@@ -28,16 +28,13 @@ import java.util.*;
 import structure.*;
 import structure.Transition;
 import structure.Expression.*;
+import exception.*;
 
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
-
-import exception.FOADAException;
-import exception.FinalRedundancyException;
-import exception.InitialRedundancyException;
 
 import java.util.List;
 import java.util.Iterator;
@@ -229,7 +226,7 @@ public class FOADA_Parser extends Parser {
 			setState(35);
 			match(EOF);
 
-					_localctx.tree.finishCategory();
+					_localctx.tree.finishType();
 				
 			}
 		}
@@ -555,7 +552,7 @@ public class FOADA_Parser extends Parser {
 				setState(77);
 				match(RP);
 
-						((ExprContext)_localctx).tree =  new Expression(ExpressionType.Not, ((ExprContext)_localctx).expr.tree);
+						((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.Not, ((ExprContext)_localctx).expr.tree);
 					
 				}
 				break;
@@ -580,7 +577,7 @@ public class FOADA_Parser extends Parser {
 					setState(84);
 					((ExprContext)_localctx).e2 = expr();
 
-							((ExprContext)_localctx).tree =  new Expression(ExpressionType.And, _localctx.tree, ((ExprContext)_localctx).e2.tree);
+							((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.And, _localctx.tree, ((ExprContext)_localctx).e2.tree);
 						
 					}
 					}
@@ -613,7 +610,7 @@ public class FOADA_Parser extends Parser {
 					setState(97);
 					((ExprContext)_localctx).e2 = expr();
 
-							((ExprContext)_localctx).tree =  new Expression(ExpressionType.Or, _localctx.tree, ((ExprContext)_localctx).e2.tree);
+							((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.Or, _localctx.tree, ((ExprContext)_localctx).e2.tree);
 						
 					}
 					}
@@ -643,7 +640,7 @@ public class FOADA_Parser extends Parser {
 				setState(112);
 				match(RP);
 
-						((ExprContext)_localctx).tree =  new Expression(ExpressionType.Exists, ((ExprContext)_localctx).list_arguments.tree, ((ExprContext)_localctx).expr.tree);
+						((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.Exists, ((ExprContext)_localctx).list_arguments.tree, ((ExprContext)_localctx).expr.tree);
 					
 				}
 				break;
@@ -665,7 +662,7 @@ public class FOADA_Parser extends Parser {
 				setState(121);
 				match(RP);
 
-						((ExprContext)_localctx).tree =  new Expression(ExpressionType.Forall, ((ExprContext)_localctx).list_arguments.tree, ((ExprContext)_localctx).expr.tree);
+						((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.Forall, ((ExprContext)_localctx).list_arguments.tree, ((ExprContext)_localctx).expr.tree);
 					
 				}
 				break;
@@ -683,7 +680,7 @@ public class FOADA_Parser extends Parser {
 				setState(128);
 				match(RP);
 
-						((ExprContext)_localctx).tree =  new Expression(ExpressionType.GT, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
+						((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.GT, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
 					
 				}
 				break;
@@ -701,7 +698,7 @@ public class FOADA_Parser extends Parser {
 				setState(135);
 				match(RP);
 
-						((ExprContext)_localctx).tree =  new Expression(ExpressionType.LT, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
+						((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.LT, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
 					
 				}
 				break;
@@ -719,7 +716,7 @@ public class FOADA_Parser extends Parser {
 				setState(142);
 				match(RP);
 
-						((ExprContext)_localctx).tree =  new Expression(ExpressionType.GEQ, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
+						((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.GEQ, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
 					
 				}
 				break;
@@ -737,7 +734,7 @@ public class FOADA_Parser extends Parser {
 				setState(149);
 				match(RP);
 
-						((ExprContext)_localctx).tree =  new Expression(ExpressionType.LEQ, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
+						((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.LEQ, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
 					
 				}
 				break;
@@ -755,7 +752,7 @@ public class FOADA_Parser extends Parser {
 				setState(156);
 				match(RP);
 
-						((ExprContext)_localctx).tree =  new Expression(ExpressionType.Equals, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
+						((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.Equals, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
 					
 				}
 				break;
@@ -773,7 +770,7 @@ public class FOADA_Parser extends Parser {
 				setState(163);
 				match(RP);
 
-						((ExprContext)_localctx).tree =  new Expression(ExpressionType.Distinct, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
+						((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.Distinct, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
 					
 				}
 				break;
@@ -849,7 +846,7 @@ public class FOADA_Parser extends Parser {
 					setState(186);
 					((ExprContext)_localctx).e2 = expr();
 
-							((ExprContext)_localctx).tree =  new Expression(ExpressionType.Plus, _localctx.tree, ((ExprContext)_localctx).e2.tree);
+							((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.Plus, _localctx.tree, ((ExprContext)_localctx).e2.tree);
 						
 					}
 					}
@@ -882,7 +879,7 @@ public class FOADA_Parser extends Parser {
 					setState(199);
 					((ExprContext)_localctx).e2 = expr();
 
-							((ExprContext)_localctx).tree =  new Expression(ExpressionType.Times, _localctx.tree, ((ExprContext)_localctx).e2.tree);
+							((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.Times, _localctx.tree, ((ExprContext)_localctx).e2.tree);
 						
 					}
 					}
@@ -908,7 +905,7 @@ public class FOADA_Parser extends Parser {
 				setState(212);
 				match(RP);
 
-						((ExprContext)_localctx).tree =  new Expression(ExpressionType.Minus, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
+						((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.Minus, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
 					
 				}
 				break;
@@ -926,7 +923,7 @@ public class FOADA_Parser extends Parser {
 				setState(219);
 				match(RP);
 
-						((ExprContext)_localctx).tree =  new Expression(ExpressionType.Slash, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
+						((ExprContext)_localctx).tree =  new Expression(ExpressionSubtype.Slash, ((ExprContext)_localctx).e1.tree, ((ExprContext)_localctx).e2.tree);
 					
 				}
 				break;
@@ -1009,7 +1006,7 @@ public class FOADA_Parser extends Parser {
 	}
 
 	public static class List_argumentsContext extends ParserRuleContext {
-		public Map<String, ExpressionCategory> tree;
+		public Map<String, ExpressionType> tree;
 		public Token ID;
 		public TypeContext type;
 		public List<TerminalNode> LP() { return getTokens(FOADA_Parser.LP); }
@@ -1052,7 +1049,7 @@ public class FOADA_Parser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 
-					((List_argumentsContext)_localctx).tree =  new HashMap<String, ExpressionCategory>();
+					((List_argumentsContext)_localctx).tree =  new LinkedHashMap<String, ExpressionType>();
 				
 			setState(242);
 			_errHandler.sync(this);
@@ -1091,7 +1088,7 @@ public class FOADA_Parser extends Parser {
 	}
 
 	public static class TypeContext extends ParserRuleContext {
-		public ExpressionCategory tree;
+		public ExpressionType tree;
 		public TerminalNode INT() { return getToken(FOADA_Parser.INT, 0); }
 		public TerminalNode BOOL() { return getToken(FOADA_Parser.BOOL, 0); }
 		public TypeContext(ParserRuleContext parent, int invokingState) {
@@ -1121,7 +1118,7 @@ public class FOADA_Parser extends Parser {
 				setState(245);
 				match(INT);
 
-						((TypeContext)_localctx).tree =  ExpressionCategory.Integer;
+						((TypeContext)_localctx).tree =  ExpressionType.Integer;
 					
 				}
 				break;
@@ -1131,7 +1128,7 @@ public class FOADA_Parser extends Parser {
 				setState(247);
 				match(BOOL);
 
-						((TypeContext)_localctx).tree =  ExpressionCategory.Boolean;
+						((TypeContext)_localctx).tree =  ExpressionType.Boolean;
 					
 				}
 				break;

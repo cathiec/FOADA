@@ -28,13 +28,14 @@ import exception.*;
 
 public class Expression extends BasicObject {
 	
-	public enum ExpressionCategory {Boolean, Integer, Unknown};
+	public enum ExpressionType {Boolean, Integer, Unknown};
 	
-	public enum ExpressionType {Constant, Function, Distinct, Equals, Not, And, Or, Exists, Forall, GT, LT, GEQ, LEQ, Plus, Minus, Times, Slash};
-	
-	public ExpressionCategory category;
+	public enum ExpressionSubtype {Constant, Function, Distinct, Equals, Not, And, Or, Exists, Forall, GT, LT, GEQ, LEQ, Plus, Minus, Times, Slash};
 	
 	public ExpressionType type;
+	public List<ExpressionType> inputTypes;
+	
+	public ExpressionSubtype subtype;
 	
 	public List<Expression> sub;
 	
@@ -44,92 +45,117 @@ public class Expression extends BasicObject {
 	
 	public String name;
 	
-	public Map<String, ExpressionCategory> variablesExistsForall;
+	public Map<String, ExpressionType> variablesExistsForall;
 	
 	// integer constant
 	public Expression(int i)
 	{
-		category = ExpressionCategory.Integer;
-		type = ExpressionType.Constant;
+		type = ExpressionType.Integer;
+		inputTypes = new ArrayList<ExpressionType>();
+		subtype = ExpressionSubtype.Constant;
 		sub = new ArrayList<Expression>();
 		intValue = i;
-		variablesExistsForall = new HashMap<String, ExpressionCategory>();
+		variablesExistsForall = new LinkedHashMap<String, ExpressionType>();
 	}
 	
 	// Boolean constant
 	public Expression(boolean b)
 	{
-		category = ExpressionCategory.Boolean;
-		type = ExpressionType.Constant;
+		type = ExpressionType.Boolean;
+		inputTypes = new ArrayList<ExpressionType>();
+		subtype = ExpressionSubtype.Constant;
 		sub = new ArrayList<Expression>();
 		boolValue = b;
-		variablesExistsForall = new HashMap<String, ExpressionCategory>();
+		variablesExistsForall = new LinkedHashMap<String, ExpressionType>();
 	}
 	
 	// integer/Boolean function
 	public Expression(String s, Expression... es)
 	{
-		category = ExpressionCategory.Unknown;
-		type = ExpressionType.Function;
+		type = ExpressionType.Unknown;
+		inputTypes = new ArrayList<ExpressionType>();
+		subtype = ExpressionSubtype.Function;
 		sub = new ArrayList<Expression>();
 		name = s;
 		for(Expression e : es) {
 			sub.add(e.copy());
+			inputTypes.add(e.type);
 		}
-		variablesExistsForall = new HashMap<String, ExpressionCategory>();
+		variablesExistsForall = new LinkedHashMap<String, ExpressionType>();
 	}
 	
 	public void addArgument(Expression e)
 	{
 		sub.add(e.copy());
+		inputTypes.add(e.type);
+	}
+	
+	public String getCompleteTypeString()
+	{
+		String x = "" + type + '(';
+		if(inputTypes.size() == 0) {
+			x = x + ' ';
+		}
+		for(ExpressionType t : inputTypes) {
+			x = x + t + ',';
+		}
+		x = x.substring(0, x.length() - 1) + ')';
+		return x;
 	}
 	
 	// exists/forall
-	public Expression(ExpressionType t, Map<String, ExpressionCategory> m, Expression e)
+	public Expression(ExpressionSubtype t, Map<String, ExpressionType> m, Expression e)
 	{
-		category = ExpressionCategory.Boolean;
-		type = t;
+		type = ExpressionType.Boolean;
+		inputTypes = new ArrayList<ExpressionType>();
+		subtype = t;
 		sub = new ArrayList<Expression>();
 		sub.add(e.copy());
-		variablesExistsForall = new HashMap<String, ExpressionCategory>();
+		variablesExistsForall = new LinkedHashMap<String, ExpressionType>();
 		variablesExistsForall.putAll(m);
 	}
 	
 	// other kind of expression
-	public Expression(ExpressionType t, Expression... es)
+	public Expression(ExpressionSubtype t, Expression... es)
 	{
-		type = t;
+		subtype = t;
 		switch(t)
 		{
 		case Constant:	/* impossible call */ return;
 		case Function:	/* impossible call */ return;
-		case Distinct:	category = ExpressionCategory.Boolean; break;
-		case Equals:	category = ExpressionCategory.Boolean; break;
-		case Not:		category = ExpressionCategory.Boolean; break;
-		case And:		category = ExpressionCategory.Boolean; break;
-		case Or:		category = ExpressionCategory.Boolean; break;
+		case Distinct:	type = ExpressionType.Boolean; break;
+		case Equals:	type = ExpressionType.Boolean; break;
+		case Not:		type = ExpressionType.Boolean; break;
+		case And:		type = ExpressionType.Boolean; break;
+		case Or:		type = ExpressionType.Boolean; break;
 		case Exists:	/* impossible call */ return;
 		case Forall:	/* impossible call */ return;
-		case GT:		category = ExpressionCategory.Boolean; break;
-		case LT:		category = ExpressionCategory.Boolean; break;
-		case GEQ:		category = ExpressionCategory.Boolean; break;
-		case LEQ:		category = ExpressionCategory.Boolean; break;
-		case Plus:		category = ExpressionCategory.Integer; break;
-		case Minus:		category = ExpressionCategory.Integer; break;
-		case Times:		category = ExpressionCategory.Integer; break;
-		case Slash:		category = ExpressionCategory.Integer; break;
+		case GT:		type = ExpressionType.Boolean; break;
+		case LT:		type = ExpressionType.Boolean; break;
+		case GEQ:		type = ExpressionType.Boolean; break;
+		case LEQ:		type = ExpressionType.Boolean; break;
+		case Plus:		type = ExpressionType.Integer; break;
+		case Minus:		type = ExpressionType.Integer; break;
+		case Times:		type = ExpressionType.Integer; break;
+		case Slash:		type = ExpressionType.Integer; break;
 		}
+		inputTypes = new ArrayList<ExpressionType>();
 		sub = new ArrayList<Expression>();
 		for(Expression e : es) {
 			sub.add(e.copy());
 		}
-		variablesExistsForall = new HashMap<String, ExpressionCategory>();
+		variablesExistsForall = new LinkedHashMap<String, ExpressionType>();
 	}
 	
+	// copy constructor
 	public Expression(Expression another)
 	{
-		category = another.category;
 		type = another.type;
+		inputTypes = new ArrayList<ExpressionType>();
+		for(ExpressionType t : another.inputTypes) {
+			inputTypes.add(t);
+		}
+		subtype = another.subtype;
 		sub = new ArrayList<Expression>();
 		for(Expression e : another.sub) {
 			sub.add(e.copy());
@@ -137,77 +163,89 @@ public class Expression extends BasicObject {
 		intValue = another.intValue;
 		boolValue = another.boolValue;
 		name = another.name;
-		variablesExistsForall = new HashMap<String, ExpressionCategory>();
+		variablesExistsForall = new LinkedHashMap<String, ExpressionType>();
 		variablesExistsForall.putAll(another.variablesExistsForall);
 	}
 	
-	public void finishCategory(ExpressionCategory ec, Map<String, ExpressionCategory> m)
+	// finish the type structure
+	public void finishType(Map<String, ExpressionType> variablesTypes, Map<String, ArrayList<ExpressionType>> variablesInputTypes)
 			throws FOADAException
 	{
-		Map<String, ExpressionCategory> copy = new HashMap<String, ExpressionCategory>();
-		copy.putAll(m);
-		if(type == ExpressionType.Function) {
-			if(m.get(name) != null) {
-				category = m.get(name);
-				//System.out.println(name + " ---> " + category);
+		Map<String, ExpressionType> copy = new LinkedHashMap<String, ExpressionType>();
+		copy.putAll(variablesTypes);
+		if(subtype == ExpressionSubtype.Function) {
+			if(variablesTypes.get(name) != null) {
+				type = variablesTypes.get(name);
 			}
-			if(category == ExpressionCategory.Unknown) {
-				category = ec;
-				//System.out.println(name + " ---> " + category);
+			if(variablesInputTypes.get(name) != null) {
+				inputTypes.clear();
+				inputTypes.addAll(variablesInputTypes.get(name));
 			}
 		}
-		if(type == ExpressionType.Exists || type == ExpressionType.Forall) {
+		if(subtype == ExpressionSubtype.Exists || subtype == ExpressionSubtype.Forall) {
 			copy.putAll(variablesExistsForall);
 		}
 		for(Expression e : sub) {
-			e.finishCategory(ec, copy);
+			e.finishType(copy, variablesInputTypes);
 		}
 	}
 	
-	public void checkCategory(ExpressionCategory ec)
+	// check the type structure
+	public void checkType(ExpressionType ec)
 			throws FOADAException
 	{
-		if(category != ec && ec != ExpressionCategory.Unknown) {
-			throw new CategoryConflictException(toSMTString(), ec, category);
+		//System.out.println(toSMTString() + ": " + getCompleteTypeString());
+		if(type == ExpressionType.Unknown) {
+			throw new VariableUndeclaredException(name);
 		}
-		ExpressionCategory subCategory = ExpressionCategory.Unknown;
-		switch(type)
+		else if(type != ec) {
+			throw new CategoryConflictException(toSMTString(), ec, type);
+		}
+		ExpressionType subCategory = ExpressionType.Unknown;
+		switch(subtype)
 		{
 		case Constant:	return;
-		case Function:	break;
-		case Distinct:	subCategory = sub.get(0).category;
+		case Function:	int i = 0;
+						if(sub.size() != inputTypes.size()) {
+							throw new NumberOfArgumentsException(name, inputTypes.size(), sub.size());
+						}
+						for(Expression e : sub) {
+							e.checkType(inputTypes.get(i++));
+						}
+						return;
+		case Distinct:	subCategory = sub.get(0).type;
 						break;
-		case Equals:	subCategory = sub.get(0).category;
+		case Equals:	subCategory = sub.get(0).type;
 						break;
-		case Not:		subCategory = ExpressionCategory.Boolean;
+		case Not:		subCategory = ExpressionType.Boolean;
 						break;
-		case And:		subCategory = ExpressionCategory.Boolean;
+		case And:		subCategory = ExpressionType.Boolean;
 						break;
-		case Or:		subCategory = ExpressionCategory.Boolean;
+		case Or:		subCategory = ExpressionType.Boolean;
 						break;
-		case Exists:	subCategory = ExpressionCategory.Boolean;
+		case Exists:	subCategory = ExpressionType.Boolean;
 						break;
-		case Forall:	subCategory = ExpressionCategory.Boolean;
+		case Forall:	subCategory = ExpressionType.Boolean;
 						break;
-		case GT:		subCategory = ExpressionCategory.Integer;
+		case GT:		subCategory = ExpressionType.Integer;
 						break;
-		case LT:		subCategory = ExpressionCategory.Integer;
+		case LT:		subCategory = ExpressionType.Integer;
 						break;
-		case GEQ:		subCategory = ExpressionCategory.Integer;
+		case GEQ:		subCategory = ExpressionType.Integer;
 						break;
-		case LEQ:		subCategory = ExpressionCategory.Integer;
+		case LEQ:		subCategory = ExpressionType.Integer;
 						break;
-		case Plus:		subCategory = ExpressionCategory.Integer;
+		case Plus:		subCategory = ExpressionType.Integer;
 						break;
-		case Minus:		subCategory = ExpressionCategory.Integer;
+		case Minus:		subCategory = ExpressionType.Integer;
 						break;
-		case Times:		subCategory = ExpressionCategory.Integer;
+		case Times:		subCategory = ExpressionType.Integer;
 						break;
-		case Slash:		subCategory = ExpressionCategory.Integer;
+		case Slash:		subCategory = ExpressionType.Integer;
 						break;
 		}
 		for(Expression e : sub) {
-			e.checkCategory(subCategory);
+			e.checkType(subCategory);
 		}
 	}
 	
@@ -220,12 +258,12 @@ public class Expression extends BasicObject {
 	public String toSMTString()
 	{
 		String x;
-		switch(type)
+		switch(subtype)
 		{
-		case Constant:	if(category == ExpressionCategory.Boolean) {
+		case Constant:	if(type == ExpressionType.Boolean) {
 							return Boolean.toString(boolValue);
 						}
-						else if(category == ExpressionCategory.Integer) {
+						else if(type == ExpressionType.Integer) {
 							return Integer.toString(intValue);
 						}
 		case Function:	if(sub.size() > 0) {
@@ -256,10 +294,10 @@ public class Expression extends BasicObject {
 						return x;
 		case Exists:	x = "(exists (";
 						for(String s : variablesExistsForall.keySet()) {
-							if(variablesExistsForall.get(s) == ExpressionCategory.Boolean) {
+							if(variablesExistsForall.get(s) == ExpressionType.Boolean) {
 								x = x + '(' + s + " Bool) ";
 							}
-							else if(variablesExistsForall.get(s) == ExpressionCategory.Integer) {
+							else if(variablesExistsForall.get(s) == ExpressionType.Integer) {
 								x = x + '(' + s + " Int) ";
 							}
 						}
@@ -267,10 +305,10 @@ public class Expression extends BasicObject {
 						return x;
 		case Forall:	x = "(forall (";
 						for(String s : variablesExistsForall.keySet()) {
-							if(variablesExistsForall.get(s) == ExpressionCategory.Boolean) {
+							if(variablesExistsForall.get(s) == ExpressionType.Boolean) {
 								x = x + '(' + s + " Bool) ";
 							}
-							else if(variablesExistsForall.get(s) == ExpressionCategory.Integer) {
+							else if(variablesExistsForall.get(s) == ExpressionType.Integer) {
 								x = x + '(' + s + " Int) ";
 							}
 						}

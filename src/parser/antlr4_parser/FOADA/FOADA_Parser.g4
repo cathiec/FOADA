@@ -34,6 +34,7 @@ import java.util.*;
 import structure.*;
 import structure.Transition;
 import structure.Expression.*;
+import exception.*;
 }
 
 automaton returns [Automaton tree]
@@ -52,7 +53,7 @@ automaton returns [Automaton tree]
 		}
 	)*
 	RP EOF {
-		$tree.finishCategory();
+		$tree.finishType();
 	}
 ;
 
@@ -90,14 +91,14 @@ expr returns [Expression tree]
 	}
 	|
 	LP NOT expr RP {
-		$tree = new Expression(ExpressionType.Not, $expr.tree);
+		$tree = new Expression(ExpressionSubtype.Not, $expr.tree);
 	}
 	|
 	LP AND e1=expr {
 		$tree = $e1.tree; 
 	}
 	(e2=expr {
-		$tree = new Expression(ExpressionType.And, $tree, $e2.tree);
+		$tree = new Expression(ExpressionSubtype.And, $tree, $e2.tree);
 	}
 	)+
 	RP
@@ -106,41 +107,41 @@ expr returns [Expression tree]
 		$tree = $e1.tree;
 	}
 	(e2=expr {
-		$tree = new Expression(ExpressionType.Or, $tree, $e2.tree);
+		$tree = new Expression(ExpressionSubtype.Or, $tree, $e2.tree);
 	}
 	)+
 	RP
 	|
 	LP EXISTS LP list_arguments RP expr RP {
-		$tree = new Expression(ExpressionType.Exists, $list_arguments.tree, $expr.tree);
+		$tree = new Expression(ExpressionSubtype.Exists, $list_arguments.tree, $expr.tree);
 	}
 	|
 	LP FORALL LP list_arguments RP expr RP {
-		$tree = new Expression(ExpressionType.Forall, $list_arguments.tree, $expr.tree);
+		$tree = new Expression(ExpressionSubtype.Forall, $list_arguments.tree, $expr.tree);
 	}
 	|
 	LP GT e1=expr e2=expr RP {
-		$tree = new Expression(ExpressionType.GT, $e1.tree, $e2.tree);
+		$tree = new Expression(ExpressionSubtype.GT, $e1.tree, $e2.tree);
 	}
 	|
 	LP LT e1=expr e2=expr RP {
-		$tree = new Expression(ExpressionType.LT, $e1.tree, $e2.tree);
+		$tree = new Expression(ExpressionSubtype.LT, $e1.tree, $e2.tree);
 	}
 	|
 	LP GEQ e1=expr e2=expr RP {
-		$tree = new Expression(ExpressionType.GEQ, $e1.tree, $e2.tree);
+		$tree = new Expression(ExpressionSubtype.GEQ, $e1.tree, $e2.tree);
 	}
 	|
 	LP LEQ e1=expr e2=expr RP {
-		$tree = new Expression(ExpressionType.LEQ, $e1.tree, $e2.tree);
+		$tree = new Expression(ExpressionSubtype.LEQ, $e1.tree, $e2.tree);
 	}
 	|
 	LP EQUALS e1=expr e2=expr RP {
-		$tree = new Expression(ExpressionType.Equals, $e1.tree, $e2.tree);
+		$tree = new Expression(ExpressionSubtype.Equals, $e1.tree, $e2.tree);
 	}
 	|
 	LP DISTINCT e1=expr e2=expr RP {
-		$tree = new Expression(ExpressionType.Distinct, $e1.tree, $e2.tree);
+		$tree = new Expression(ExpressionSubtype.Distinct, $e1.tree, $e2.tree);
 	}
 	|
 	ID {
@@ -164,7 +165,7 @@ expr returns [Expression tree]
 		$tree = $e1.tree; 
 	}
 	(e2=expr {
-		$tree = new Expression(ExpressionType.Plus, $tree, $e2.tree);
+		$tree = new Expression(ExpressionSubtype.Plus, $tree, $e2.tree);
 	}
 	)+
 	RP
@@ -173,17 +174,17 @@ expr returns [Expression tree]
 		$tree = $e1.tree; 
 	}
 	(e2=expr {
-		$tree = new Expression(ExpressionType.Times, $tree, $e2.tree);
+		$tree = new Expression(ExpressionSubtype.Times, $tree, $e2.tree);
 	}
 	)+
 	RP
 	|
 	LP MINUS e1=expr e2=expr RP {
-		$tree = new Expression(ExpressionType.Minus, $e1.tree, $e2.tree);
+		$tree = new Expression(ExpressionSubtype.Minus, $e1.tree, $e2.tree);
 	}
 	|
 	LP SLASH e1=expr e2=expr RP {
-		$tree = new Expression(ExpressionType.Slash, $e1.tree, $e2.tree);
+		$tree = new Expression(ExpressionSubtype.Slash, $e1.tree, $e2.tree);
 	}
 ;
 
@@ -198,9 +199,9 @@ list_finals returns [List<String> tree]
 	)*
 ;
 
-list_arguments returns [Map<String, ExpressionCategory> tree]
+list_arguments returns [Map<String, ExpressionType> tree]
 	: {
-		$tree = new HashMap<String, ExpressionCategory>();
+		$tree = new LinkedHashMap<String, ExpressionType>();
 	}
 	(LP ID type RP {
 		$tree.put($ID.text, $type.tree);
@@ -208,11 +209,11 @@ list_arguments returns [Map<String, ExpressionCategory> tree]
 	)*
 ;
 
-type returns [ExpressionCategory tree]
+type returns [ExpressionType tree]
 	: INT {
-		$tree = ExpressionCategory.Integer;
+		$tree = ExpressionType.Integer;
 	}
 	| BOOL {
-		$tree = ExpressionCategory.Boolean;
+		$tree = ExpressionType.Boolean;
 	}
 ;

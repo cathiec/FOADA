@@ -5,6 +5,7 @@
 	;(init (forall ((x Int)) (or (q1 x) (q2 x))))
 	;(trans (q3 ((x Int))) (a ((y Int))) (forall ((z Int)) (or (= x z) (q2 y))))
 	(trans (q1 ((x1 Int))) (a ((y1 Int))) (exists ((z1 Int)) (and (distinct x1 z1) (q3 y1))))
-	(trans (q3 ((x2 Int))) (a ((y2 Int))) (forall ((z2 Bool)) (or (= x2 z2) (q2 y2))))
+	(trans (q3 ((x2 Int))) (a ((y2 Int))) (forall ((z2 Int)) (or (= x2 z2) (q2 y2))))
+	(trans (q2 ()) (a ()) false)
 	;(final (q1 q2))
 )

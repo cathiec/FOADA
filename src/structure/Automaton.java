@@ -25,23 +25,23 @@ package structure;
 import java.util.*;
 
 import exception.*;
-import structure.Expression.ExpressionCategory;
+import structure.Expression.*;
 import utility.ConsolePrint;
 import utility.ConsolePrint.ConsoleType;
 
 public class Automaton extends BasicObject {
 	
 	// name(ID) of the automaton
-	String id;
+	public String id;
 	
 	// initial configuration
-	Expression initial;
+	public Expression initial;
 	
 	// list of names(IDs) of the final states
-	List<String> listOfIDFinals;
+	public List<String> listOfIDFinals;
 	
 	// list of transitions
-	List<Transition> listOfTransitions;
+	public List<Transition> listOfTransitions;
 	
 	public Automaton(String s)
 	{
@@ -78,24 +78,30 @@ public class Automaton extends BasicObject {
 		listOfTransitions.add(t.copy());
 	}
 	
-	public void finishCategory()
+	public void finishType()
 			throws FOADAException
 	{
-		Map<String, ExpressionCategory> tableVariables = new HashMap<String, ExpressionCategory>();
+		Map<String, ExpressionType> variablesTypes = new LinkedHashMap<String, ExpressionType>();
+		Map<String, ArrayList<ExpressionType>> variablesInputTypes = new LinkedHashMap<String, ArrayList<ExpressionType>>();
 		for(Transition t : listOfTransitions) {
-			tableVariables.put(t.from, ExpressionCategory.Boolean);
+			variablesTypes.put(t.from, ExpressionType.Boolean);
+			ArrayList<ExpressionType> x = new ArrayList<>();
+			for(ExpressionType e : t.argumentsOfFrom.values()) {
+				x.add(e);
+			}
+			variablesInputTypes.put(t.from, x);
 		}
 		for(Transition t : listOfTransitions) {
-				t.finishCategory(tableVariables);
+				t.finishType(variablesTypes, variablesInputTypes);
 		}
 	}
 	
-	public void checkCategory()
+	public void checkType()
 			throws FOADAException
 	{
 		for(Transition t : listOfTransitions) {
 			try {
-				t.checkCategory();
+				t.checkType();
 			}
 			catch(FOADAException e)
 			{

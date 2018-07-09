@@ -38,7 +38,9 @@ public abstract class FOADAException extends Throwable{
 		UnknownTypeOfInput,
 		InputFileNotScript,
 		InputFileNotAutomaton,
-		CategoryConflict
+		CategoryConflict,
+		VariableUndeclared,
+		NumberOfArguments
 	};
 	
 	public ExceptionType type;
