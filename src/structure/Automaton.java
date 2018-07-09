@@ -92,8 +92,16 @@ public class Automaton extends BasicObject {
 			variablesInputTypes.put(t.from, x);
 		}
 		for(Transition t : listOfTransitions) {
+			try {
 				t.finishType(variablesTypes, variablesInputTypes);
+			}
+			catch(FOADAException e)
+			{
+				ConsolePrint.printError(ConsoleType.FOADA, "An error has been found in the transition rule \"" + t.toSMTString() + "\"");
+				throw e;
+			}
 		}
+		checkType();
 	}
 	
 	public void checkType()
@@ -105,7 +113,7 @@ public class Automaton extends BasicObject {
 			}
 			catch(FOADAException e)
 			{
-				ConsolePrint.printError(ConsoleType.FOADA, "Type error has been found in the transition rule \"" + t.toSMTString() + "\"");
+				ConsolePrint.printError(ConsoleType.FOADA, "An error has been found in the transition rule \"" + t.toSMTString() + "\"");
 				throw e;
 			}
 		}

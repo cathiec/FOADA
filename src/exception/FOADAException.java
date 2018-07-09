@@ -40,6 +40,7 @@ public abstract class FOADAException extends Throwable{
 		InputFileNotAutomaton,
 		CategoryConflict,
 		VariableUndeclared,
+		AmbiguousVariable,
 		NumberOfArguments
 	};
 	

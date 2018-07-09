@@ -183,7 +183,14 @@ public class Expression extends BasicObject {
 			}
 		}
 		if(subtype == ExpressionSubtype.Exists || subtype == ExpressionSubtype.Forall) {
-			copy.putAll(variablesExistsForall);
+			for(String s : variablesExistsForall.keySet()) {
+				if(copy.containsKey(s)) {
+					throw new AmbiguousVariableException(s);
+				}
+				else {
+					copy.put(s, variablesExistsForall.get(s));
+				}
+			}
 		}
 		for(Expression e : sub) {
 			e.finishType(copy, variablesInputTypes);
