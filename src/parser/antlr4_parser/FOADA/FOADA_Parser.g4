@@ -43,32 +43,30 @@ automaton returns [Automaton tree]
 		$tree = new Automaton($ID.text);
 	}
 	(	event_def {
-			$tree.setEvents($event_def.tree);
+			$tree.initializeEvents($event_def.tree);
 		}
 		|
 		var_def {
-			$tree.setVariables($var_def.tree);
+			$tree.initializeVariables($var_def.tree);
 		}
 		|
 		pred_def {
-			$tree.setPredicates($pred_def.tree);
+			$tree.initializePredicates($pred_def.tree);
 		}
 		|
 		init_def {
-			$tree.setInitial($init_def.tree);
+			$tree.initializeInitial($init_def.tree);
 		}
 		|
 		final_def {
-			$tree.setFinals($final_def.tree);
+			$tree.initializeFinals($final_def.tree);
 		}
 		|
 		trans_def {
 			$tree.addTransition($trans_def.tree);
 		}
 	)*
-	RP EOF {
-		$tree.finishType();
-	}
+	RP EOF
 ;
 
 event_def returns [List<String> tree]
