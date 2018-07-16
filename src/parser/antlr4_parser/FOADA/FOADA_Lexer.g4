@@ -32,6 +32,9 @@ package parser.antlr4_parser.FOADA;
 
 // key words
 DEFAUTO : 'define-automaton';
+EVENT : 'event';
+VAR : 'var';
+PRED : 'pred';
 INIT : 'init';
 FINAL : 'final';
 TRANS : 'trans';

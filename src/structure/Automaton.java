@@ -34,6 +34,15 @@ public class Automaton extends BasicObject {
 	// name(ID) of the automaton
 	public String id;
 	
+	// list of event symbols
+	public List<String> listOfEventSymbols;
+	
+	// list of types of variables
+	public List<ExpressionType> listOfTypesOfVariables;
+	
+	// map of predicates to their types
+	public Map<String, List<ExpressionType>> mapOfPredicatesToTheirTypes;
+	
 	// initial configuration
 	public Expression initial;
 	
@@ -43,33 +52,70 @@ public class Automaton extends BasicObject {
 	// list of transitions
 	public List<Transition> listOfTransitions;
 	
-	public Automaton(String s)
+	// default constructor
+	public Automaton(String id)
 	{
-		id = s;
-		initial = null;
-		listOfIDFinals = new ArrayList<String>();
-		listOfTransitions = new ArrayList<Transition>();
+		this.id = id;
+		this.listOfEventSymbols = new ArrayList<String>();
+		this.listOfTypesOfVariables = new ArrayList<ExpressionType>();
+		this.mapOfPredicatesToTheirTypes = new LinkedHashMap<String, List<ExpressionType>>();
+		this.initial = null;
+		this.listOfIDFinals = new ArrayList<String>();
+		this.listOfTransitions = new ArrayList<Transition>();
+	}
+	
+	public void setEvents(List<String> listOfEventSymbols)
+			throws FOADAException
+	{
+		if(this.listOfEventSymbols.size() == 0) {
+			this.listOfEventSymbols.addAll(listOfEventSymbols);
+		}
+		else {
+			throw new EventDefRedundancyException();
+		}
+	}
+	
+	public void setVariables(List<ExpressionType> listOfTypesOfVariables)
+			throws FOADAException
+	{
+		if(this.listOfTypesOfVariables.size() == 0) {
+			this.listOfTypesOfVariables.addAll(listOfTypesOfVariables);
+		}
+		else {
+			throw new VarDefRedundancyException();
+		}
+	}
+	
+	public void setPredicates(Map<String, List<ExpressionType>> mapOfPredicatesToTheirTypes)
+			throws FOADAException
+	{
+		if(this.mapOfPredicatesToTheirTypes.isEmpty()) {
+			this.mapOfPredicatesToTheirTypes.putAll(mapOfPredicatesToTheirTypes);
+		}
+		else {
+			;
+		}
 	}
 	
 	public void setInitial(Expression e)
-			throws InitialRedundancyException
+			throws InitDefRedundancyException
 	{
 		if(initial == null) {
 			initial = e;
 		}
 		else {
-			throw new InitialRedundancyException();
+			throw new InitDefRedundancyException();
 		}
 	}
 	
 	public void setFinals(List<String> l)
-			throws FinalRedundancyException
+			throws FinalDefRedundancyException
 	{
 		if(listOfIDFinals.size() == 0) {
 			listOfIDFinals.addAll(l);
 		}
 		else {
-			throw new FinalRedundancyException();
+			throw new FinalDefRedundancyException();
 		}
 	}
 	
@@ -156,16 +202,17 @@ public class Automaton extends BasicObject {
 	}
 	
 	public String toSMTString()
+			throws FOADAException
 	{
 		String x = "(define-automaton " + id + '\n';
 		if(initial != null) {
 			x = x + "\t(init " + initial.toSMTString() + ")\n";
 		}
 		else {
-			x = x + "\t(init)\n";
+			throw new NoInitialConfigurationException();
 		}
 		if(listOfIDFinals.size() == 0) {
-			x = x + "\t(final)\n";
+			x = x + "\t(final ())\n";
 		}
 		else {
 			x = x + "\t(final (";

@@ -42,16 +42,28 @@ automaton returns [Automaton tree]
 	LP DEFAUTO ID {
 		$tree = new Automaton($ID.text);
 	}
-	(	initial_def {
-			$tree.setInitial($initial_def.tree);
+	(	event_def {
+			$tree.setEvents($event_def.tree);
 		}
 		|
-		list_finals_def {
-			$tree.setFinals($list_finals_def.tree);
+		var_def {
+			$tree.setVariables($var_def.tree);
 		}
 		|
-		transition_def {
-			$tree.addTransition($transition_def.tree);
+		pred_def {
+			$tree.setPredicates($pred_def.tree);
+		}
+		|
+		init_def {
+			$tree.setInitial($init_def.tree);
+		}
+		|
+		final_def {
+			$tree.setFinals($final_def.tree);
+		}
+		|
+		trans_def {
+			$tree.addTransition($trans_def.tree);
 		}
 	)*
 	RP EOF {
@@ -59,26 +71,111 @@ automaton returns [Automaton tree]
 	}
 ;
 
-initial_def returns [Expression tree]
+event_def returns [List<String> tree]
 :
-	LP INIT expr {
+	LP EVENT LP list_events RP RP {
+		$tree = $list_events.tree;
+	}
+;
+
+var_def returns [List<ExpressionType> tree]
+:
+	LP VAR LP list_types RP RP {
+		$tree = $list_types.tree;
+	}
+;
+
+pred_def returns [Map<String, List<ExpressionType>> tree]
+:
+	LP PRED LP list_predicates RP RP {
+		$tree = $list_predicates.tree;
+	}
+;
+
+init_def returns [Expression tree]
+:
+	LP INIT expr RP {
 		$tree = $expr.tree;
 	}
-	RP
 ;
 
-list_finals_def returns [List<String> tree]
+final_def returns [List<String> tree]
 :
-	LP FINAL LP list_finals {
+	LP FINAL LP list_finals RP RP {
 		$tree = $list_finals.tree;
 	}
-	RP RP
 ;
 
-transition_def returns [Transition tree]
+trans_def returns [Transition tree]
 :
 	LP TRANS LP from=ID LP argFrom=list_arguments RP RP LP event=ID LP argEvent=list_arguments RP RP expr RP {
 		$tree = new Transition($from.text, $argFrom.tree, $event.text, $argEvent.tree, $expr.tree);
+	}
+;
+
+list_events returns [List<String> tree]
+:
+	{
+		$tree = new ArrayList<String>();
+	}
+	(ID {
+		$tree.add($ID.text);
+	}
+	)*
+;
+
+list_types returns [List<ExpressionType> tree]
+:
+	{
+		$tree = new ArrayList<ExpressionType>();
+	}
+	(type {
+		$tree.add($type.tree);
+	}
+	)*
+;
+
+list_predicates returns [Map<String, List<ExpressionType>> tree]
+:
+	{
+		$tree = new LinkedHashMap<String, List<ExpressionType>>();
+	}
+	(LP ID LP list_types RP RP {
+		$tree.put($ID.text, $list_types.tree);
+	}
+	)*
+;
+
+list_finals returns [List<String> tree]
+:
+	{
+		$tree = new ArrayList<String>();
+	}
+	(ID {
+		$tree.add($ID.text);
+	}
+	)*
+;
+
+list_arguments returns [Map<String, ExpressionType> tree]
+:
+	{
+		$tree = new LinkedHashMap<String, ExpressionType>();
+	}
+	(LP ID type RP {
+		$tree.put($ID.text, $type.tree);
+	}
+	)*
+;
+
+type returns [ExpressionType tree]
+:
+	INT {
+		$tree = ExpressionType.Integer;
+	}
+	|
+	BOOL {
+		$tree = ExpressionType.Boolean;
 	}
 ;
 
@@ -187,38 +284,5 @@ expr returns [Expression tree]
 	|
 	LP SLASH e1=expr e2=expr RP {
 		$tree = new Expression(ExpressionSubtype.Slash, $e1.tree, $e2.tree);
-	}
-;
-
-list_finals returns [List<String> tree]
-:
-	{
-		$tree = new ArrayList<String>();
-	}
-	(ID {
-		$tree.add($ID.text);
-	}
-	)*
-;
-
-list_arguments returns [Map<String, ExpressionType> tree]
-:
-	{
-		$tree = new LinkedHashMap<String, ExpressionType>();
-	}
-	(LP ID type RP {
-		$tree.put($ID.text, $type.tree);
-	}
-	)*
-;
-
-type returns [ExpressionType tree]
-:
-	INT {
-		$tree = ExpressionType.Integer;
-	}
-	|
-	BOOL {
-		$tree = ExpressionType.Boolean;
 	}
 ;

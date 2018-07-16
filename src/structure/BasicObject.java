@@ -22,10 +22,12 @@
 
 package structure;
 
+import exception.*;
+
 public abstract class BasicObject {
 	
 	public abstract BasicObject copy();
 	
-	public abstract String toSMTString();
+	public abstract String toSMTString() throws FOADAException;
 
 }

@@ -49,49 +49,109 @@ public class FOADA_ParserBaseListener implements FOADA_ParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterInitial_def(FOADA_Parser.Initial_defContext ctx) { }
+	@Override public void enterEvent_def(FOADA_Parser.Event_defContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitInitial_def(FOADA_Parser.Initial_defContext ctx) { }
+	@Override public void exitEvent_def(FOADA_Parser.Event_defContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterList_finals_def(FOADA_Parser.List_finals_defContext ctx) { }
+	@Override public void enterVar_def(FOADA_Parser.Var_defContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitList_finals_def(FOADA_Parser.List_finals_defContext ctx) { }
+	@Override public void exitVar_def(FOADA_Parser.Var_defContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTransition_def(FOADA_Parser.Transition_defContext ctx) { }
+	@Override public void enterPred_def(FOADA_Parser.Pred_defContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTransition_def(FOADA_Parser.Transition_defContext ctx) { }
+	@Override public void exitPred_def(FOADA_Parser.Pred_defContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpr(FOADA_Parser.ExprContext ctx) { }
+	@Override public void enterInit_def(FOADA_Parser.Init_defContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitExpr(FOADA_Parser.ExprContext ctx) { }
+	@Override public void exitInit_def(FOADA_Parser.Init_defContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFinal_def(FOADA_Parser.Final_defContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFinal_def(FOADA_Parser.Final_defContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTrans_def(FOADA_Parser.Trans_defContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTrans_def(FOADA_Parser.Trans_defContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterList_events(FOADA_Parser.List_eventsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitList_events(FOADA_Parser.List_eventsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterList_types(FOADA_Parser.List_typesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitList_types(FOADA_Parser.List_typesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterList_predicates(FOADA_Parser.List_predicatesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitList_predicates(FOADA_Parser.List_predicatesContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -128,6 +188,18 @@ public class FOADA_ParserBaseListener implements FOADA_ParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitType(FOADA_Parser.TypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpr(FOADA_Parser.ExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpr(FOADA_Parser.ExprContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

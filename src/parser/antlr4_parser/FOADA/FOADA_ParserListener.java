@@ -40,45 +40,95 @@ public interface FOADA_ParserListener extends ParseTreeListener {
 	 */
 	void exitAutomaton(FOADA_Parser.AutomatonContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#initial_def}.
+	 * Enter a parse tree produced by {@link FOADA_Parser#event_def}.
 	 * @param ctx the parse tree
 	 */
-	void enterInitial_def(FOADA_Parser.Initial_defContext ctx);
+	void enterEvent_def(FOADA_Parser.Event_defContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#initial_def}.
+	 * Exit a parse tree produced by {@link FOADA_Parser#event_def}.
 	 * @param ctx the parse tree
 	 */
-	void exitInitial_def(FOADA_Parser.Initial_defContext ctx);
+	void exitEvent_def(FOADA_Parser.Event_defContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#list_finals_def}.
+	 * Enter a parse tree produced by {@link FOADA_Parser#var_def}.
 	 * @param ctx the parse tree
 	 */
-	void enterList_finals_def(FOADA_Parser.List_finals_defContext ctx);
+	void enterVar_def(FOADA_Parser.Var_defContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#list_finals_def}.
+	 * Exit a parse tree produced by {@link FOADA_Parser#var_def}.
 	 * @param ctx the parse tree
 	 */
-	void exitList_finals_def(FOADA_Parser.List_finals_defContext ctx);
+	void exitVar_def(FOADA_Parser.Var_defContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#transition_def}.
+	 * Enter a parse tree produced by {@link FOADA_Parser#pred_def}.
 	 * @param ctx the parse tree
 	 */
-	void enterTransition_def(FOADA_Parser.Transition_defContext ctx);
+	void enterPred_def(FOADA_Parser.Pred_defContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#transition_def}.
+	 * Exit a parse tree produced by {@link FOADA_Parser#pred_def}.
 	 * @param ctx the parse tree
 	 */
-	void exitTransition_def(FOADA_Parser.Transition_defContext ctx);
+	void exitPred_def(FOADA_Parser.Pred_defContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link FOADA_Parser#expr}.
+	 * Enter a parse tree produced by {@link FOADA_Parser#init_def}.
 	 * @param ctx the parse tree
 	 */
-	void enterExpr(FOADA_Parser.ExprContext ctx);
+	void enterInit_def(FOADA_Parser.Init_defContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link FOADA_Parser#expr}.
+	 * Exit a parse tree produced by {@link FOADA_Parser#init_def}.
 	 * @param ctx the parse tree
 	 */
-	void exitExpr(FOADA_Parser.ExprContext ctx);
+	void exitInit_def(FOADA_Parser.Init_defContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link FOADA_Parser#final_def}.
+	 * @param ctx the parse tree
+	 */
+	void enterFinal_def(FOADA_Parser.Final_defContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FOADA_Parser#final_def}.
+	 * @param ctx the parse tree
+	 */
+	void exitFinal_def(FOADA_Parser.Final_defContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link FOADA_Parser#trans_def}.
+	 * @param ctx the parse tree
+	 */
+	void enterTrans_def(FOADA_Parser.Trans_defContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FOADA_Parser#trans_def}.
+	 * @param ctx the parse tree
+	 */
+	void exitTrans_def(FOADA_Parser.Trans_defContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link FOADA_Parser#list_events}.
+	 * @param ctx the parse tree
+	 */
+	void enterList_events(FOADA_Parser.List_eventsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FOADA_Parser#list_events}.
+	 * @param ctx the parse tree
+	 */
+	void exitList_events(FOADA_Parser.List_eventsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link FOADA_Parser#list_types}.
+	 * @param ctx the parse tree
+	 */
+	void enterList_types(FOADA_Parser.List_typesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FOADA_Parser#list_types}.
+	 * @param ctx the parse tree
+	 */
+	void exitList_types(FOADA_Parser.List_typesContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link FOADA_Parser#list_predicates}.
+	 * @param ctx the parse tree
+	 */
+	void enterList_predicates(FOADA_Parser.List_predicatesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FOADA_Parser#list_predicates}.
+	 * @param ctx the parse tree
+	 */
+	void exitList_predicates(FOADA_Parser.List_predicatesContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link FOADA_Parser#list_finals}.
 	 * @param ctx the parse tree
@@ -109,4 +159,14 @@ public interface FOADA_ParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitType(FOADA_Parser.TypeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link FOADA_Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpr(FOADA_Parser.ExprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FOADA_Parser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpr(FOADA_Parser.ExprContext ctx);
 }

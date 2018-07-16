@@ -95,6 +95,7 @@ public class Transition extends BasicObject {
 	}
 	
 	public String toSMTString()
+			throws FOADAException
 	{
 		String x = "(trans (" + from + " (";
 		if(argumentsOfFrom.size() == 0) {

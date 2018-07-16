@@ -23,16 +23,16 @@
 package exception;
 
 @SuppressWarnings("serial")
-public class FinalRedundancyException extends FOADAException {
+public class VarDefRedundancyException extends FOADAException {
 	
-	public FinalRedundancyException()
+	public VarDefRedundancyException()
 	{
-		type = ExceptionType.FinalRedundancy;
+		type = ExceptionType.VarDefRedundancy;
 	}
 	
 	public String getInfo()
 	{
-		return "The final states had already been set. They cannot be reset anymore.";
+		return "The variables had already been set. They cannot be reset anymore.";
 	}
 
 }

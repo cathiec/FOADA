@@ -47,7 +47,7 @@ public class Expression extends BasicObject {
 	
 	public Map<String, ExpressionType> variablesExistsForall;
 	
-	// integer constant
+	// constructor for integer constants
 	public Expression(int i)
 	{
 		type = ExpressionType.Integer;
@@ -58,7 +58,7 @@ public class Expression extends BasicObject {
 		variablesExistsForall = new LinkedHashMap<String, ExpressionType>();
 	}
 	
-	// Boolean constant
+	// constructor for Boolean constants
 	public Expression(boolean b)
 	{
 		type = ExpressionType.Boolean;
@@ -69,7 +69,7 @@ public class Expression extends BasicObject {
 		variablesExistsForall = new LinkedHashMap<String, ExpressionType>();
 	}
 	
-	// integer/Boolean function
+	// constructor for integer/Boolean functions
 	public Expression(String s, Expression... es)
 	{
 		type = ExpressionType.Unknown;
@@ -84,13 +84,14 @@ public class Expression extends BasicObject {
 		variablesExistsForall = new LinkedHashMap<String, ExpressionType>();
 	}
 	
+	// add an argument to an integer/Boolean functions
 	public void addArgument(Expression e)
 	{
 		sub.add(e.copy());
 		inputTypes.add(e.type);
 	}
 	
-	// exists/forall
+	// constructor for exists/forall expressions
 	public Expression(ExpressionSubtype t, Map<String, ExpressionType> m, Expression e)
 	{
 		type = ExpressionType.Boolean;
@@ -102,7 +103,7 @@ public class Expression extends BasicObject {
 		variablesExistsForall.putAll(m);
 	}
 	
-	// other kind of expression
+	// constructor for other kind of expressions
 	public Expression(ExpressionSubtype t, Expression... es)
 	{
 		subtype = t;
@@ -252,6 +253,7 @@ public class Expression extends BasicObject {
 	}
 	
 	public String toSMTString()
+			throws FOADAException
 	{
 		String x;
 		switch(subtype)

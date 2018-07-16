@@ -23,16 +23,16 @@
 package exception;
 
 @SuppressWarnings("serial")
-public class InitialRedundancyException extends FOADAException {
+public class NoInitialConfigurationException extends FOADAException {
 	
-	public InitialRedundancyException()
+	public NoInitialConfigurationException()
 	{
-		type = ExceptionType.InitialRedundancy;
+		type = ExceptionType.NoInitialConfiguration;
 	}
 	
 	public String getInfo()
 	{
-		return "The initial configuration had already been set. It cannot be reset anymore.";
+		return "The automaton has no initial configuration.";
 	}
 
 }

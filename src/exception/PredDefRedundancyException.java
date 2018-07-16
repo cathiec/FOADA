@@ -1,10 +1,3 @@
-lexer grammar FOADA_Lexer;
-
-options {
-    language = Java;
-}
-
-@header {
 /*
 	FOADA
     Copyright (C) 2018  Xiao XU & Radu IOSIF
@@ -27,48 +20,19 @@ options {
     If you have any questions, please contact Xiao XU <xiao.xu.cathiec@gmail.com>.
 */
 
-package parser.antlr4_parser.FOADA;
+package exception;
+
+@SuppressWarnings("serial")
+public class PredDefRedundancyException extends FOADAException {
+	
+	public PredDefRedundancyException()
+	{
+		type = ExceptionType.PredDefRedundancy;
+	}
+	
+	public String getInfo()
+	{
+		return "The predicates had already been set. They cannot be reset anymore.";
+	}
+
 }
-
-// key words
-DEFAUTO : 'define-automaton';
-EVENT : 'event';
-VAR : 'var';
-PRED : 'pred';
-INIT : 'init';
-FINAL : 'final';
-TRANS : 'trans';
-TRUE : 'true';
-FALSE : 'false';
-INT : 'Int';
-BOOL : 'Bool';
-EXISTS : 'exists';
-FORALL : 'forall';
-NOT : 'not';
-AND : 'and';
-OR : 'or';
-DISTINCT : 'distinct';
-
-fragment LETTER : 'a' .. 'z' | 'A' .. 'Z';
-fragment DIGIT : '0' .. '9';
-
-ID : (LETTER | '$' | '_')(LETTER | DIGIT | '$' | '_')*;
-INTEGER : '0' | ('1' .. '9' DIGIT*);
-
-LP : '(';
-RP : ')';
-PLUS : '+';
-MINUS : '-';
-TIMES : '*';
-SLASH : '/';
-GT : '>';
-LT : '<';
-GEQ : '>=';
-LEQ : '<=';
-EQUALS : '=';
-
-WS : (' ' | '\t' | '\r' | '\n') {skip();};
-
-COMMENT
-: ';' ( ~('\n') )* {skip();}
-;
