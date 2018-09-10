@@ -78,7 +78,7 @@ public class FOADA {
 	 */
 	private static void checkEmpty(String input)
 	{
-
+		;
 	}
 	
 	/** < FOADA installed version > </br>
