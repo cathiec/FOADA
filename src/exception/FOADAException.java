@@ -22,31 +22,16 @@
 
 package exception;
 
-import utility.*;
-import utility.ConsolePrint.ConsoleType;
+import utility.Console;
+import utility.Console.*;
 
+// general FOADA exception (abstract class)
 @SuppressWarnings("serial")
-public abstract class FOADAException extends Throwable{
+public abstract class FOADAException extends Throwable {
 	
 	public enum ExceptionType {
-		AmbiguousVariable,
-		ANTLR4ParseCancellation,
-		CategoryConflict,
-		EventDefRedundancy,
-		FinalDefRedundancy,
-		InitDefRedundancy,
-		InputFileNotAutomaton,
 		InputFileNotFound,
-		InputFileNotScript,
-		JavaIO,
-		NoInitialConfiguration,
-		PredDefRedundancy,
-		TransitionOverridden,
-		UnknownConsoleOption,
-		UnknownTypeOfInput,
-		VarDefRedundancy,
-		VariableOverridden,
-		VariableUndeclared
+		UnknownConsoleOption
 	};
 	
 	public ExceptionType type;
@@ -55,7 +40,7 @@ public abstract class FOADAException extends Throwable{
 	
 	public void printErrorMessage()
 	{
-		ConsolePrint.printError(ConsoleType.FOADA, getInfo());
+		Console.printError(ConsoleType.FOADA, getInfo());
 	}
 
 }

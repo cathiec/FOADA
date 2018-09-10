@@ -23,16 +23,17 @@
 package app;
 
 import exception.*;
-import parser.Parser.ParserCategory;
-import tool.*;
 import utility.*;
-import utility.ConsolePrint.ConsoleType;
+import utility.Console.*;
 
 public class FOADA {
 	
-	private static String version = "1.0";
-	
-	// no argument
+	// FOADA Version
+	public static final String FOADA_version = "1.0";
+
+	/** < FOADA welcome > </br>
+	 * FOADA execution with no argument
+	 */
 	private static void welcome()
 	{
 		System.out.println("------------------------------");
@@ -41,132 +42,80 @@ public class FOADA {
 		help();
 	}
 	
-	// -h
-	// --help
-	// show all the options
+	/** < FOADA help menu > </br>
+	 * FOADA execution with argument <b> -h </b> or <b> --help </b>
+	 */
 	private static void help()
 	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, "Showing all the options...");
+		Console.printInfo(ConsoleType.FOADA, "Showing all the options...");
 		// -h , --help
 		System.out.println("\t-h, --help \t\t show all the options");
 		// -c , --check
 		System.out.println("\t-c, --check \t\t check all the solvers");
-		// -s , --syntax
-		System.out.println("\t-s, --syntax <input> \t check syntax errors in an input file");
 		// -e, --empty
 		System.out.println("\t-e, --empty <input> \t check whether the automaton in an input file is empty");
 		// -r , --run
 		System.out.println("\t-r, --run <input> \t run a script input file");
 		// -v , --version
 		System.out.println("\t-v, --version \t\t show the current version of FOADA");
-		ConsolePrint.printFOADAEndOfSession();
+		Console.printFOADAEndOfSession();
 	}
 	
-	// -c
-	// --check
-	// check all the solvers
+	/** < FOADA solver checking > </br>
+	 * FOADA execution with argument <b> -c </b> or <b> --check </b>
+	 */
 	private static void checkSolvers()
 	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, "Start checking all the solvers...");
-		CheckSolver.checkSMTINTERPOL();
-		CheckSolver.checkZ3();
-		CheckSolver.checkMATHSAT5();
-		CheckSolver.checkPRINCESS();
-		ConsolePrint.printFOADAEndOfSession();
+		Console.printInfo(ConsoleType.FOADA, "Start checking all the solvers...");
+		Solver.checkSMTINTERPOL();
+		Solver.checkZ3();
+		Solver.checkMATHSAT5();
+		Solver.checkPRINCESS();
+		Console.printFOADAEndOfSession();
 	}
 	
-	// -s <input>
-	// --syntax <input>
-	// check syntax errors in an input file
-	private static void checkSyntax(String input)
-			throws FOADAException
-	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, "Reading the input file < " + input + " >...");
-		parser.Parser p = tool.SelectParser.selectParser(input);
-		p.checkSyntax(input);
-		ConsolePrint.printFOADAEndOfSession();
-	}
-	
-	// -e <input>
-	// --empty <input>
-	// check whether the automaton in an input file is empty
+	/** < FOADA emptiness checking > </br>
+	 * FOADA execution with argument <b> -e </b> or <b> --empty </b>
+	 */
 	private static void checkEmpty(String input)
-		throws FOADAException
 	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, "Reading the input file < " + input + " >...");
-		parser.Parser p = tool.SelectParser.selectParser(input);
-		if(p.category == ParserCategory.Script) {
-			throw new InputFileNotAutomatonException(input);
-		}
-		((parser.AutomatonParser)p).checkEmpty(input);
-		ConsolePrint.printFOADAEndOfSession();
+
 	}
 	
-	// -r <input>
-	// --run <input>
-	// run a script input file
-	private static void run(String input)
-			throws FOADAException
-	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, "Reading the input file < " + input + " >...");
-		parser.Parser p = tool.SelectParser.selectParser(input);
-		if(p.category == ParserCategory.Automaton) {
-			throw new InputFileNotScriptException(input);
-		}
-		((parser.ScriptParser)p).run(input);
-		ConsolePrint.printFOADAEndOfSession();
-	}
-		
-	// -v
-	// --version
-	// show the current version of FOADA
+	/** < FOADA version > </br>
+	 * FOADA execution with argument <b> -v </b> or <b> --version </b>
+	 */
 	private static void version()
 	{
-		ConsolePrint.printInfo(ConsoleType.FOADA, "Version " + version);
-		ConsolePrint.printFOADAEndOfSession();
+		Console.printInfo(ConsoleType.FOADA, "Version " + FOADA_version);
+		Console.printFOADAEndOfSession();
 	}
 	
-	// main function
+	/** < FOADA execution >
+	 * @param args command-line arguments
+	 */
 	public static void main(String[] args)
 	{
 		try {
-			// no argument
+			// welcome
 			if(args.length == 0) {
 				welcome();
 			}
-			// show all the options
+			// help menu
 			else if(args[0].equals("-h") || args[0].equals("--help")) {
 				help();
 			}
-			// check all the solvers
+			// solver checking
 			else if(args[0].equals("-c") || args[0].equals("--check")) {
 				checkSolvers();
 			}
-			// check syntax errors in an input file
-			else if(args[0].equals("-s") || args[0].equals("--syntax")) {
-				if(args.length < 2) {
-					throw new InputFileNotFoundException(null);
-				}
-				else {
-					checkSyntax(args[1]);
-				}
-			}
-			// check whether the automaton in an input file is empty
+			// emptiness checking
 			else if(args[0].equals("-e") || args[0].equals("--empty")) {
 				if(args.length < 2) {
 					throw new InputFileNotFoundException(null);
 				}
 				else {
 					checkEmpty(args[1]);
-				}
-			}
-			// run a script input file
-			else if(args[0].equals("-r") || args[0].equals("--run")) {
-				if(args.length < 2) {
-					throw new InputFileNotFoundException(null);
-				}
-				else {
-					run(args[1]);
 				}
 			}
 			// show the current version of FOADA
@@ -180,7 +129,8 @@ public class FOADA {
 		}
 		catch(FOADAException e) {
 			e.printErrorMessage();
-			ConsolePrint.printFOADAEndOfSession();
+			Console.printFOADAEndOfSession();
 		}
 	}
+	
 }

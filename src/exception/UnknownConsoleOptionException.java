@@ -22,15 +22,16 @@
 
 package exception;
 
+// the given console option is unknown
 @SuppressWarnings("serial")
 public class UnknownConsoleOptionException extends FOADAException {
 
 	private String option;
 	
-	public UnknownConsoleOptionException(String s)
+	public UnknownConsoleOptionException(String option)
 	{
 		type = ExceptionType.UnknownConsoleOption;
-		option = s;
+		this.option = option;
 	}
 	
 	public String getInfo()

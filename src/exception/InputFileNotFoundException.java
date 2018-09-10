@@ -22,15 +22,16 @@
 
 package exception;
 
+// the input file cannot be found
 @SuppressWarnings("serial")
 public class InputFileNotFoundException extends FOADAException {
 	
 	private String filename;
 	
-	public InputFileNotFoundException(String s)
+	public InputFileNotFoundException(String filename)
 	{
 		type = ExceptionType.InputFileNotFound;
-		filename = s;
+		this.filename = filename;
 	}
 	
 	public String getInfo()
