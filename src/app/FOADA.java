@@ -37,7 +37,8 @@ public class FOADA {
 	private static void welcome()
 	{
 		System.out.println("------------------------------");
-		System.out.println("      FOADA Version 1.0");
+		System.out.print("      FOADA Version ");
+		System.out.println(FOADA_version);
 		System.out.println("------------------------------");
 		help();
 	}
@@ -49,15 +50,13 @@ public class FOADA {
 	{
 		Console.printInfo(ConsoleType.FOADA, "Showing all the options...");
 		// -h , --help
-		System.out.println("\t-h, --help \t\t show all the options");
+		System.out.println("\t-h, --help \t\t help menu");
 		// -c , --check
-		System.out.println("\t-c, --check \t\t check all the solvers");
+		System.out.println("\t-c, --check \t\t solver checking");
 		// -e, --empty
-		System.out.println("\t-e, --empty <input> \t check whether the automaton in an input file is empty");
-		// -r , --run
-		System.out.println("\t-r, --run <input> \t run a script input file");
+		System.out.println("\t-e, --empty <input> \t emptiness checking");
 		// -v , --version
-		System.out.println("\t-v, --version \t\t show the current version of FOADA");
+		System.out.println("\t-v, --version \t\t installed version");
 		Console.printFOADAEndOfSession();
 	}
 	
@@ -82,7 +81,7 @@ public class FOADA {
 
 	}
 	
-	/** < FOADA version > </br>
+	/** < FOADA installed version > </br>
 	 * FOADA execution with argument <b> -v </b> or <b> --version </b>
 	 */
 	private static void version()
@@ -118,7 +117,7 @@ public class FOADA {
 					checkEmpty(args[1]);
 				}
 			}
-			// show the current version of FOADA
+			// installed version
 			else if(args[0].equals("-v") || args[0].equals("--version")) {
 				version();
 			}
