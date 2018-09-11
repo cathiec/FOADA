@@ -135,10 +135,5 @@ public class Console {
 	{
 		printInfo(ConsoleType.FOADA, "End of session.\n");
 	}
-	
-	public static void printFOADAHelpInfo()
-	{
-		printInfo(ConsoleType.FOADA, "Entry " + YELLOW_BRIGHT + "-h" + RESET + " for the help.");
-	}
-	
+
 }

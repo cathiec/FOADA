@@ -23,6 +23,10 @@
 package app;
 
 import exception.*;
+import parser.Parser;
+import parser.Parser.ParserType;
+import parser.PA.PAParser;
+import structure.*;
 import utility.*;
 import utility.Console.*;
 
@@ -75,10 +79,31 @@ public class FOADA {
 	
 	/** < FOADA emptiness checking > </br>
 	 * FOADA execution with argument <b> -e </b> or <b> --empty </b>
+	 * @param	filename	name of the input file
 	 */
-	private static void checkEmpty(String input)
+	private static void checkEmpty(String filename)
+			throws FOADAException
 	{
-		;
+		Automaton a = null;
+		ParserType type = Parser.selectAccordingToInputFile(filename);
+		switch(type)
+		{
+		case PAParser:		a = PAParser.buildAutomatonFromFile(filename);
+							break;
+		case ADAParser:		a = null;
+							break;
+		case FOADAParser:	a = null;
+							break;
+		default:			throw new InputFileUnsupportedException(filename);
+		}
+		Console.printInfo(ConsoleType.FOADA, "Start checking emptiness...");
+		if(a.isEmpty()) {
+			Console.printInfo(ConsoleType.FOADA, "The automaton is empty...");
+		}
+		else {
+			Console.printInfo(ConsoleType.FOADA, "The automaton is not empty...");
+		}
+		Console.printFOADAEndOfSession();
 	}
 	
 	/** < FOADA installed version > </br>
@@ -91,7 +116,7 @@ public class FOADA {
 	}
 	
 	/** < FOADA execution >
-	 * @param args command-line arguments
+	 * @param	args	command-line arguments
 	 */
 	public static void main(String[] args)
 	{

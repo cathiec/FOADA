@@ -22,28 +22,21 @@
 
 package exception;
 
-import utility.Console;
-import utility.Console.*;
-
-// general structure for FOADA exception (abstract class)
+// the input file is not supported
 @SuppressWarnings("serial")
-public abstract class FOADAException extends Throwable {
-	
-	public enum ExceptionType {
-		ANTLR4ParseCancellation,
-		InputFileNotFound,
-		InputFileUnsupported,
-		JavaIO,
-		UnknownConsoleOption
-	};
-	
-	public ExceptionType type;
+public class InputFileUnsupportedException extends FOADAException {
 
-	public abstract String getInfo();
+	private String filename;
 	
-	public void printErrorMessage()
+	public InputFileUnsupportedException(String filename)
 	{
-		Console.printError(ConsoleType.FOADA, getInfo());
+		type = ExceptionType.InputFileUnsupported;
+		this.filename = filename;
 	}
-
+	
+	public String getInfo()
+	{
+		return "The input file \"" + filename + "\" is not supported.";
+	}
+	
 }

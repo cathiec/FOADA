@@ -1,4 +1,4 @@
-start: {old>x}() /\ {old>=0}().
+start: forall k. {old>x}() /\ {old>=0}().
 final: none.
 
 {old>x}() --( x++ : i )-> false.

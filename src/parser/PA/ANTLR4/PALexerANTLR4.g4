@@ -1,4 +1,4 @@
-lexer grammar FOADA_Lexer;
+lexer grammar PALexerANTLR4;
 
 options {
     language = Java;
@@ -27,48 +27,40 @@ options {
     If you have any questions, please contact Xiao XU <xiao.xu.cathiec@gmail.com>.
 */
 
-package parser.antlr4_parser.FOADA;
+package parser.PA.ANTLR4;
 }
 
 // key words
-DEFAUTO : 'define-automaton';
-EVENT : 'event';
-VAR : 'var';
-PRED : 'pred';
-INIT : 'init';
+START : 'start';
 FINAL : 'final';
-TRANS : 'trans';
-TRUE : 'true';
+NONE : 'none';
 FALSE : 'false';
-INT : 'Int';
-BOOL : 'Bool';
-EXISTS : 'exists';
+TRUE : 'true';
 FORALL : 'forall';
-NOT : 'not';
-AND : 'and';
-OR : 'or';
-DISTINCT : 'distinct';
+EXISTS : 'exists';
+TL : '--(';
+TR : ')->';
+AND : '/\\';
+OR : '\\/';
+EQUALS : '=';
+DISTINCTS : '!=';
 
 fragment LETTER : 'a' .. 'z' | 'A' .. 'Z';
 fragment DIGIT : '0' .. '9';
 
-ID : (LETTER | '$' | '_')(LETTER | DIGIT | '$' | '_')*;
+ID : (LETTER)(LETTER | DIGIT)*;
 INTEGER : '0' | ('1' .. '9' DIGIT*);
+FUNCNAME : ('{' (~('\n' | '}'))* '}') | ('<' (~('\n' | '>'))* '>');
+SYMBOL : ('[' (~('\n' | ']'))* ']') | ((LETTER | DIGIT | '_' | '+' | '-' | '*' | '/' | '!' | '=' | '>' | '<')+) | '$';
 
 LP : '(';
 RP : ')';
-PLUS : '+';
-MINUS : '-';
-TIMES : '*';
-SLASH : '/';
-GT : '>';
-LT : '<';
-GEQ : '>=';
-LEQ : '<=';
-EQUALS : '=';
+POINT : '.';
+TWOPOINTS : ':';
+COM : ',';
 
 WS : (' ' | '\t' | '\r' | '\n') {skip();};
 
 COMMENT
-: ';' ( ~('\n') )* {skip();}
+: '(*' ( ~('\n') )* '*)' {skip();}
 ;

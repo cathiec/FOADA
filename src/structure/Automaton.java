@@ -20,30 +20,19 @@
     If you have any questions, please contact Xiao XU <xiao.xu.cathiec@gmail.com>.
 */
 
-package exception;
+package structure;
 
-import utility.Console;
-import utility.Console.*;
-
-// general structure for FOADA exception (abstract class)
-@SuppressWarnings("serial")
-public abstract class FOADAException extends Throwable {
+public class Automaton {
 	
-	public enum ExceptionType {
-		ANTLR4ParseCancellation,
-		InputFileNotFound,
-		InputFileUnsupported,
-		JavaIO,
-		UnknownConsoleOption
-	};
 	
-	public ExceptionType type;
-
-	public abstract String getInfo();
 	
-	public void printErrorMessage()
+	/** check if the automaton is empty
+	 * @return	<b> true </b> if the automaton is empty </br>
+	 * 			<b> false </b> if the automaton is not empty
+	 */
+	public boolean isEmpty()
 	{
-		Console.printError(ConsoleType.FOADA, getInfo());
+		return true;
 	}
 
 }

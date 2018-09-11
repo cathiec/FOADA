@@ -1,3 +1,11 @@
+parser grammar PAParserANTLR4;
+
+options {
+    language = Java;
+    tokenVocab = PALexerANTLR4;
+}
+
+@header {
 /*
 	FOADA
     Copyright (C) 2018  Xiao XU & Radu IOSIF
@@ -20,30 +28,64 @@
     If you have any questions, please contact Xiao XU <xiao.xu.cathiec@gmail.com>.
 */
 
-package exception;
+package parser.PA.ANTLR4;
 
-import utility.Console;
-import utility.Console.*;
-
-// general structure for FOADA exception (abstract class)
-@SuppressWarnings("serial")
-public abstract class FOADAException extends Throwable {
-	
-	public enum ExceptionType {
-		ANTLR4ParseCancellation,
-		InputFileNotFound,
-		InputFileUnsupported,
-		JavaIO,
-		UnknownConsoleOption
-	};
-	
-	public ExceptionType type;
-
-	public abstract String getInfo();
-	
-	public void printErrorMessage()
-	{
-		Console.printError(ConsoleType.FOADA, getInfo());
-	}
-
+import java.util.*;
+import exception.*;
+import structure.*;
 }
+
+automaton returns [Automaton tree]
+:
+	START TWOPOINTS expression POINT FINAL TWOPOINTS final_list POINT (transition)* EOF
+;
+
+final_list
+:
+	NONE
+	|
+	(FUNCNAME (COM FUNCNAME)*)
+;
+
+transition
+:
+	FUNCNAME LP argument_list RP TL SYMBOL TWOPOINTS ID TR expression POINT
+;
+
+expression
+:
+	EXISTS ID POINT expression {
+	}
+	|
+	FORALL ID POINT expression {
+	}
+	|
+	FUNCNAME LP argument_list RP {
+	}
+	|
+	ID EQUALS ID {
+	}
+	|
+	ID DISTINCTS ID {
+	}
+	|
+	TRUE {
+	}
+	|
+	FALSE {
+	}
+	|
+	e1=expression AND e2=expression {
+	}
+	|
+	e1=expression OR e2=expression {
+	}
+	|
+	LP expression RP {
+	}
+;
+
+argument_list
+:
+	(ID (COM ID)*)?
+;

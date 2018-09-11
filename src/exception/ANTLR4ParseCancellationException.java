@@ -22,28 +22,30 @@
 
 package exception;
 
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+
 import utility.Console;
-import utility.Console.*;
+import utility.Console.ConsoleType;
 
-// general structure for FOADA exception (abstract class)
 @SuppressWarnings("serial")
-public abstract class FOADAException extends Throwable {
+public class ANTLR4ParseCancellationException extends FOADAException {
 	
-	public enum ExceptionType {
-		ANTLR4ParseCancellation,
-		InputFileNotFound,
-		InputFileUnsupported,
-		JavaIO,
-		UnknownConsoleOption
-	};
+	private ParseCancellationException ANTLR4Exception;
 	
-	public ExceptionType type;
-
-	public abstract String getInfo();
+	public ANTLR4ParseCancellationException(ParseCancellationException ANTLR4Exception)
+	{
+		type = ExceptionType.ANTLR4ParseCancellation;
+		this.ANTLR4Exception = ANTLR4Exception;
+	}
+	
+	public String getInfo()
+	{
+		return ANTLR4Exception.getMessage();
+	}
 	
 	public void printErrorMessage()
 	{
-		Console.printError(ConsoleType.FOADA, getInfo());
+		Console.printError(ConsoleType.ANTLR4, getInfo());
 	}
 
 }
