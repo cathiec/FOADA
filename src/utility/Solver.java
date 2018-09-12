@@ -24,7 +24,6 @@ package utility;
 
 import org.sosy_lab.java_smt.SolverContextFactory;
 import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
-
 import utility.Console.*;
 
 public class Solver {

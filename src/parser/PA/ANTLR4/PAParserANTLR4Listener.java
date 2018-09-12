@@ -27,6 +27,9 @@ package parser.PA.ANTLR4;
 import java.util.*;
 import exception.*;
 import structure.*;
+import structure.FOADAExpression.*;
+import org.sosy_lab.java_smt.api.*;
+
 
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -56,16 +59,6 @@ public interface PAParserANTLR4Listener extends ParseTreeListener {
 	 */
 	void exitFinal_list(PAParserANTLR4.Final_listContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link PAParserANTLR4#transition}.
-	 * @param ctx the parse tree
-	 */
-	void enterTransition(PAParserANTLR4.TransitionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PAParserANTLR4#transition}.
-	 * @param ctx the parse tree
-	 */
-	void exitTransition(PAParserANTLR4.TransitionContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link PAParserANTLR4#expression}.
 	 * @param ctx the parse tree
 	 */
@@ -75,6 +68,46 @@ public interface PAParserANTLR4Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExpression(PAParserANTLR4.ExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PAParserANTLR4#or_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterOr_expression(PAParserANTLR4.Or_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PAParserANTLR4#or_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitOr_expression(PAParserANTLR4.Or_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PAParserANTLR4#and_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterAnd_expression(PAParserANTLR4.And_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PAParserANTLR4#and_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitAnd_expression(PAParserANTLR4.And_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PAParserANTLR4#basic_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterBasic_expression(PAParserANTLR4.Basic_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PAParserANTLR4#basic_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitBasic_expression(PAParserANTLR4.Basic_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PAParserANTLR4#eq_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterEq_expression(PAParserANTLR4.Eq_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PAParserANTLR4#eq_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitEq_expression(PAParserANTLR4.Eq_expressionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PAParserANTLR4#argument_list}.
 	 * @param ctx the parse tree

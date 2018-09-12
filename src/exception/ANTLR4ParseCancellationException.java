@@ -23,7 +23,6 @@
 package exception;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-
 import utility.Console;
 import utility.Console.ConsoleType;
 

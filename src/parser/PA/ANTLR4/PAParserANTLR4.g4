@@ -33,59 +33,159 @@ package parser.PA.ANTLR4;
 import java.util.*;
 import exception.*;
 import structure.*;
+import structure.FOADAExpression.*;
+import org.sosy_lab.java_smt.api.*;
+
 }
 
-automaton returns [Automaton tree]
+automaton returns [Automaton jData]
 :
-	START TWOPOINTS expression POINT FINAL TWOPOINTS final_list POINT (transition)* EOF
+	{
+		$jData = new Automaton("A");
+	}
+	START TWOPOINTS e=expression {
+		$jData.setInitialState($e.jData);
+	}
+	POINT FINAL TWOPOINTS fl=final_list {
+		$jData.setFinalStates($fl.jData);
+	}
+	POINT (FUNCNAME LP al=argument_list RP TL SYMBOL TWOPOINTS ID TR e=expression POINT {
+		$jData.addTransition($FUNCNAME.text, $al.jData, $SYMBOL.text, $ID.text, $e.jData);
+	}
+	)* EOF
 ;
 
-final_list
+final_list returns [List<String> jData]
 :
-	NONE
+	NONE {
+		$jData = new ArrayList<String>();
+	}
 	|
-	(FUNCNAME (COM FUNCNAME)*)
+	FUNCNAME {
+		$jData = new ArrayList<String>();
+		$jData.add($FUNCNAME.text);		
+	}
+	(COM FUNCNAME {
+		$jData.add($FUNCNAME.text);
+	}
+	)*
 ;
 
-transition
+expression returns [FOADAExpression jData]
 :
-	FUNCNAME LP argument_list RP TL SYMBOL TWOPOINTS ID TR expression POINT
+	oe=or_expression {
+		$jData = $oe.jData;
+	}
 ;
 
-expression
+or_expression returns [FOADAExpression jData]
 :
-	EXISTS ID POINT expression {
+	ae1=and_expression {
+		$jData = $ae1.jData;
 	}
-	|
-	FORALL ID POINT expression {
+	(OR ae2=and_expression {
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Or, $ae1.jData, $ae2.jData);
 	}
+	)*
 	|
-	FUNCNAME LP argument_list RP {
+	LP oe=or_expression RP {
+		$jData = $oe.jData;
 	}
-	|
-	ID EQUALS ID {
+;
+
+and_expression returns [FOADAExpression jData]
+:
+	be=basic_expression {
+		$jData = $be.jData;
 	}
-	|
-	ID DISTINCTS ID {
+	(AND oe=or_expression {
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.And, $be.jData, $oe.jData);
 	}
+	)*
 	|
+	LP oe1=or_expression RP {
+		$jData = $oe1.jData;
+	}
+	(AND oe2=or_expression {
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.And, $oe1.jData, $oe2.jData);
+	}
+	)*
+;
+
+basic_expression returns [FOADAExpression jData]
+:
 	TRUE {
+		$jData = new FOADAExpression(true);
 	}
 	|
 	FALSE {
+		$jData = new FOADAExpression(false);
 	}
 	|
-	e1=expression AND e2=expression {
+	EXISTS al=argument_list POINT e=expression {
+		List<FOADAExpression> subExpressions = new ArrayList<FOADAExpression>();
+		for(String s : $al.jData) {
+			FOADAExpression argument = new FOADAExpression(s, ExpressionType.Integer);
+			subExpressions.add(argument);
+		}
+		subExpressions.add($e.jData);
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Exists, subExpressions);
 	}
 	|
-	e1=expression OR e2=expression {
+	FORALL al=argument_list POINT e=expression {
+		List<FOADAExpression> subExpressions = new ArrayList<FOADAExpression>();
+		for(String s : $al.jData) {
+			FOADAExpression argument = new FOADAExpression(s, ExpressionType.Integer);
+			subExpressions.add(argument);
+		}
+		subExpressions.add($e.jData);
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Forall, subExpressions);
 	}
 	|
-	LP expression RP {
+	ee=eq_expression {
+		$jData = $ee.jData;
+	}
+	|
+	FUNCNAME LP al=argument_list RP {
+		List<FOADAExpression> subExpressions = new ArrayList<FOADAExpression>();
+		for(String s : $al.jData) {
+			FOADAExpression argument = new FOADAExpression(s, ExpressionType.Integer);
+			subExpressions.add(argument);
+		}
+		$jData = new FOADAExpression($FUNCNAME.text, ExpressionType.Boolean, subExpressions);
 	}
 ;
 
-argument_list
+eq_expression returns [FOADAExpression jData]
 :
-	(ID (COM ID)*)?
+	i1=ID EQUALS i2=ID {
+		FOADAExpression left = new FOADAExpression($i1.text, ExpressionType.Integer);
+		FOADAExpression right = new FOADAExpression($i2.text, ExpressionType.Integer);
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Equals, left, right);
+	}
+	|
+	i1=ID DISTINCTS i2=ID {
+		FOADAExpression left = new FOADAExpression($i1.text, ExpressionType.Integer);
+		FOADAExpression right = new FOADAExpression($i2.text, ExpressionType.Integer);
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Distincts, left, right);
+	}
+	|
+	LP ee=eq_expression RP {
+		$jData = $ee.jData;
+	}
+;
+
+argument_list returns [List<String> jData]
+:
+	{
+		$jData = new ArrayList<String>();
+	}
+	(i1=ID {
+		$jData.add($i1.text);
+	}
+	(COM i2=ID {
+		$jData.add($i2.text);
+	}
+	)*
+	)?
 ;

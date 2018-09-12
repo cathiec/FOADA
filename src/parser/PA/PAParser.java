@@ -25,7 +25,6 @@ package parser.PA;
 import java.io.*;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.*;
-
 import exception.*;
 import parser.PA.ANTLR4.*;
 import structure.*;
@@ -51,7 +50,7 @@ public class PAParser {
 	        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
 	        Console.printInfo(ConsoleType.ANTLR4, "Syntax checking succeeded...");
 	        istream.close();
-	        return parser.automaton().tree;
+	        return parser.automaton().jData;
 		}
 		catch(ParseCancellationException e) {
 			throw new ANTLR4ParseCancellationException(e);

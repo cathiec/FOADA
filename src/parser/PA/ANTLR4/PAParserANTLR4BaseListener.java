@@ -27,6 +27,9 @@ package parser.PA.ANTLR4;
 import java.util.*;
 import exception.*;
 import structure.*;
+import structure.FOADAExpression.*;
+import org.sosy_lab.java_smt.api.*;
+
 
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -68,18 +71,6 @@ public class PAParserANTLR4BaseListener implements PAParserANTLR4Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTransition(PAParserANTLR4.TransitionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTransition(PAParserANTLR4.TransitionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterExpression(PAParserANTLR4.ExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -87,6 +78,54 @@ public class PAParserANTLR4BaseListener implements PAParserANTLR4Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExpression(PAParserANTLR4.ExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOr_expression(PAParserANTLR4.Or_expressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOr_expression(PAParserANTLR4.Or_expressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAnd_expression(PAParserANTLR4.And_expressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAnd_expression(PAParserANTLR4.And_expressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBasic_expression(PAParserANTLR4.Basic_expressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBasic_expression(PAParserANTLR4.Basic_expressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEq_expression(PAParserANTLR4.Eq_expressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEq_expression(PAParserANTLR4.Eq_expressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

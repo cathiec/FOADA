@@ -23,7 +23,6 @@
 package exception;
 
 import java.io.*;
-
 import utility.Console;
 import utility.Console.ConsoleType;
 
