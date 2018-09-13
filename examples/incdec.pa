@@ -16,6 +16,3 @@ final: none.
 {old>x}() --( $ : i )-> false.
 {old>=x}() --( $ : i )-> true.
 {old>=0}() --( $ : i )-> false.
-
-{old>=0}() --( $ : i )-> false /\ (true \/ false) \/ true.
-{old>=0}() --( [x>0] : i )-> {old>=x}() /\ true \/ {old>=0}() /\ true.

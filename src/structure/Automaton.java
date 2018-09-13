@@ -104,8 +104,8 @@ public class Automaton {
 	 */
 	public void addTransition(String predicate, List<String> listOfArguments, String symbol, String variable, FOADAExpression post)
 	{
-		//System.out.println(predicate + '(' + listOfArguments + ')' + " : " + symbol + '(' + variable + ')' + " => " + post);
-		System.out.println(post.category +  " => " + post);
+		System.out.println(predicate + '(' + listOfArguments + ')' + " : " + symbol + '(' + variable + ')' + " => " + post);
+		//System.out.println(post.category +  " => " + post);
 	}
 	
 	/** rename a predicate and then add it into the set of predicates (do nothing if already added)
