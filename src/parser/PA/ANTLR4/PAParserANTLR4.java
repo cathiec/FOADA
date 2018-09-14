@@ -256,7 +256,9 @@ public class PAParserANTLR4 extends Parser {
 				setState(37);
 				match(POINT);
 
-						_localctx.jData.addTransition((((AutomatonContext)_localctx).FUNCNAME!=null?((AutomatonContext)_localctx).FUNCNAME.getText():null), ((AutomatonContext)_localctx).al.jData, (((AutomatonContext)_localctx).SYMBOL!=null?((AutomatonContext)_localctx).SYMBOL.getText():null), (((AutomatonContext)_localctx).ID!=null?((AutomatonContext)_localctx).ID.getText():null), ((AutomatonContext)_localctx).e.jData);
+						List<String> variablesNames = new ArrayList<String>();
+						variablesNames.add((((AutomatonContext)_localctx).ID!=null?((AutomatonContext)_localctx).ID.getText():null));
+						_localctx.jData.addTransition((((AutomatonContext)_localctx).FUNCNAME!=null?((AutomatonContext)_localctx).FUNCNAME.getText():null), ((AutomatonContext)_localctx).al.jData, (((AutomatonContext)_localctx).SYMBOL!=null?((AutomatonContext)_localctx).SYMBOL.getText():null), variablesNames, ((AutomatonContext)_localctx).e.jData);
 					
 				}
 				}

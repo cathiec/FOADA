@@ -23,6 +23,9 @@
 package structure;
 
 import java.util.*;
+import java.util.Map.Entry;
+
+import structure.FOADAExpression.ExpressionCategory;
 import structure.FOADAExpression.ExpressionType;
 
 public class Automaton {
@@ -100,15 +103,48 @@ public class Automaton {
 	}
 	
 	/** add a transition
-	 * 
+	 * @param	predicate		predicate (left part) in the transition
+	 * @param	listOfArguments	list of arguments of left predicate in the transition
+	 * @param	symbol			event symbol in the transition
+	 * @param	variables		variables' names in the transition
+	 * @param	post			post expression (right part) in the transition
 	 */
-	public void addTransition(String predicate, List<String> listOfArguments, String symbol, String variable, FOADAExpression post)
+	public void addTransition(String predicate, List<String> listOfArguments, String eventSymbol, List<String> variables, FOADAExpression post)
 	{
-		System.out.println(predicate + '(' + listOfArguments + ')' + " : " + symbol + '(' + variable + ')' + " => " + post);
-		//System.out.println(post.category +  " => " + post);
+		// rename predicates
+		List<String> predicatesToBeRenamed = new ArrayList<String>();
+		predicatesToBeRenamed.add(predicate);
+		predicatesToBeRenamed.addAll(post.getFreeVariables());
+		for(String s : predicatesToBeRenamed) {
+			addPredicate(s);
+			post.substitue(s, renameMap.get(s));
+		}
+		// rename event symbols
+		addEventSymbol(eventSymbol);
+		// rename variables
+		int i = 0;
+		for(String s : variables) {
+			post.substitue(s, "v" + i);
+			i++;
+		}
+		// add transition
+		if(listOfArguments.size() > 0) {
+			List<FOADAExpression> subDataForall = new ArrayList<FOADAExpression>();
+			for(String s : listOfArguments) {
+				FOADAExpression argument = new FOADAExpression(s, ExpressionType.Integer);
+				subDataForall.add(argument);
+			}
+			subDataForall.add(post);
+			FOADAExpression postWithForall = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Forall, subDataForall);
+			transitions.put(renameMap.get(predicate) + '+' + renameMap.get(eventSymbol), postWithForall);
+		}
+		else {
+			transitions.put(renameMap.get(predicate) + '+' + renameMap.get(eventSymbol), post);
+		}
 	}
 	
 	/** rename a predicate and then add it into the set of predicates (do nothing if already added)
+	 * @param	predicate	name of the predicate
 	 */
 	public void addPredicate(String predicate)
 	{
@@ -116,6 +152,18 @@ public class Automaton {
 			String newName = "q" + predicates.size();
 			renameMap.put(predicate, newName);
 			predicates.add(newName);
+		}
+	}
+	
+	/** rename a event symbol and then add it into the set of event symbols (do nothing if already added)
+	 * @param	eventSymbol	name of the event symbol
+	 */
+	public void addEventSymbol(String eventSymbol)
+	{
+		if(!renameMap.containsKey(eventSymbol)) {
+			String newName = "s" + eventSymbols.size();
+			renameMap.put(eventSymbol, newName);
+			eventSymbols.add(newName);
 		}
 	}
 	
@@ -128,6 +176,9 @@ public class Automaton {
 		System.out.println(name);
 		System.out.println(initialState);
 		System.out.println(finalStates);
+		for(Entry<String, FOADAExpression> e : transitions.entrySet()) {
+			System.out.println(e.getKey() + " : " + e.getValue() );
+		}
 		return true;
 	}
 

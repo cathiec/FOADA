@@ -23,6 +23,7 @@
 package structure;
 
 import java.util.*;
+import org.sosy_lab.java_smt.api.*;
 
 public class FOADAExpression {
 	
@@ -184,12 +185,114 @@ public class FOADAExpression {
 	
 	// utilities
 	
+	/** replace a part of the expression
+	 * @param	from	the part to be replaced
+	 * @param	to		used to replace the part
+	 */
+	public void substitue(String from, String to)
+	{
+		switch(category)
+		{
+		case Constant:	break;
+		case Function:	if(name.equals(from)) {
+							name = to;
+						}
+						for(FOADAExpression e : subData) {
+							e.substitue(from, to);
+						}
+						break;
+		case Exists:	subData.get(subData.size() - 1).substitue(from, to);
+						break;
+		case Forall:	subData.get(subData.size() - 1).substitue(from, to);
+						break;
+		case And:		for(FOADAExpression e : subData) {
+							e.substitue(from, to);
+						}
+						break;
+		case Or:		for(FOADAExpression e : subData) {
+							e.substitue(from, to);
+						}
+						break;
+		case Equals:	subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case Distincts:	subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		}
+	}
+	
+	/** get all free variables in the expression
+	 */
+	public List<String> getFreeVariables()
+	{
+		List<String> freeVariables = new ArrayList<String>();
+		switch(category)
+		{
+		case Constant:	break;
+		case Function:	if(type == ExpressionType.Boolean) {
+							freeVariables.add(name);
+						}
+						break;
+		case Exists:	freeVariables.addAll(subData.get(subData.size() - 1).getFreeVariables());
+						break;
+		case Forall:	freeVariables.addAll(subData.get(subData.size() - 1).getFreeVariables());
+						break;
+		case And:		for(FOADAExpression e : subData) {
+							freeVariables.addAll(e.getFreeVariables());
+						}
+						break;
+		case Or:		for(FOADAExpression e : subData) {
+							freeVariables.addAll(e.getFreeVariables());
+						}
+						break;
+		case Equals:	freeVariables.addAll(subData.get(0).getFreeVariables());
+						freeVariables.addAll(subData.get(1).getFreeVariables());
+						break;
+		case Distincts:	freeVariables.addAll(subData.get(0).getFreeVariables());
+						freeVariables.addAll(subData.get(1).getFreeVariables());
+						break;
+		}
+		return freeVariables;
+	}
+	
 	/** deep copy
 	 */
 	public FOADAExpression copy()
 	{
 		FOADAExpression copy = new FOADAExpression(this);
 		return copy;
+	}
+	
+	
+	/** to JavaSMT Formula
+	 * @param	fmgr	corresponding JavaSMT FormulaManager
+	 */
+	public Formula toJavaSMTFormula(FormulaManager fmgr)
+	{
+		switch(category)
+		{
+		case Constant:	if(type == ExpressionType.Integer) {
+							return fmgr.getIntegerFormulaManager().makeNumber(iValue);
+						}
+						else {
+							return fmgr.getBooleanFormulaManager().makeBoolean(bValue);
+						}
+		case Function:	// to do
+						// ******************
+						// ******************
+						// ******************
+						// ******************
+						// ******************
+						return null;
+		case Exists:	return null;
+		case Forall:	return null;
+		case And:		return null;
+		case Or:		return null;
+		case Equals:	return null;
+		case Distincts:	return null;
+		/* never reach here */ default: return null;
+		}
 	}
 	
 	/** to string

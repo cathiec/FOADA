@@ -50,7 +50,9 @@ automaton returns [Automaton jData]
 		$jData.setFinalStates($fl.jData);
 	}
 	POINT (FUNCNAME LP al=argument_list RP TL SYMBOL TWOPOINTS ID TR e=expression POINT {
-		$jData.addTransition($FUNCNAME.text, $al.jData, $SYMBOL.text, $ID.text, $e.jData);
+		List<String> variablesNames = new ArrayList<String>();
+		variablesNames.add($ID.text);
+		$jData.addTransition($FUNCNAME.text, $al.jData, $SYMBOL.text, variablesNames, $e.jData);
 	}
 	)* EOF
 ;
