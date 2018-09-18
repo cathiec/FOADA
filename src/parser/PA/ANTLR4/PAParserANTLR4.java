@@ -24,12 +24,14 @@
 
 package parser.PA.ANTLR4;
 
-import java.util.*;
-import exception.*;
-import structure.*;
-import structure.FOADAExpression.*;
-import org.sosy_lab.java_smt.api.*;
-
+import exception.FOADAException;
+import structure.Automaton;
+import structure.FOADAExpression;
+import structure.FOADAExpression.ExpressionCategory;
+import structure.FOADAExpression.ExpressionType;
+import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -195,7 +197,7 @@ public class PAParserANTLR4 extends Parser {
 		}
 	}
 
-	public final AutomatonContext automaton() throws RecognitionException {
+	public final AutomatonContext automaton() throws RecognitionException, FOADAException {
 		AutomatonContext _localctx = new AutomatonContext(_ctx, getState());
 		enterRule(_localctx, 0, RULE_automaton);
 		int _la;
@@ -256,9 +258,15 @@ public class PAParserANTLR4 extends Parser {
 				setState(37);
 				match(POINT);
 
-						List<String> variablesNames = new ArrayList<String>();
-						variablesNames.add((((AutomatonContext)_localctx).ID!=null?((AutomatonContext)_localctx).ID.getText():null));
-						_localctx.jData.addTransition((((AutomatonContext)_localctx).FUNCNAME!=null?((AutomatonContext)_localctx).FUNCNAME.getText():null), ((AutomatonContext)_localctx).al.jData, (((AutomatonContext)_localctx).SYMBOL!=null?((AutomatonContext)_localctx).SYMBOL.getText():null), variablesNames, ((AutomatonContext)_localctx).e.jData);
+						List<String> variables = new ArrayList<String>();
+						variables.add((((AutomatonContext)_localctx).ID!=null?((AutomatonContext)_localctx).ID.getText():null));
+						List<ExpressionType> variablesTypes = new ArrayList<ExpressionType>();
+						variablesTypes.add(ExpressionType.Integer);
+						List<ExpressionType> argumentsTypes = new ArrayList<ExpressionType>();
+						for(String s : ((AutomatonContext)_localctx).al.jData) {
+							argumentsTypes.add(ExpressionType.Integer);
+						}
+						_localctx.jData.addTransition((((AutomatonContext)_localctx).FUNCNAME!=null?((AutomatonContext)_localctx).FUNCNAME.getText():null), ((AutomatonContext)_localctx).al.jData, argumentsTypes, (((AutomatonContext)_localctx).SYMBOL!=null?((AutomatonContext)_localctx).SYMBOL.getText():null), variables, variablesTypes, ((AutomatonContext)_localctx).e.jData);
 					
 				}
 				}

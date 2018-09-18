@@ -22,7 +22,8 @@
 
 package parser;
 
-import exception.*;
+import exception.FOADAException;
+import exception.InputFileUnsupportedException;
 import utility.Console;
 import utility.Console.ConsoleType;
 

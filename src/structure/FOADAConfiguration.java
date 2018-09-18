@@ -22,7 +22,9 @@
 
 package structure;
 
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.sosy_lab.java_smt.api.BooleanFormula;
 
 public class FOADAConfiguration {
@@ -38,5 +40,64 @@ public class FOADAConfiguration {
 	/** set of all free variables in the expression
 	 */
 	public List<String> freeVariables;
+	
+	/** father node
+	 */
+	public FOADAConfiguration father;
+	
+	/** father symbol
+	 */
+	public String fatherSymbol;
+	
+	/** successors
+	 */
+	public List<FOADAConfiguration> successors;
+	
+	/** default constructor
+	 * @param	expression		given expression in the configuration
+	 * @param	timeStamp		given time-stamp of the configuration
+	 * @param	freeVariables	given set of all free variables in the expression
+	 * @param	father			given father node of the current configuration node
+	 */
+	public FOADAConfiguration(BooleanFormula expression, int timeStamp, List<String> freeVariables, FOADAConfiguration father, String fatherSymbol)
+	{
+		this.expression = expression;
+		this.timeStamp = timeStamp;
+		this.freeVariables = new ArrayList<String>();
+		this.freeVariables.addAll(freeVariables);
+		this.father = father;
+		this.fatherSymbol = fatherSymbol;
+	}
+	
+	/** copy constructor
+	 */
+	public FOADAConfiguration(FOADAConfiguration configuration)
+	{
+		expression = configuration.expression;
+		timeStamp = configuration.timeStamp;
+		freeVariables = new ArrayList<String>();
+		freeVariables.addAll(configuration.freeVariables);
+		father = configuration.father;
+		fatherSymbol = configuration.fatherSymbol;
+		successors = new ArrayList<FOADAConfiguration>();
+		for(FOADAConfiguration c : configuration.successors) {
+			successors.add(c.copy());
+		}
+	}
+	
+	/** deep copy
+	 */
+	public FOADAConfiguration copy()
+	{
+		FOADAConfiguration copy = new FOADAConfiguration(this);
+		return copy;
+	}
+	
+	/** to string
+	 */
+	public String toString()
+	{
+		return "#" + timeStamp + ' ' + expression + " {FV" + freeVariables + "}";
+	}
 
 }

@@ -30,12 +30,14 @@ options {
 
 package parser.PA.ANTLR4;
 
-import java.util.*;
-import exception.*;
-import structure.*;
-import structure.FOADAExpression.*;
-import org.sosy_lab.java_smt.api.*;
-
+import exception.FOADAException;
+import structure.Automaton;
+import structure.FOADAExpression;
+import structure.FOADAExpression.ExpressionCategory;
+import structure.FOADAExpression.ExpressionType;
+import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 }
 
 automaton returns [Automaton jData]
@@ -50,9 +52,15 @@ automaton returns [Automaton jData]
 		$jData.setFinalStates($fl.jData);
 	}
 	POINT (FUNCNAME LP al=argument_list RP TL SYMBOL TWOPOINTS ID TR e=expression POINT {
-		List<String> variablesNames = new ArrayList<String>();
-		variablesNames.add($ID.text);
-		$jData.addTransition($FUNCNAME.text, $al.jData, $SYMBOL.text, variablesNames, $e.jData);
+		List<String> variables = new ArrayList<String>();
+		variables.add($ID.text);
+		List<ExpressionType> variablesTypes = new ArrayList<ExpressionType>();
+		variablesTypes.add(ExpressionType.Integer);
+		List<ExpressionType> argumentsTypes = new ArrayList<ExpressionType>();
+		for(String s : $al.jData) {
+			argumentsTypes.add(ExpressionType.Integer);
+		}
+		$jData.addTransition($FUNCNAME.text, $al.jData, argumentsTypes, $SYMBOL.text, variables, variablesTypes, $e.jData);
 	}
 	)* EOF
 ;

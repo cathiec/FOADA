@@ -34,6 +34,7 @@ public abstract class FOADAException extends Throwable {
 		InputFileNotFound,
 		InputFileUnsupported,
 		JavaIO,
+		JavaSMTInvalidConfiguration,
 		UnknownConsoleOption
 	};
 	

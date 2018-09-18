@@ -22,14 +22,22 @@
 
 package parser.PA;
 
-import java.io.*;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
-import exception.*;
-import parser.PA.ANTLR4.*;
-import structure.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import exception.ANTLR4ParseCancellationException;
+import exception.FOADAException;
+import exception.InputFileNotFoundException;
+import exception.JavaIOException;
+import parser.PA.ANTLR4.PALexerANTLR4;
+import parser.PA.ANTLR4.PAParserANTLR4;
+import structure.Automaton;
 import utility.Console;
-import utility.Console.*;
+import utility.Console.ConsoleType;
 
 @SuppressWarnings("deprecation")
 public class PAParser {

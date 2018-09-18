@@ -24,14 +24,6 @@
 
 package parser.PA.ANTLR4;
 
-import java.util.*;
-import exception.*;
-import structure.*;
-import structure.FOADAExpression.*;
-import org.sosy_lab.java_smt.api.*;
-
-
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;

@@ -22,13 +22,17 @@
 
 package app;
 
-import exception.*;
+import exception.FOADAException;
+import exception.InputFileNotFoundException;
+import exception.InputFileUnsupportedException;
+import exception.UnknownConsoleOptionException;
 import parser.Parser;
 import parser.Parser.ParserType;
 import parser.PA.PAParser;
-import structure.*;
-import utility.*;
-import utility.Console.*;
+import structure.Automaton;
+import utility.Console;
+import utility.Console.ConsoleType;
+import utility.Solver;
 
 public class FOADA {
 	

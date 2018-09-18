@@ -22,8 +22,13 @@
 
 package structure;
 
-import java.util.*;
-import org.sosy_lab.java_smt.api.*;
+import java.util.ArrayList;
+import java.util.List;
+import org.sosy_lab.java_smt.api.BooleanFormula;
+import org.sosy_lab.java_smt.api.Formula;
+import org.sosy_lab.java_smt.api.FormulaManager;
+import org.sosy_lab.java_smt.api.FormulaType;
+import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 
 public class FOADAExpression {
 	
@@ -37,6 +42,7 @@ public class FOADAExpression {
 		Function,
 		Exists,
 		Forall,
+		Not,
 		And,
 		Or,
 		Equals,
@@ -205,6 +211,8 @@ public class FOADAExpression {
 						break;
 		case Forall:	subData.get(subData.size() - 1).substitue(from, to);
 						break;
+		case Not:		subData.get(subData.size() - 1).substitue(from, to);
+						break;
 		case And:		for(FOADAExpression e : subData) {
 							e.substitue(from, to);
 						}
@@ -238,6 +246,8 @@ public class FOADAExpression {
 						break;
 		case Forall:	freeVariables.addAll(subData.get(subData.size() - 1).getFreeVariables());
 						break;
+		case Not:		freeVariables.addAll(subData.get(subData.size() - 1).getFreeVariables());
+						break;	
 		case And:		for(FOADAExpression e : subData) {
 							freeVariables.addAll(e.getFreeVariables());
 						}
@@ -278,19 +288,49 @@ public class FOADAExpression {
 						else {
 							return fmgr.getBooleanFormulaManager().makeBoolean(bValue);
 						}
-		case Function:	// to do
-						// ******************
-						// ******************
-						// ******************
-						// ******************
-						// ******************
-						return null;
-		case Exists:	return null;
-		case Forall:	return null;
-		case And:		return null;
-		case Or:		return null;
-		case Equals:	return null;
-		case Distincts:	return null;
+		case Function:	List<Formula> argumentsIntoJavaSMT = new ArrayList<Formula>();
+						for(FOADAExpression e : subData) {
+							argumentsIntoJavaSMT.add(e.toJavaSMTFormula(fmgr));
+						}
+						if(type == ExpressionType.Integer) {
+							return fmgr.getUFManager().declareAndCallUF(name, FormulaType.IntegerType, argumentsIntoJavaSMT);
+						}
+						else {
+							return fmgr.getUFManager().declareAndCallUF(name, FormulaType.BooleanType, argumentsIntoJavaSMT);
+						}
+		case Exists:	List<Formula> quantifiedVariables1 = new ArrayList<Formula>();
+						for(int i = 0; i < subData.size() - 1; i++) {
+							quantifiedVariables1.add(subData.get(i).toJavaSMTFormula(fmgr));
+						}
+						return fmgr.getQuantifiedFormulaManager().exists(quantifiedVariables1, (BooleanFormula)subData.get(subData.size() - 1).toJavaSMTFormula(fmgr));
+		case Forall:	List<Formula> quantifiedVariables2 = new ArrayList<Formula>();
+						for(int i = 0; i < subData.size() - 1; i++) {
+							quantifiedVariables2.add(subData.get(i).toJavaSMTFormula(fmgr));
+						}
+						return fmgr.getQuantifiedFormulaManager().forall(quantifiedVariables2, (BooleanFormula)subData.get(subData.size() - 1).toJavaSMTFormula(fmgr));
+		case Not:		return fmgr.getBooleanFormulaManager().not((BooleanFormula)subData.get(0).toJavaSMTFormula(fmgr));
+		case And:		List<BooleanFormula> subDataIntoJavaSMT1 = new ArrayList<BooleanFormula>();
+						for(FOADAExpression e : subData) {
+							subDataIntoJavaSMT1.add((BooleanFormula)e.toJavaSMTFormula(fmgr));
+						}
+						return fmgr.getBooleanFormulaManager().and(subDataIntoJavaSMT1);
+		case Or:		List<BooleanFormula> subDataIntoJavaSMT2 = new ArrayList<BooleanFormula>();
+						for(FOADAExpression e : subData) {
+							subDataIntoJavaSMT2.add((BooleanFormula)e.toJavaSMTFormula(fmgr));
+						}
+						return fmgr.getBooleanFormulaManager().or(subDataIntoJavaSMT2);
+		case Equals:	if(subData.get(0).type == ExpressionType.Integer) {
+							return fmgr.getIntegerFormulaManager().equal((IntegerFormula)subData.get(0).toJavaSMTFormula(fmgr), (IntegerFormula)subData.get(1).toJavaSMTFormula(fmgr));
+						}
+						else {
+							return fmgr.getBooleanFormulaManager().equivalence((BooleanFormula)subData.get(0).toJavaSMTFormula(fmgr), (BooleanFormula)subData.get(1).toJavaSMTFormula(fmgr));
+						}
+		case Distincts:	if(subData.get(0).type == ExpressionType.Integer) {
+							return fmgr.getBooleanFormulaManager().not(fmgr.getIntegerFormulaManager().equal((IntegerFormula)subData.get(0).toJavaSMTFormula(fmgr), (IntegerFormula)subData.get(1).toJavaSMTFormula(fmgr)));
+						}
+						else {
+							return fmgr.getBooleanFormulaManager().xor((BooleanFormula)subData.get(0).toJavaSMTFormula(fmgr), (BooleanFormula)subData.get(1).toJavaSMTFormula(fmgr));
+						}
 		/* never reach here */ default: return null;
 		}
 	}
@@ -321,13 +361,15 @@ public class FOADAExpression {
 						for(int i = 0; i < subData.size() - 1; i++) {
 							resultString = resultString + subData.get(i).toString() + ' ';
 						}
-						resultString = resultString + ". " + subData.get(subData.size() - 1);
+						resultString = resultString + ". " + subData.get(subData.size() - 1).toString();
 						return resultString;
 		case Forall:	resultString = resultString + "forall ";
 						for(int i = 0; i < subData.size() - 1; i++) {
 							resultString = resultString + subData.get(i).toString() + ' ';
 						}
-						resultString = resultString + ". " + subData.get(subData.size() - 1);
+						resultString = resultString + ". " + subData.get(subData.size() - 1).toString();
+						return resultString;
+		case Not:		resultString = resultString + "!(" + subData.get(0).toString() + ')';
 						return resultString;
 		case And:		for(int i = 0; i < subData.size(); i++) {
 							ExpressionCategory subCategory = subData.get(i).category;

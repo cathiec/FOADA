@@ -22,10 +22,28 @@
 
 package structure;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import org.sosy_lab.common.configuration.InvalidConfigurationException;
+import org.sosy_lab.java_smt.SolverContextFactory;
+import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
+import org.sosy_lab.java_smt.api.BooleanFormula;
+import org.sosy_lab.java_smt.api.BooleanFormulaManager;
+import org.sosy_lab.java_smt.api.Formula;
+import org.sosy_lab.java_smt.api.FormulaManager;
+import org.sosy_lab.java_smt.api.FormulaType;
+import org.sosy_lab.java_smt.api.IntegerFormulaManager;
+import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
+import org.sosy_lab.java_smt.api.QuantifiedFormulaManager;
+import org.sosy_lab.java_smt.api.SolverContext;
+import org.sosy_lab.java_smt.api.UFManager;
+import org.sosy_lab.java_smt.api.visitors.FormulaVisitor;
 
-import structure.FOADAExpression.ExpressionCategory;
+import exception.FOADAException;
+import exception.JavaSMTInvalidConfigurationException;
 import structure.FOADAExpression.ExpressionType;
 
 public class Automaton {
@@ -70,10 +88,21 @@ public class Automaton {
 	 */
 	private Map<String, FOADAExpression> transitions;
 	
+	/** solver context
+	 */
+	private SolverContext solverContext;
+	private FormulaManager fmgr;
+	private BooleanFormulaManager bmgr;
+	private IntegerFormulaManager imgr;
+	private QuantifiedFormulaManager qmgr;
+	private UFManager ufmgr;
+	
 	/** default constructor
 	 * @param	name	name of the automaton
+	 * @throws	InvalidConfigurationException 
 	 */
 	public Automaton(String name)
+			throws FOADAException
 	{
 		this.name = name;
 		renameMap = new LinkedHashMap<String, String>();
@@ -81,9 +110,22 @@ public class Automaton {
 		variables = new ArrayList<String>();
 		variableTypeMap = new LinkedHashMap<String, ExpressionType>();
 		predicates = new ArrayList<String>();
+		predicateArgumentsTypesMap = new LinkedHashMap<String, List<ExpressionType>>();
 		initialState = null;
 		finalStates = new ArrayList<String>();
 		transitions = new LinkedHashMap<String, FOADAExpression>();
+		try {
+			solverContext = SolverContextFactory.createSolverContext(Solvers.Z3);
+			fmgr = solverContext.getFormulaManager();
+			bmgr = fmgr.getBooleanFormulaManager();
+			imgr = fmgr.getIntegerFormulaManager();
+			qmgr = fmgr.getQuantifiedFormulaManager();
+			ufmgr = fmgr.getUFManager();
+		}
+		catch(InvalidConfigurationException e)
+		{
+			throw new JavaSMTInvalidConfigurationException(e);
+		}
 	}
 	
 	/** set initial state
@@ -109,7 +151,7 @@ public class Automaton {
 	 * @param	variables		variables' names in the transition
 	 * @param	post			post expression (right part) in the transition
 	 */
-	public void addTransition(String predicate, List<String> listOfArguments, String eventSymbol, List<String> variables, FOADAExpression post)
+	public void addTransition(String predicate, List<String> arguments, List<ExpressionType> argumentsTypes, String eventSymbol, List<String> variables, List<ExpressionType> variablesTypes, FOADAExpression post)
 	{
 		// rename predicates
 		List<String> predicatesToBeRenamed = new ArrayList<String>();
@@ -121,26 +163,25 @@ public class Automaton {
 		}
 		// rename event symbols
 		addEventSymbol(eventSymbol);
-		// rename variables
-		int i = 0;
-		for(String s : variables) {
-			post.substitue(s, "v" + i);
-			i++;
+		// rename variables and add variables and their types
+		for(int i = 0; i < variables.size(); i++) {
+			if(this.variables.isEmpty()) {
+				this.variables.add("v" + i);
+				variableTypeMap.put("v" + i, variablesTypes.get(i));
+			}
+			post.substitue(variables.get(i), "v" + i);
+		}
+		// rename arguments of predicates
+		for(int i = 0; i < arguments.size(); i++) {
+			post.substitue(arguments.get(i), "a" + i);
+		}
+		// add predicate and its arguments' types into map
+		String newName = renameMap.get(predicate);
+		if(!predicateArgumentsTypesMap.containsKey(newName)) {
+			predicateArgumentsTypesMap.put(newName, argumentsTypes);
 		}
 		// add transition
-		if(listOfArguments.size() > 0) {
-			List<FOADAExpression> subDataForall = new ArrayList<FOADAExpression>();
-			for(String s : listOfArguments) {
-				FOADAExpression argument = new FOADAExpression(s, ExpressionType.Integer);
-				subDataForall.add(argument);
-			}
-			subDataForall.add(post);
-			FOADAExpression postWithForall = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Forall, subDataForall);
-			transitions.put(renameMap.get(predicate) + '+' + renameMap.get(eventSymbol), postWithForall);
-		}
-		else {
-			transitions.put(renameMap.get(predicate) + '+' + renameMap.get(eventSymbol), post);
-		}
+		transitions.put(renameMap.get(predicate) + '+' + renameMap.get(eventSymbol), post);
 	}
 	
 	/** rename a predicate and then add it into the set of predicates (do nothing if already added)
@@ -152,6 +193,12 @@ public class Automaton {
 			String newName = "q" + predicates.size();
 			renameMap.put(predicate, newName);
 			predicates.add(newName);
+			initialState.substitue(predicate, newName);
+			for(int i = 0; i < finalStates.size(); i++) {
+				if(finalStates.get(i).equals(predicate)) {
+					finalStates.set(i, newName);
+				}
+			}
 		}
 	}
 	
@@ -167,17 +214,82 @@ public class Automaton {
 		}
 	}
 	
+	public BooleanFormula addTimeStamp(BooleanFormula expression, int timeStamp, List<String> freeVariables)
+	{
+		Map<Formula, Formula> fromToMapping = new LinkedHashMap<Formula, Formula>();
+		for(String s : variables) {
+			if(variableTypeMap.get(s) == ExpressionType.Integer) {
+				fromToMapping.put(imgr.makeVariable(s), imgr.makeVariable(s + '_' + timeStamp));
+			}
+			else {
+				fromToMapping.put(bmgr.makeVariable(s), bmgr.makeVariable(s + '_' + timeStamp));
+			}
+		}
+		for(String s : freeVariables) {
+		}
+		return fmgr.substitute(expression, fromToMapping);
+	}
+	
 	/** check if the automaton is empty
 	 * @return	<b> true </b> if the automaton is empty </br>
 	 * 			<b> false </b> if the automaton is not empty
 	 */
 	public boolean isEmpty()
-	{
-		System.out.println(name);
-		System.out.println(initialState);
-		System.out.println(finalStates);
+	{	
+		/*System.out.println("Automaton " + name);
+		for(String s : variables) {
+			System.out.println(s + " : " + variableTypeMap.get(s));
+		}
+		for(String s : predicates) {
+			System.out.println(s + " : " + predicateArgumentsTypesMap.get(s));
+		}
 		for(Entry<String, FOADAExpression> e : transitions.entrySet()) {
-			System.out.println(e.getKey() + " : " + e.getValue() );
+			System.out.println(e.getKey() + " : " + e.getValue().toJavaSMTFormula(fmgr));
+		}*/
+	// start with the initial state
+		// create node(configuration) for the initial state
+		FOADAConfiguration initialConfiguration = new FOADAConfiguration((BooleanFormula)initialState.toJavaSMTFormula(fmgr), 0, initialState.getFreeVariables(), null, null);
+	// start working with workList
+		// create workList
+		List<FOADAConfiguration> workList = new ArrayList<FOADAConfiguration>();
+		// add the initial node(configuration) into workList
+		workList.add(initialConfiguration);
+		// looped working with workList until it becomes empty
+		while(!workList.isEmpty()) {
+		// pick the currentNode
+			// pick the first node of workList
+			FOADAConfiguration currentNode = workList.get(0);
+			/***************/ System.out.println(currentNode);
+			// remove the first node from workList
+			workList.remove(0);
+		// calculate the path from the initial node to the currentNode
+			// create a new list for symbols along the path
+			List<String> pathFromInitialToCurrent = new ArrayList<String>();
+			// create "c" for the loop and initialize it to currentNode
+			FOADAConfiguration c = currentNode;
+			// looped working for finding the path (end if father node is null)
+			while(c.fatherSymbol != null) {
+				// add the father symbol in the beginning (position index = 0) of the list
+				pathFromInitialToCurrent.add(0, c.fatherSymbol);
+				// set "c" to the father node(configuration)
+				c = c.father;
+			}
+			/***************/ System.out.println("\t path : " + pathFromInitialToCurrent);
+		// determine whether currentNode is accepted
+			// create a new list for blocks of time-stamped conjunctions in the path formula
+			List<BooleanFormula> blocks = new ArrayList<BooleanFormula>();
+			// make the initial state time-stamped
+			IntegerFormula v0 = ufmgr.declareAndCallUF("v0", FormulaType.IntegerType);
+			BooleanFormula q2v0 = ufmgr.declareAndCallUF("q2", FormulaType.BooleanType, v0);
+			BooleanFormula q1 = ufmgr.declareAndCallUF("q1", FormulaType.BooleanType);
+			BooleanFormula expression = bmgr.and(q1, q2v0);
+			Map<Formula, Formula> fromToMapping = new LinkedHashMap<Formula, Formula>();
+			fromToMapping.put(ufmgr.declareAndCallUF("q1", FormulaType.BooleanType), bmgr.makeVariable("q1_0"));
+			fromToMapping.put(ufmgr.declareAndCallUF("q2", FormulaType.BooleanType), bmgr.makeVariable("q2_0"));
+			BooleanFormula result = fmgr.substitute(expression, fromToMapping);
+			System.out.println(result);
+			//System.out.println(fmgr.extractVariablesAndUFs(expression));
+			//System.out.println(addTimeStamp(initialConfiguration.expression, 1, initialConfiguration.freeVariables));
 		}
 		return true;
 	}
