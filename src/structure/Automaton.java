@@ -279,15 +279,18 @@ public class Automaton {
 			// create a new list for blocks of time-stamped conjunctions in the path formula
 			List<BooleanFormula> blocks = new ArrayList<BooleanFormula>();
 			// make the initial state time-stamped
-			IntegerFormula v0 = ufmgr.declareAndCallUF("v0", FormulaType.IntegerType);
+			/*IntegerFormula v0 = ufmgr.declareAndCallUF("v0", FormulaType.IntegerType);
 			BooleanFormula q2v0 = ufmgr.declareAndCallUF("q2", FormulaType.BooleanType, v0);
 			BooleanFormula q1 = ufmgr.declareAndCallUF("q1", FormulaType.BooleanType);
 			BooleanFormula expression = bmgr.and(q1, q2v0);
 			Map<Formula, Formula> fromToMapping = new LinkedHashMap<Formula, Formula>();
 			fromToMapping.put(ufmgr.declareAndCallUF("q1", FormulaType.BooleanType), bmgr.makeVariable("q1_0"));
-			fromToMapping.put(ufmgr.declareAndCallUF("q2", FormulaType.BooleanType), bmgr.makeVariable("q2_0"));
-			BooleanFormula result = fmgr.substitute(expression, fromToMapping);
-			System.out.println(result);
+			fromToMapping.put(ufmgr.declareAndCallUF("q2", FormulaType.BooleanType), bmgr.makeVariable("q2_0"));*/
+			IntegerFormula v = ufmgr.declareAndCallUF("v", FormulaType.IntegerType);
+			BooleanFormula q = ufmgr.declareAndCallUF("q", FormulaType.BooleanType, v);
+			fmgr.extractVariablesAndUFs(q);
+			//BooleanFormula result = fmgr.substitute(expression, fromToMapping);
+			//System.out.println(result);
 			//System.out.println(fmgr.extractVariablesAndUFs(expression));
 			//System.out.println(addTimeStamp(initialConfiguration.expression, 1, initialConfiguration.freeVariables));
 		}

@@ -1,6 +1,6 @@
 # FOADA
 
-Java tool for First Order Alternating Data Automata.
+Java tool for First Order Alternating Data Automata based on [JavaSMT](https://github.com/sosy-lab/java-smt).
 
 ## Author
 Xiao XU(xiao.xu.cathiec@gmail.com) & Radu IOSIF(radu.iosif@univ-grenoble-alpes.fr)
@@ -18,4 +18,8 @@ A higher or lower version would cause problems with [JavaSMT](https://github.com
 1. Open terminal and go to the project folder.
 2. Type ``` sudo make uninstall ``` to remove the tool from your computer.
 
-## Quickstart
+## Installation Check
+### Check Main Program of the Tool
+Type ``` foada ``` to check if main program of the tool is successfully installed (the version number and a list of options will show).
+### Check JavaSMT-Integrated Solvers
+Type ``` foada -c ``` to check if the solvers are successfully integrated with [JavaSMT](https://github.com/sosy-lab/java-smt).
