@@ -11,9 +11,6 @@ JavaSE 1.8 is the best version for FOADA. A higher/lower version would cause pro
 ## Installation
 1. Download/Clone the project "[FOADA](https://github.com/cathiec/FOADA)" from [GitHub](https://github.com).
 2. Open terminal and go to the project folder.
-3. Type:
-```
-sudo make install
-```
+3. Type ``` sudo make install ``` to finish the installation of the tool.
 
 ## Quickstart
