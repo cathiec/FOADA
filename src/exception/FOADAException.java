@@ -33,6 +33,7 @@ public abstract class FOADAException extends Throwable {
 		ANTLR4ParseCancellation,
 		InputFileNotFound,
 		InputFileUnsupported,
+		InterpolatingProverEnvironment,
 		JavaIO,
 		JavaSMTInvalidConfiguration,
 		UnknownConsoleOption

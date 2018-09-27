@@ -22,8 +22,8 @@
 
 package exception;
 
-import org.sosy_lab.common.configuration.*;
 
+import org.sosy_lab.common.configuration.InvalidConfigurationException;
 import utility.Console;
 import utility.Console.ConsoleType;
 

@@ -29,17 +29,13 @@ import org.sosy_lab.java_smt.api.BooleanFormula;
 
 public class FOADAConfiguration {
 	
+	/** configuration number
+	 */
+	public int number;
+	
 	/** expression in the configuration
 	 */
 	public BooleanFormula expression;
-	
-	/** time-stamp of the configuration
-	 */
-	public int timeStamp;
-	
-	/** set of all free variables in the expression
-	 */
-	public List<String> freeVariables;
 	
 	/** father node
 	 */
@@ -55,16 +51,13 @@ public class FOADAConfiguration {
 	
 	/** default constructor
 	 * @param	expression		given expression in the configuration
-	 * @param	timeStamp		given time-stamp of the configuration
-	 * @param	freeVariables	given set of all free variables in the expression
 	 * @param	father			given father node of the current configuration node
+	 * @param	fatherSymbol	the symbol with which father nodes comes to here
 	 */
-	public FOADAConfiguration(BooleanFormula expression, int timeStamp, List<String> freeVariables, FOADAConfiguration father, String fatherSymbol)
+	public FOADAConfiguration(int number, BooleanFormula expression, FOADAConfiguration father, String fatherSymbol)
 	{
+		this.number = number;
 		this.expression = expression;
-		this.timeStamp = timeStamp;
-		this.freeVariables = new ArrayList<String>();
-		this.freeVariables.addAll(freeVariables);
 		this.father = father;
 		this.fatherSymbol = fatherSymbol;
 	}
@@ -73,10 +66,8 @@ public class FOADAConfiguration {
 	 */
 	public FOADAConfiguration(FOADAConfiguration configuration)
 	{
+		number = configuration.number;
 		expression = configuration.expression;
-		timeStamp = configuration.timeStamp;
-		freeVariables = new ArrayList<String>();
-		freeVariables.addAll(configuration.freeVariables);
 		father = configuration.father;
 		fatherSymbol = configuration.fatherSymbol;
 		successors = new ArrayList<FOADAConfiguration>();
@@ -97,7 +88,7 @@ public class FOADAConfiguration {
 	 */
 	public String toString()
 	{
-		return "#" + timeStamp + ' ' + expression + " {FV" + freeVariables + "}";
+		return "#" + number + ' ' + expression;
 	}
 
 }

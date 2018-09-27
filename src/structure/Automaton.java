@@ -23,10 +23,12 @@
 package structure;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.sosy_lab.common.NativeLibraries;
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
@@ -37,14 +39,18 @@ import org.sosy_lab.java_smt.api.BooleanFormulaManager;
 import org.sosy_lab.java_smt.api.Formula;
 import org.sosy_lab.java_smt.api.FormulaManager;
 import org.sosy_lab.java_smt.api.FormulaType;
+import org.sosy_lab.java_smt.api.FunctionDeclaration;
 import org.sosy_lab.java_smt.api.IntegerFormulaManager;
+import org.sosy_lab.java_smt.api.InterpolatingProverEnvironment;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 import org.sosy_lab.java_smt.api.QuantifiedFormulaManager;
 import org.sosy_lab.java_smt.api.SolverContext;
+import org.sosy_lab.java_smt.api.SolverException;
 import org.sosy_lab.java_smt.api.UFManager;
 import org.sosy_lab.java_smt.api.visitors.FormulaVisitor;
 
 import exception.FOADAException;
+import exception.InterpolatingProverEnvironmentException;
 import exception.JavaSMTInvalidConfigurationException;
 import structure.FOADAExpression.ExpressionType;
 
@@ -158,7 +164,7 @@ public class Automaton {
 		// rename predicates
 		List<String> predicatesToBeRenamed = new ArrayList<String>();
 		predicatesToBeRenamed.add(predicate);
-		predicatesToBeRenamed.addAll(post.getFreeVariables());
+		predicatesToBeRenamed.addAll(post.getPredicates());
 		for(String s : predicatesToBeRenamed) {
 			addPredicate(s);
 			post.substitue(s, renameMap.get(s));
@@ -184,6 +190,7 @@ public class Automaton {
 		}
 		// add transition
 		transitions.put(renameMap.get(predicate) + '+' + renameMap.get(eventSymbol), post);
+		//System.out.println(renameMap.get(predicate) + '+' + renameMap.get(eventSymbol) + "   --->   " + post);
 	}
 	
 	/** rename a predicate and then add it into the set of predicates (do nothing if already added)
@@ -216,20 +223,43 @@ public class Automaton {
 		}
 	}
 	
-	public BooleanFormula addTimeStamp(BooleanFormula expression, int timeStamp, List<String> freeVariables)
+	/** add time-stamps on the variables and the predicates in a Boolean formula
+	 * @param	expression		the original Boolean formula
+	 * @param	timeStamp		the time-stamp to be added
+	 * @param	freeVariables	the free variables in the original Boolean formula
+	 * @return	the Boolean formula after adding time-stamps
+	 */
+	public BooleanFormula addTimeStamps(BooleanFormula expression, List<String> predicates, int timeStamp)
 	{
-		Map<Formula, Formula> fromToMapping = new LinkedHashMap<Formula, Formula>();
+		BooleanFormula result = expression;
+		String resultToString = fmgr.dumpFormula(result).toString();
+		// add time-stamps on variables
 		for(String s : variables) {
-			if(variableTypeMap.get(s) == ExpressionType.Integer) {
-				fromToMapping.put(imgr.makeVariable(s), imgr.makeVariable(s + '_' + timeStamp));
-			}
-			else {
-				fromToMapping.put(bmgr.makeVariable(s), bmgr.makeVariable(s + '_' + timeStamp));
+			resultToString = resultToString.replaceAll(s, s + '_' + timeStamp);
+		}
+		// add time-stamps on predicates
+		for(String s : predicates) {
+			resultToString = resultToString.replaceAll(s, s + '_' + timeStamp);
+		}
+		result = fmgr.parse(resultToString);
+		return result;
+	}
+	
+	/** remove all the time-stamps on the variables and the predicates in a Boolean formula
+	 * @param	expression	the original Boolean formula
+	 * @return	the Boolean formula after removing time-stamps
+	 */
+	public BooleanFormula removeTimeStamps(BooleanFormula expression)
+	{
+		BooleanFormula result = expression;
+		String resultToString = fmgr.dumpFormula(result).toString();
+		for(String s : fmgr.extractVariablesAndUFs(result).keySet()) {
+			if(s.contains("_")) {
+				resultToString = resultToString.replaceAll(s, s.substring(0, s.indexOf("_")));
 			}
 		}
-		for(String s : freeVariables) {
-		}
-		return fmgr.substitute(expression, fromToMapping);
+		result = fmgr.parse(resultToString);
+		return result;
 	}
 	
 	/** check if the automaton is empty
@@ -237,10 +267,13 @@ public class Automaton {
 	 * 			<b> false </b> if the automaton is not empty
 	 */
 	public boolean isEmpty()
+			throws FOADAException
 	{	
 	// start with the initial state
+		// configuration number (starting from 0)
+		int configurationNumber = 0;
 		// create node(configuration) for the initial state
-		FOADAConfiguration initialConfiguration = new FOADAConfiguration((BooleanFormula)initialState.toJavaSMTFormula(fmgr), 0, initialState.getFreeVariables(), null, null);
+		FOADAConfiguration initialConfiguration = new FOADAConfiguration(configurationNumber++, (BooleanFormula)initialState.toJavaSMTFormula(fmgr), null, null);
 	// start working with workList
 		// create workList
 		List<FOADAConfiguration> workList = new ArrayList<FOADAConfiguration>();
@@ -271,20 +304,85 @@ public class Automaton {
 			// create a new list for blocks of time-stamped conjunctions in the path formula
 			List<BooleanFormula> blocks = new ArrayList<BooleanFormula>();
 			// make the initial state time-stamped
-			/*IntegerFormula v0 = ufmgr.declareAndCallUF("v0", FormulaType.IntegerType);
-			BooleanFormula q2v0 = ufmgr.declareAndCallUF("q2", FormulaType.BooleanType, v0);
-			BooleanFormula q1 = ufmgr.declareAndCallUF("q1", FormulaType.BooleanType);
-			BooleanFormula expression = bmgr.and(q1, q2v0);
-			Map<Formula, Formula> fromToMapping = new LinkedHashMap<Formula, Formula>();
-			fromToMapping.put(ufmgr.declareAndCallUF("q1", FormulaType.BooleanType), bmgr.makeVariable("q1_0"));
-			fromToMapping.put(ufmgr.declareAndCallUF("q2", FormulaType.BooleanType), bmgr.makeVariable("q2_0"));*/
-			IntegerFormula v = ufmgr.declareAndCallUF("v", FormulaType.IntegerType);
-			BooleanFormula q = ufmgr.declareAndCallUF("q", FormulaType.BooleanType, v);
-			System.out.println(fmgr.extractVariablesAndUFs(q));
-			//BooleanFormula result = fmgr.substitute(expression, fromToMapping);
-			//System.out.println(result);
-			//System.out.println(fmgr.extractVariablesAndUFs(expression));
-			//System.out.println(addTimeStamp(initialConfiguration.expression, 1, initialConfiguration.freeVariables));
+			BooleanFormula timeStampedInitialState = addTimeStamps(initialConfiguration.expression, initialState.getPredicates(), 0);
+			// add time-stamped initial state into the blocks
+			blocks.add(timeStampedInitialState);
+			// create a new list for the predicates in the current block
+			List<String> predicatesInCurrentBlock = initialState.getPredicates();
+			// create an integer indicating the current time-stamp
+			int currentTimeStamp = 0;
+			// compute next blocks (except the last block) according to the path
+			for(String s : pathFromInitialToCurrent) {
+				//****************
+				
+				
+				// TO DO
+				
+				
+				//****************
+			}
+			// compute the last block containing the final conjunction according to the set of final states
+			List<BooleanFormula> finalConjunction = new ArrayList<BooleanFormula>();
+			for(String s : predicatesInCurrentBlock) {
+				if(finalStates.contains(s)) {
+					// implies true if is final state
+					finalConjunction.add(bmgr.implication(bmgr.makeVariable(s + '_' + currentTimeStamp), bmgr.makeBoolean(true)));
+				}
+				else {
+					// implies false if is not final state
+					finalConjunction.add(bmgr.implication(bmgr.makeVariable(s + '_' + currentTimeStamp), bmgr.makeBoolean(false)));
+				}
+			}
+			// add the last block into the list of blocks
+			if(finalConjunction.isEmpty()) {
+				blocks.add(bmgr.makeBoolean(true));
+			}
+			else {
+				blocks.add(bmgr.and(finalConjunction));
+			}
+			// check if the conjunction of all blocks is true or compute the interpolants
+			System.out.println("The Blocks:");
+			for(BooleanFormula f : blocks) {
+				System.out.println(f);
+			}
+			@SuppressWarnings("rawtypes")
+			// create prover environment for interpolation
+			InterpolatingProverEnvironment prover = solverContext.newProverEnvironmentWithInterpolation();
+			// create a new list for sets of objects received when pushing different partitions into the prover
+			List<Set<Object>> listPartitions = new ArrayList<Set<Object>>();
+			// each block is a partition
+			for(BooleanFormula f : blocks) {
+				// create a set for objects received when pushing different partitions into the prover
+				Set<Object> partitionProverPushObjects = new HashSet<Object>();
+				// push the partition (block) into the prover and add the received object into the set
+				partitionProverPushObjects.add(prover.push(f));
+				// add the set into the list
+				listPartitions.add(partitionProverPushObjects);
+			}
+			try {
+				if(prover.isUnsat()) {
+					System.out.println("Interpolants:");
+					@SuppressWarnings("unchecked")
+					List<BooleanFormula> interpolantsWithTimeStamps = prover.getSeqInterpolants(listPartitions);
+					List<BooleanFormula> interpolants = new ArrayList<BooleanFormula>();
+					for(BooleanFormula f : interpolantsWithTimeStamps) {
+						interpolants.add(removeTimeStamps(f));
+					}
+					for(BooleanFormula f : interpolants) {
+						System.out.println(f);
+					}
+				}
+				else {
+					System.out.println("SAT");
+					System.out.println(prover.getModel());
+				}
+			}
+			catch (SolverException e) {
+				throw new InterpolatingProverEnvironmentException(e);
+			}
+			catch (InterruptedException e) {
+				throw new InterpolatingProverEnvironmentException(e);
+			}
 		}
 		return true;
 	}

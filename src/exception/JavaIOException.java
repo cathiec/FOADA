@@ -22,7 +22,7 @@
 
 package exception;
 
-import java.io.*;
+import java.io.IOException;
 import utility.Console;
 import utility.Console.ConsoleType;
 

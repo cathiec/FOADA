@@ -60,7 +60,7 @@ public class FOADAExpression {
 	 */
 	public ExpressionCategory category;
 	
-	/** name (in case: )
+	/** name
 	 */
 	public String name;
 	
@@ -230,40 +230,40 @@ public class FOADAExpression {
 		}
 	}
 	
-	/** get all free variables in the expression
+	/** get all predicates in the expression
 	 */
-	public List<String> getFreeVariables()
+	public List<String> getPredicates()
 	{
-		List<String> freeVariables = new ArrayList<String>();
+		List<String> predicates = new ArrayList<String>();
 		switch(category)
 		{
 		case Constant:	break;
-		case Function:	if(type == ExpressionType.Boolean) {
-							freeVariables.add(name);
+		case Function:	if(type == ExpressionType.Boolean && name.charAt(0) == 'q') {
+							predicates.add(name);
 						}
 						break;
-		case Exists:	freeVariables.addAll(subData.get(subData.size() - 1).getFreeVariables());
+		case Exists:	predicates.addAll(subData.get(subData.size() - 1).getPredicates());
 						break;
-		case Forall:	freeVariables.addAll(subData.get(subData.size() - 1).getFreeVariables());
+		case Forall:	predicates.addAll(subData.get(subData.size() - 1).getPredicates());
 						break;
-		case Not:		freeVariables.addAll(subData.get(subData.size() - 1).getFreeVariables());
+		case Not:		predicates.addAll(subData.get(subData.size() - 1).getPredicates());
 						break;	
 		case And:		for(FOADAExpression e : subData) {
-							freeVariables.addAll(e.getFreeVariables());
+							predicates.addAll(e.getPredicates());
 						}
 						break;
 		case Or:		for(FOADAExpression e : subData) {
-							freeVariables.addAll(e.getFreeVariables());
+							predicates.addAll(e.getPredicates());
 						}
 						break;
-		case Equals:	freeVariables.addAll(subData.get(0).getFreeVariables());
-						freeVariables.addAll(subData.get(1).getFreeVariables());
+		case Equals:	predicates.addAll(subData.get(0).getPredicates());
+						predicates.addAll(subData.get(1).getPredicates());
 						break;
-		case Distincts:	freeVariables.addAll(subData.get(0).getFreeVariables());
-						freeVariables.addAll(subData.get(1).getFreeVariables());
+		case Distincts:	predicates.addAll(subData.get(0).getPredicates());
+						predicates.addAll(subData.get(1).getPredicates());
 						break;
 		}
-		return freeVariables;
+		return predicates;
 	}
 	
 	/** deep copy
