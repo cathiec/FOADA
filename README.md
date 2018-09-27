@@ -13,13 +13,12 @@ A higher or lower version would cause problems with [JavaSMT](https://github.com
 1. Download/Clone the project "[FOADA](https://github.com/cathiec/FOADA)" from [GitHub](https://github.com).
 2. Open terminal and go to the project folder.
 3. Type ``` sudo make install ``` to finish installing the tool.
+### Installation Check
+Type ``` foada -c ``` to check if the solvers are successfully integrated with [JavaSMT](https://github.com/sosy-lab/java-smt).
 
 ## Uninstallation
 1. Open terminal and go to the project folder.
 2. Type ``` sudo make uninstall ``` to remove the tool from your computer.
 
-## Installation Check
-### Check Main Program of the Tool
-Type ``` foada ``` to check if main program of the tool is successfully installed (the version number and a list of options will show).
-### Check JavaSMT-Integrated Solvers
-Type ``` foada -c ``` to check if the solvers are successfully integrated with [JavaSMT](https://github.com/sosy-lab/java-smt).
+## Emptiness Checking
+Type  ``` foada -e [inputfile] ``` to check whether the automaton in the inputfile is empty. The implemented algorithms is IMPACT.
