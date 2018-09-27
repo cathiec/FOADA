@@ -27,6 +27,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.sosy_lab.common.NativeLibraries;
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
 import org.sosy_lab.java_smt.SolverContextFactory;
 import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
@@ -236,16 +238,6 @@ public class Automaton {
 	 */
 	public boolean isEmpty()
 	{	
-		/*System.out.println("Automaton " + name);
-		for(String s : variables) {
-			System.out.println(s + " : " + variableTypeMap.get(s));
-		}
-		for(String s : predicates) {
-			System.out.println(s + " : " + predicateArgumentsTypesMap.get(s));
-		}
-		for(Entry<String, FOADAExpression> e : transitions.entrySet()) {
-			System.out.println(e.getKey() + " : " + e.getValue().toJavaSMTFormula(fmgr));
-		}*/
 	// start with the initial state
 		// create node(configuration) for the initial state
 		FOADAConfiguration initialConfiguration = new FOADAConfiguration((BooleanFormula)initialState.toJavaSMTFormula(fmgr), 0, initialState.getFreeVariables(), null, null);
@@ -288,7 +280,7 @@ public class Automaton {
 			fromToMapping.put(ufmgr.declareAndCallUF("q2", FormulaType.BooleanType), bmgr.makeVariable("q2_0"));*/
 			IntegerFormula v = ufmgr.declareAndCallUF("v", FormulaType.IntegerType);
 			BooleanFormula q = ufmgr.declareAndCallUF("q", FormulaType.BooleanType, v);
-			fmgr.extractVariablesAndUFs(q);
+			System.out.println(fmgr.extractVariablesAndUFs(q));
 			//BooleanFormula result = fmgr.substitute(expression, fromToMapping);
 			//System.out.println(result);
 			//System.out.println(fmgr.extractVariablesAndUFs(expression));
