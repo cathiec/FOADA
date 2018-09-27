@@ -14,7 +14,7 @@ A higher or lower version would cause problems with [JavaSMT](https://github.com
 2. Open terminal and go to the project folder.
 3. Type ``` sudo make install ``` to finish installing the tool.
 ### Installation Check
-Type ``` foada -c ``` to check if the solvers are successfully integrated with [JavaSMT](https://github.com/sosy-lab/java-smt).
+Type ``` foada -c ``` to check whether FOADA is successfully installed and all the solvers are successfully integrated with [JavaSMT](https://github.com/sosy-lab/java-smt).
 
 ## Uninstallation
 1. Open terminal and go to the project folder.
