@@ -237,11 +237,11 @@ public class FOADAExpression {
 	 */
 	public Set<String> getPredicates()
 	{
-		Set<String> predicates = new HashSet<String>();
+		List<String> predicates = new ArrayList<String>();
 		switch(category)
 		{
 		case Constant:	break;
-		case Function:	if(type == ExpressionType.Boolean && name.charAt(0) == 'q') {
+		case Function:	if(type == ExpressionType.Boolean) {
 							predicates.add(name);
 						}
 						break;
@@ -266,7 +266,8 @@ public class FOADAExpression {
 						predicates.addAll(subData.get(1).getPredicates());
 						break;
 		}
-		return predicates;
+		Set<String> predicatesWithoutDuplicate = new HashSet<>(predicates);
+		return predicatesWithoutDuplicate;
 	}
 	
 	/** deep copy

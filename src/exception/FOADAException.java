@@ -31,6 +31,7 @@ public abstract class FOADAException extends Throwable {
 	
 	public enum ExceptionType {
 		ANTLR4ParseCancellation,
+		ImplicationProverEnvironment,
 		InputFileNotFound,
 		InputFileUnsupported,
 		InterpolatingProverEnvironment,

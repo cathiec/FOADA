@@ -43,6 +43,7 @@ import org.sosy_lab.java_smt.api.FunctionDeclaration;
 import org.sosy_lab.java_smt.api.IntegerFormulaManager;
 import org.sosy_lab.java_smt.api.InterpolatingProverEnvironment;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
+import org.sosy_lab.java_smt.api.ProverEnvironment;
 import org.sosy_lab.java_smt.api.QuantifiedFormulaManager;
 import org.sosy_lab.java_smt.api.SolverContext;
 import org.sosy_lab.java_smt.api.SolverException;
@@ -171,6 +172,7 @@ public class Automaton {
 		predicatesToBeRenamed.add(predicate);
 		predicatesToBeRenamed.addAll(post.getPredicates());
 		for(String s : predicatesToBeRenamed) {
+			
 			addPredicate(s);
 			post.substitue(s, renameMap.get(s));
 		}
@@ -292,6 +294,38 @@ public class Automaton {
 		return result;
 	}
 	
+	/** check the validity of an implication <b> f1 -> f2 </b>
+	 * @param	f1	first Boolean formula
+	 * @param	f2	second Boolean formula
+	 */
+	public boolean implies(BooleanFormula f1, BooleanFormula f2)
+			throws FOADAException
+	{
+		BooleanFormula implication = bmgr.implication(f1, f2);
+		ProverEnvironment prover = solverContext.newProverEnvironment();
+		BooleanFormula notImplication = bmgr.not(implication);
+		prover.addConstraint(notImplication);
+		boolean isUnsat;
+		boolean implicationIsValid = false;
+		try {
+			isUnsat = prover.isUnsat();
+			if(isUnsat) {
+				implicationIsValid = true;
+			}
+			else {
+				implicationIsValid = false;
+			}
+		}
+		catch (SolverException e) {
+			throw new InterpolatingProverEnvironmentException(e);
+		}
+		catch (InterruptedException e) {
+			throw new InterpolatingProverEnvironmentException(e);
+		}
+		prover.close();
+		return implicationIsValid;
+	}
+	
 	/** check if the automaton is empty
 	 * @return	<b> true </b> if the automaton is empty </br>
 	 * 			<b> false </b> if the automaton is not empty
@@ -374,7 +408,7 @@ public class Automaton {
 					// create a new set for the predicates in the current part of the new block
 					Set<String> predicatesInCurrentPart = rightWithoutTimeStamps.getPredicates();
 					// add the predicates in the current part into the set of predicates in the new block
-					for(String s2 : predicatesInCurrentBlock) {
+					for(String s2 : predicatesInCurrentPart) {
 						predicatesInNewBlock.add(s2);
 					}
 					// create the right part of the universally-quantified implication with time-stamp
@@ -469,7 +503,7 @@ public class Automaton {
 				blocks.add(bmgr.and(finalConjunction));
 			}
 		// check if the conjunction of all blocks is satisfiable or compute the interpolants
-			/***************/ System.out.println("\tThe Blocks:");
+			/***************/ System.out.println("\tBlocks:");
 			/***************/ for(BooleanFormula f : blocks) {
 			/***************/ 	System.out.println("\t\t" + f);
 			/***************/ }
@@ -500,20 +534,61 @@ public class Automaton {
 					for(BooleanFormula f : interpolantsWithTimeStamps) {
 						interpolants.add(removeTimeStamps(f));
 					}
-					/***************/ for(BooleanFormula f : interpolants) {
-					/***************/ 	System.out.println("\t\t" + f);
-					/***************/ }
+				// refine the nodes among the path
+					// starting from the root node
+					FOADAConfiguration currentNodeAmongPath = initialConfiguration;
+					int step = 0;
+					// loop check the path
+					while(true) {
+						// get the corresponding interpolant according to the current step
+						BooleanFormula interpolant = interpolants.get(step);
+						// get the expression in the current node
+						BooleanFormula current = currentNodeAmongPath.expression;
+						/***************/ System.out.println("\t\t" + interpolant);
+						// check the validity of the implication: current -> interpolant
+						boolean implicationIsValid = implies(current, interpolant);
+						/***************/ System.out.println("\t\t\tchecking: " + current + " -> " + interpolant + "   {" + implicationIsValid + '}');
+						// if the implication if not valid
+						if(!implicationIsValid) {
+							// refine the node by making a conjunction
+							currentNodeAmongPath.expression = bmgr.and(current, interpolant);
+							// TODO close the node
+							
+						}
+						// if finish looping the path
+						if(step >= pathFromInitialToCurrent.size()) {
+							break;
+						}
+						// if not finish looping the path
+						else {
+							// refresh the current node among the path
+							int indexOfSuccessor = currentNodeAmongPath.successorSymbolIndexMap.get(pathFromInitialToCurrent.get(step));
+							currentNodeAmongPath = currentNodeAmongPath.successors.get(indexOfSuccessor);
+							// refresh the current step
+							step++;
+						}
+					}
 				}
 				// print out the model and return false if it is satisfiable
 				else {
 					/***************/ System.out.println("SAT");
 					/***************/ System.out.println(toOriginalNames(prover.getModel().toString()));
+					///***************/ System.out.println(prover.getModel().toString());
 					return false;
 				}
+			// expand the current node if it is not covered
+				// TODO need to add coverage check
+				if(true) {
+					// try all the event symbols
+					for(String a : eventSymbols) {
+						///***************/ System.out.println("\tExpand with " + a + ':');
+						FOADAConfiguration newNode = new FOADAConfiguration(configurationNumber++, bmgr.makeBoolean(true), currentNode, a);
+						currentNode.addSuccessor(a, newNode);
+						///***************/ System.out.println("\t\t" + newNode);
+						workList.add(newNode);
+					}
+				}
 			}
-		// refine the current nodes among the path
-			
-		
 			catch (SolverException e) {
 				throw new InterpolatingProverEnvironmentException(e);
 			}

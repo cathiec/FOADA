@@ -24,7 +24,9 @@ package structure;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.sosy_lab.java_smt.api.BooleanFormula;
 
 public class FOADAConfiguration {
@@ -49,6 +51,10 @@ public class FOADAConfiguration {
 	 */
 	public List<FOADAConfiguration> successors;
 	
+	/** map of symbol leading to successor to successor's index
+	 */
+	public Map<String, Integer> successorSymbolIndexMap;
+	
 	/** default constructor
 	 * @param	expression		given expression in the configuration
 	 * @param	father			given father node of the current configuration node
@@ -60,6 +66,8 @@ public class FOADAConfiguration {
 		this.expression = expression;
 		this.father = father;
 		this.fatherSymbol = fatherSymbol;
+		successors = new ArrayList<FOADAConfiguration>();
+		successorSymbolIndexMap = new HashMap<String, Integer>();
 	}
 	
 	/** copy constructor
@@ -74,6 +82,8 @@ public class FOADAConfiguration {
 		for(FOADAConfiguration c : configuration.successors) {
 			successors.add(c.copy());
 		}
+		successorSymbolIndexMap = new HashMap<String, Integer>();
+		successorSymbolIndexMap.putAll(configuration.successorSymbolIndexMap);
 	}
 	
 	/** deep copy
@@ -82,6 +92,16 @@ public class FOADAConfiguration {
 	{
 		FOADAConfiguration copy = new FOADAConfiguration(this);
 		return copy;
+	}
+	
+	/** add successor
+	 * @param	symbol		the symbol leading to the successor
+	 * @param	successor	the successor to be added
+	 */
+	public void addSuccessor(String symbol, FOADAConfiguration successor)
+	{
+		successors.add(successor);
+		successorSymbolIndexMap.put(symbol, successors.size() - 1);
 	}
 	
 	/** to string
