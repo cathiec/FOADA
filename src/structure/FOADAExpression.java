@@ -233,43 +233,6 @@ public class FOADAExpression {
 		}
 	}
 	
-	/** get all predicates in the expression
-	 */
-	public Set<String> getPredicates()
-	{
-		List<String> predicates = new ArrayList<String>();
-		switch(category)
-		{
-		case Constant:	break;
-		case Function:	if(type == ExpressionType.Boolean) {
-							predicates.add(name);
-						}
-						break;
-		case Exists:	predicates.addAll(subData.get(subData.size() - 1).getPredicates());
-						break;
-		case Forall:	predicates.addAll(subData.get(subData.size() - 1).getPredicates());
-						break;
-		case Not:		predicates.addAll(subData.get(subData.size() - 1).getPredicates());
-						break;	
-		case And:		for(FOADAExpression e : subData) {
-							predicates.addAll(e.getPredicates());
-						}
-						break;
-		case Or:		for(FOADAExpression e : subData) {
-							predicates.addAll(e.getPredicates());
-						}
-						break;
-		case Equals:	predicates.addAll(subData.get(0).getPredicates());
-						predicates.addAll(subData.get(1).getPredicates());
-						break;
-		case Distincts:	predicates.addAll(subData.get(0).getPredicates());
-						predicates.addAll(subData.get(1).getPredicates());
-						break;
-		}
-		Set<String> predicatesWithoutDuplicate = new HashSet<>(predicates);
-		return predicatesWithoutDuplicate;
-	}
-	
 	/** deep copy
 	 */
 	public FOADAExpression copy()

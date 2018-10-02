@@ -104,6 +104,21 @@ public class FOADAConfiguration {
 		successorSymbolIndexMap.put(symbol, successors.size() - 1);
 	}
 	
+	/** check whether the current configuration is a successor of another configuration
+	 * @param	another	the target configuration
+	 */
+	public boolean isSuccessorOf(FOADAConfiguration another)
+	{
+		boolean isSuccessor = false;
+		for(FOADAConfiguration current = this; current != null; current = current.father) {
+			if(current.number == another.number) {
+				isSuccessor = true;
+				break;
+			}
+		}
+		return isSuccessor;
+	}
+	
 	/** to string
 	 */
 	public String toString()

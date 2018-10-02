@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import org.sosy_lab.common.NativeLibraries;
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
 import org.sosy_lab.java_smt.SolverContextFactory;
 import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
@@ -39,17 +37,13 @@ import org.sosy_lab.java_smt.api.BooleanFormulaManager;
 import org.sosy_lab.java_smt.api.Formula;
 import org.sosy_lab.java_smt.api.FormulaManager;
 import org.sosy_lab.java_smt.api.FormulaType;
-import org.sosy_lab.java_smt.api.FunctionDeclaration;
 import org.sosy_lab.java_smt.api.IntegerFormulaManager;
 import org.sosy_lab.java_smt.api.InterpolatingProverEnvironment;
-import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 import org.sosy_lab.java_smt.api.ProverEnvironment;
 import org.sosy_lab.java_smt.api.QuantifiedFormulaManager;
 import org.sosy_lab.java_smt.api.SolverContext;
 import org.sosy_lab.java_smt.api.SolverException;
 import org.sosy_lab.java_smt.api.UFManager;
-import org.sosy_lab.java_smt.api.visitors.FormulaVisitor;
-
 import exception.FOADAException;
 import exception.InterpolatingProverEnvironmentException;
 import exception.JavaSMTInvalidConfigurationException;
@@ -158,6 +152,80 @@ public class Automaton {
 		this.finalStates.addAll(finalStates);
 	}
 	
+	/** get predicates (before renaming) from an expression
+	 * 
+	 */
+	public Set<String> getPredicatesBeforeRenaming(FOADAExpression expression)
+	{
+		Set<String> predicates = new HashSet<String>();
+		switch(expression.category)
+		{
+		case Constant:	break;
+		case Function:	if(expression.type == ExpressionType.Boolean) {
+							predicates.add(expression.name);
+						}
+						break;
+		case Exists:	predicates.addAll(getPredicatesBeforeRenaming(expression.subData.get(expression.subData.size() - 1)));
+						break;
+		case Forall:	predicates.addAll(getPredicatesBeforeRenaming(expression.subData.get(expression.subData.size() - 1)));
+						break;
+		case Not:		predicates.addAll(getPredicatesBeforeRenaming(expression.subData.get(expression.subData.size() - 1)));
+						break;	
+		case And:		for(FOADAExpression e : expression.subData) {
+							predicates.addAll(getPredicatesBeforeRenaming(e));
+						}
+						break;
+		case Or:		for(FOADAExpression e : expression.subData) {
+							predicates.addAll(getPredicatesBeforeRenaming(e));
+						}
+						break;
+		case Equals:	predicates.addAll(getPredicatesBeforeRenaming(expression.subData.get(0)));
+						predicates.addAll(getPredicatesBeforeRenaming(expression.subData.get(1)));
+						break;
+		case Distincts:	predicates.addAll(getPredicatesBeforeRenaming(expression.subData.get(0)));
+						predicates.addAll(getPredicatesBeforeRenaming(expression.subData.get(1)));
+						break;
+		}
+		return predicates;
+	}
+	
+	/** get predicates (before renaming) from an expression
+	 * 
+	 */
+	public Set<String> getPredicatesAfterRenaming(FOADAExpression expression)
+	{
+		Set<String> predicates = new HashSet<String>();
+		switch(expression.category)
+		{
+		case Constant:	break;
+		case Function:	if(expression.type == ExpressionType.Boolean && expression.name.charAt(0) == 'q') {
+							predicates.add(expression.name);
+						}
+						break;
+		case Exists:	predicates.addAll(getPredicatesAfterRenaming(expression.subData.get(expression.subData.size() - 1)));
+						break;
+		case Forall:	predicates.addAll(getPredicatesAfterRenaming(expression.subData.get(expression.subData.size() - 1)));
+						break;
+		case Not:		predicates.addAll(getPredicatesAfterRenaming(expression.subData.get(expression.subData.size() - 1)));
+						break;	
+		case And:		for(FOADAExpression e : expression.subData) {
+							predicates.addAll(getPredicatesAfterRenaming(e));
+						}
+						break;
+		case Or:		for(FOADAExpression e : expression.subData) {
+							predicates.addAll(getPredicatesAfterRenaming(e));
+						}
+						break;
+		case Equals:	predicates.addAll(getPredicatesAfterRenaming(expression.subData.get(0)));
+						predicates.addAll(getPredicatesAfterRenaming(expression.subData.get(1)));
+						break;
+		case Distincts:	predicates.addAll(getPredicatesAfterRenaming(expression.subData.get(0)));
+						predicates.addAll(getPredicatesAfterRenaming(expression.subData.get(1)));
+						break;
+		}
+		return predicates;
+	}
+	
 	/** add a transition
 	 * @param	predicate		predicate (left part) in the transition
 	 * @param	listOfArguments	list of arguments of left predicate in the transition
@@ -170,7 +238,7 @@ public class Automaton {
 		// rename predicates
 		List<String> predicatesToBeRenamed = new ArrayList<String>();
 		predicatesToBeRenamed.add(predicate);
-		predicatesToBeRenamed.addAll(post.getPredicates());
+		predicatesToBeRenamed.addAll(getPredicatesBeforeRenaming(post));
 		for(String s : predicatesToBeRenamed) {
 			
 			addPredicate(s);
@@ -338,6 +406,11 @@ public class Automaton {
 		int configurationNumber = 0;
 		// create node(configuration) for the initial state
 		FOADAConfiguration initialConfiguration = new FOADAConfiguration(configurationNumber++, (BooleanFormula)initialState.toJavaSMTFormula(fmgr), null, null);
+	// initialize the coverage management
+		Map<FOADAConfiguration, Set<FOADAConfiguration>> coverOthers = new LinkedHashMap<FOADAConfiguration, Set<FOADAConfiguration>>();
+		Map<FOADAConfiguration, Set<FOADAConfiguration>> beCovered = new LinkedHashMap<FOADAConfiguration, Set<FOADAConfiguration>>();
+	// initialize the set of nodes
+		Set<FOADAConfiguration> allNodes = new HashSet<FOADAConfiguration>();
 	// start working with workList
 		// create workList
 		List<FOADAConfiguration> workList = new ArrayList<FOADAConfiguration>();
@@ -351,6 +424,7 @@ public class Automaton {
 			/***************/ System.out.println(currentNode);
 			// remove the first node from workList
 			workList.remove(0);
+			allNodes.add(currentNode);
 		// calculate the path from the initial node to the currentNode
 			// create a new list for symbols along the path
 			List<String> pathFromInitialToCurrent = new ArrayList<String>();
@@ -368,11 +442,11 @@ public class Automaton {
 			// create a new list for blocks of time-stamped conjunctions in the path formula
 			List<BooleanFormula> blocks = new ArrayList<BooleanFormula>();
 			// make the initial state time-stamped
-			BooleanFormula timeStampedInitialState = addTimeStamps(initialConfiguration.expression, initialState.getPredicates(), 0);
+			BooleanFormula timeStampedInitialState = addTimeStamps(initialConfiguration.expression, getPredicatesAfterRenaming(initialState), 0);
 			// add time-stamped initial state into the blocks
 			blocks.add(timeStampedInitialState);
 			// create a new set for the predicates in the current block
-			Set<String> predicatesInCurrentBlock = initialState.getPredicates();
+			Set<String> predicatesInCurrentBlock = getPredicatesAfterRenaming(initialState);
 			// create an integer indicating the current time-stamp
 			int currentTimeStamp = 0;
 			// compute next blocks (except the last block) according to the path
@@ -406,7 +480,7 @@ public class Automaton {
 					// create the right part of the universally-quantified implication without time-stamp
 					FOADAExpression rightWithoutTimeStamps = transitions.get(s + '+' + a);
 					// create a new set for the predicates in the current part of the new block
-					Set<String> predicatesInCurrentPart = rightWithoutTimeStamps.getPredicates();
+					Set<String> predicatesInCurrentPart = getPredicatesAfterRenaming(rightWithoutTimeStamps);
 					// add the predicates in the current part into the set of predicates in the new block
 					for(String s2 : predicatesInCurrentPart) {
 						predicatesInNewBlock.add(s2);
@@ -503,10 +577,10 @@ public class Automaton {
 				blocks.add(bmgr.and(finalConjunction));
 			}
 		// check if the conjunction of all blocks is satisfiable or compute the interpolants
-			/***************/ System.out.println("\tBlocks:");
-			/***************/ for(BooleanFormula f : blocks) {
-			/***************/ 	System.out.println("\t\t" + f);
-			/***************/ }
+			///***************/ System.out.println("\tBlocks:");
+			///***************/ for(BooleanFormula f : blocks) {
+			///***************/ 	System.out.println("\t\t" + f);
+			///***************/ }
 			@SuppressWarnings("rawtypes")
 			// create prover environment for interpolation
 			InterpolatingProverEnvironment prover = solverContext.newProverEnvironmentWithInterpolation();
@@ -525,7 +599,7 @@ public class Automaton {
 			try {
 				// compute the interpolants if it is not satisfiable
 				if(prover.isUnsat()) {
-					/***************/ System.out.println("\tInterpolants:");
+					///***************/ System.out.println("\tInterpolants:");
 					@SuppressWarnings("unchecked")
 					// compute the interpolants (with time-stamps)
 					List<BooleanFormula> interpolantsWithTimeStamps = prover.getSeqInterpolants(listPartitions);
@@ -544,16 +618,58 @@ public class Automaton {
 						BooleanFormula interpolant = interpolants.get(step);
 						// get the expression in the current node
 						BooleanFormula current = currentNodeAmongPath.expression;
-						/***************/ System.out.println("\t\t" + interpolant);
+						///***************/ System.out.println("\t\t" + interpolant);
 						// check the validity of the implication: current -> interpolant
 						boolean implicationIsValid = implies(current, interpolant);
-						/***************/ System.out.println("\t\t\tchecking: " + current + " -> " + interpolant + "   {" + implicationIsValid + '}');
+						///***************/ System.out.println("\t\t\tchecking: " + current + " -> " + interpolant + "   {" + implicationIsValid + '}');
 						// if the implication if not valid
 						if(!implicationIsValid) {
 							// refine the node by making a conjunction
+							/***************/ System.out.print("\tRefined: {" + currentNodeAmongPath);
 							currentNodeAmongPath.expression = bmgr.and(current, interpolant);
-							// TODO close the node
-							
+							/***************/ System.out.println("}   --->   {" + currentNodeAmongPath + '}');
+							// close the node
+							for(FOADAConfiguration node : allNodes) {
+								// according to a certain order
+								if(node.number > currentNodeAmongPath.number) {
+									// if current node is covered by another node
+									if(implies(currentNodeAmongPath.expression, node.expression)) {
+										// remove all the coverage where current node or any of its successors covers another
+										List<FOADAConfiguration> toBeRemoved = new ArrayList<FOADAConfiguration>();
+										for(Entry<FOADAConfiguration, Set<FOADAConfiguration>> e : coverOthers.entrySet()) {
+											FOADAConfiguration coverer = e.getKey();
+											if(coverer.isSuccessorOf(currentNodeAmongPath)) {
+												for(FOADAConfiguration covered : e.getValue()) {
+													beCovered.get(covered).remove(coverer);
+													System.out.println("\t{" + covered + "} no longer covered by {" + coverer + '}');
+												}
+												toBeRemoved.add(coverer);
+											}
+										}
+										for(FOADAConfiguration c2 : toBeRemoved) {
+											coverOthers.remove(c2);
+										}
+										// add coverage where current node is covered
+										if(beCovered.containsKey(currentNodeAmongPath)) {
+											beCovered.get(currentNodeAmongPath).add(node);
+										}
+										else {
+											Set<FOADAConfiguration> isCoveredBy = new HashSet<FOADAConfiguration>();
+											isCoveredBy.add(node);
+											beCovered.put(currentNodeAmongPath, isCoveredBy);
+										}
+										if(coverOthers.containsKey(node)) {
+											coverOthers.get(node).add(currentNodeAmongPath);
+										}
+										else {
+											Set<FOADAConfiguration> covers = new HashSet<FOADAConfiguration>();
+											covers.add(currentNodeAmongPath);
+											coverOthers.put(node, covers);
+										}
+										/***************/ System.out.println("\t{" + currentNodeAmongPath + "} covered by {" + node + '}');
+									}
+								}
+							}
 						}
 						// if finish looping the path
 						if(step >= pathFromInitialToCurrent.size()) {
@@ -571,14 +687,25 @@ public class Automaton {
 				}
 				// print out the model and return false if it is satisfiable
 				else {
-					/***************/ System.out.println("SAT");
-					/***************/ System.out.println(toOriginalNames(prover.getModel().toString()));
+					/***************/ System.out.println("SAT with symbol sequence: " + toOriginalNames(pathFromInitialToCurrent.toString()));
+					///***************/ System.out.println(toOriginalNames(prover.getModel().toString()));
 					///***************/ System.out.println(prover.getModel().toString());
 					return false;
 				}
 			// expand the current node if it is not covered
-				// TODO need to add coverage check
-				if(true) {
+				// skip expanding if the current node is false
+				if(implies(currentNode.expression, bmgr.makeBoolean(false))) {
+					continue;
+				}
+				// create a Boolean for coverage checking
+				boolean isCovered = false;
+				for(FOADAConfiguration current = currentNode; current != null; current = current.father) {
+					if(beCovered.containsKey(current)) {
+						isCovered = true;
+						break;
+					}
+				}
+				if(!isCovered) {
 					// try all the event symbols
 					for(String a : eventSymbols) {
 						///***************/ System.out.println("\tExpand with " + a + ':');
