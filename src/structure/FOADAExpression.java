@@ -23,7 +23,10 @@
 package structure;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.sosy_lab.java_smt.api.BooleanFormula;
 import org.sosy_lab.java_smt.api.Formula;
 import org.sosy_lab.java_smt.api.FormulaManager;
@@ -232,9 +235,9 @@ public class FOADAExpression {
 	
 	/** get all predicates in the expression
 	 */
-	public List<String> getPredicates()
+	public Set<String> getPredicates()
 	{
-		List<String> predicates = new ArrayList<String>();
+		Set<String> predicates = new HashSet<String>();
 		switch(category)
 		{
 		case Constant:	break;

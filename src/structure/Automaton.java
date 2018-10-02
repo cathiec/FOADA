@@ -64,6 +64,10 @@ public class Automaton {
 	 */
 	private Map<String, String> renameMap;
 	
+	/** rename map recording the simpler standard names to their original names
+	 */
+	private Map<String, String> renameMap2;
+	
 	/** set of event symbols
 	 */
 	private List<String> eventSymbols;
@@ -114,6 +118,7 @@ public class Automaton {
 	{
 		this.name = name;
 		renameMap = new LinkedHashMap<String, String>();
+		renameMap2 = new LinkedHashMap<String, String>();
 		eventSymbols = new ArrayList<String>();
 		variables = new ArrayList<String>();
 		variableTypeMap = new LinkedHashMap<String, ExpressionType>();
@@ -201,6 +206,7 @@ public class Automaton {
 		if(!renameMap.containsKey(predicate)) {
 			String newName = "q" + predicates.size();
 			renameMap.put(predicate, newName);
+			renameMap2.put(newName, predicate);
 			predicates.add(newName);
 			initialState.substitue(predicate, newName);
 			for(int i = 0; i < finalStates.size(); i++) {
@@ -219,8 +225,32 @@ public class Automaton {
 		if(!renameMap.containsKey(eventSymbol)) {
 			String newName = "s" + eventSymbols.size();
 			renameMap.put(eventSymbol, newName);
+			renameMap2.put(newName, eventSymbol);
 			eventSymbols.add(newName);
 		}
+	}
+	
+	/** replace all the event symbols and predicates in a string by their original names
+	 * @param	stringWithNewNames	the string to be modified
+	 */
+	public String toOriginalNames(String stringWithNewNames)
+	{
+		String result = stringWithNewNames;
+		// change event symbols back to the original names
+		for(int i = eventSymbols.size() - 1; i >= 0; i--) {
+			String eventSymbol = eventSymbols.get(i);
+			if(result.contains(eventSymbol)) {
+				result = result.replace(eventSymbol, renameMap2.get(eventSymbol));
+			}
+		}
+		// change predicates back to the original names
+		for(int i = predicates.size() - 1; i >= 0; i--) {
+			String predicate = predicates.get(i);
+			if(result.contains(predicate)) {
+				result = result.replace(predicate, renameMap2.get(predicate));
+			}
+		}
+		return result;
 	}
 	
 	/** add time-stamps on the variables and the predicates in a Boolean formula
@@ -229,17 +259,17 @@ public class Automaton {
 	 * @param	freeVariables	the free variables in the original Boolean formula
 	 * @return	the Boolean formula after adding time-stamps
 	 */
-	public BooleanFormula addTimeStamps(BooleanFormula expression, List<String> predicates, int timeStamp)
+	public BooleanFormula addTimeStamps(BooleanFormula expression, Set<String> predicates, int timeStamp)
 	{
 		BooleanFormula result = expression;
 		String resultToString = fmgr.dumpFormula(result).toString();
 		// add time-stamps on variables
 		for(String s : variables) {
-			resultToString = resultToString.replaceAll(s, s + '_' + timeStamp);
+			resultToString = resultToString.replace(s, s + '_' + timeStamp);
 		}
 		// add time-stamps on predicates
 		for(String s : predicates) {
-			resultToString = resultToString.replaceAll(s, s + '_' + timeStamp);
+			resultToString = resultToString.replace(s, s + '_' + timeStamp);
 		}
 		result = fmgr.parse(resultToString);
 		return result;
@@ -254,8 +284,8 @@ public class Automaton {
 		BooleanFormula result = expression;
 		String resultToString = fmgr.dumpFormula(result).toString();
 		for(String s : fmgr.extractVariablesAndUFs(result).keySet()) {
-			if(s.contains("_")) {
-				resultToString = resultToString.replaceAll(s, s.substring(0, s.indexOf("_")));
+			if(s.contains("_") && s.charAt(0) != 'v') {
+				resultToString = resultToString.replace(s, s.substring(0, s.indexOf("_")));
 			}
 		}
 		result = fmgr.parse(resultToString);
@@ -299,7 +329,7 @@ public class Automaton {
 				// set "c" to the father node(configuration)
 				c = c.father;
 			}
-			/***************/ System.out.println("\t path : " + pathFromInitialToCurrent);
+			/***************/ System.out.println("\tpath : " + pathFromInitialToCurrent);
 		// determine whether currentNode is accepted
 			// create a new list for blocks of time-stamped conjunctions in the path formula
 			List<BooleanFormula> blocks = new ArrayList<BooleanFormula>();
@@ -307,44 +337,142 @@ public class Automaton {
 			BooleanFormula timeStampedInitialState = addTimeStamps(initialConfiguration.expression, initialState.getPredicates(), 0);
 			// add time-stamped initial state into the blocks
 			blocks.add(timeStampedInitialState);
-			// create a new list for the predicates in the current block
-			List<String> predicatesInCurrentBlock = initialState.getPredicates();
+			// create a new set for the predicates in the current block
+			Set<String> predicatesInCurrentBlock = initialState.getPredicates();
 			// create an integer indicating the current time-stamp
 			int currentTimeStamp = 0;
 			// compute next blocks (except the last block) according to the path
-			for(String s : pathFromInitialToCurrent) {
-				//****************
-				
-				
-				// TO DO
-				
-				
-				//****************
+			for(String a : pathFromInitialToCurrent) {
+				// create a new list for the small parts (of conjunction) of the new block
+				List<BooleanFormula> block = new ArrayList<BooleanFormula>();
+				// create a new set for the predicates in the new block
+				Set<String> predicatesInNewBlock = new HashSet<String>();
+				// compute one part of the new block
+				for(String s : predicatesInCurrentBlock) {
+					// create a new list for the types of the arguments of the predicate
+					List<ExpressionType> argumentsTypes = predicateArgumentsTypesMap.get(s);
+					// create a new list for the arguments of the predicate
+					List<Formula> arguments = new ArrayList<Formula>();
+					// compute the list of arguments
+					int argumentIndex = 0;
+					for(ExpressionType t : argumentsTypes) {
+						Formula argument;
+						if(t == ExpressionType.Integer) {
+							argument = ufmgr.declareAndCallUF("a" + argumentIndex, FormulaType.IntegerType);
+							argumentIndex++;
+						}
+						else {
+							argument = ufmgr.declareAndCallUF("a" + argumentIndex, FormulaType.BooleanType);
+							argumentIndex++;
+						}
+						arguments.add(argument);
+					}
+					// create the left part of the universally-quantified implication (with time-stamp)
+					BooleanFormula left = ufmgr.declareAndCallUF(s + '_' + currentTimeStamp, FormulaType.BooleanType, arguments);
+					// create the right part of the universally-quantified implication without time-stamp
+					FOADAExpression rightWithoutTimeStamps = transitions.get(s + '+' + a);
+					// create a new set for the predicates in the current part of the new block
+					Set<String> predicatesInCurrentPart = rightWithoutTimeStamps.getPredicates();
+					// add the predicates in the current part into the set of predicates in the new block
+					for(String s2 : predicatesInCurrentBlock) {
+						predicatesInNewBlock.add(s2);
+					}
+					// create the right part of the universally-quantified implication with time-stamp
+					BooleanFormula right = addTimeStamps((BooleanFormula)rightWithoutTimeStamps.toJavaSMTFormula(fmgr), predicatesInCurrentPart, currentTimeStamp + 1);
+					// create the implication without quantifier
+					BooleanFormula implication = bmgr.implication(left, right);
+					// directly add the implication into the new block as one part of the conjunction if no argument
+					if(arguments.isEmpty()) {
+						block.add(implication);
+					}
+					// add universally-quantified implication into the new block as one part of the conjunction if there're arguments
+					else {
+						BooleanFormula universallyQuantifiedImplication = qmgr.forall(arguments, implication);
+						block.add(universallyQuantifiedImplication);
+					}
+				}
+			// add the new block into the list of blocks
+				// add true into the list of blocks if the new block is empty
+				if(block.isEmpty()) {
+					blocks.add(bmgr.makeBoolean(true));
+				}
+				// and the new block into the list of blocks if it is not empty
+				else {
+					blocks.add(bmgr.and(block));
+				}
+			// refresh for the next round
+				// refresh the current time-stamp
+				currentTimeStamp++;
+				// refresh the set of predicates in the current block
+				predicatesInCurrentBlock = predicatesInNewBlock;
 			}
-			// compute the last block containing the final conjunction according to the set of final states
+		// compute the last block containing the final conjunction according to the set of final states
+			// create a new list for the final conjunction
 			List<BooleanFormula> finalConjunction = new ArrayList<BooleanFormula>();
 			for(String s : predicatesInCurrentBlock) {
-				if(finalStates.contains(s)) {
-					// implies true if is final state
-					finalConjunction.add(bmgr.implication(bmgr.makeVariable(s + '_' + currentTimeStamp), bmgr.makeBoolean(true)));
+				// create a new list for the types of the arguments of the predicate
+				List<ExpressionType> argumentsTypes = predicateArgumentsTypesMap.get(s);
+				// create a new list for the arguments of the predicate
+				List<Formula> arguments = new ArrayList<Formula>();
+				// compute the list of arguments
+				int argumentIndex = 0;
+				for(ExpressionType t : argumentsTypes) {
+					Formula argument;
+					if(t == ExpressionType.Integer) {
+						argument = ufmgr.declareAndCallUF("a" + argumentIndex, FormulaType.IntegerType);
+						argumentIndex++;
+					}
+					else {
+						argument = ufmgr.declareAndCallUF("a" + argumentIndex, FormulaType.BooleanType);
+						argumentIndex++;
+					}
+					arguments.add(argument);
 				}
+				// create the left part of the universally-quantified implication (with time-stamp)
+				BooleanFormula left = ufmgr.declareAndCallUF(s + '_' + currentTimeStamp, FormulaType.BooleanType, arguments);
+				// implies true if is final state
+				if(finalStates.contains(s)) {
+					// create the implication without quantifier
+					BooleanFormula implication = bmgr.implication(left, bmgr.makeBoolean(true));
+					// directly add the implication into the final conjunction if no argument
+					if(arguments.isEmpty()) {
+						finalConjunction.add(implication);
+					}
+					// add universally-quantified implication into the final conjunction if there're arguments
+					else {
+						BooleanFormula universallyQuantifiedImplication = qmgr.forall(arguments, implication);
+						finalConjunction.add(universallyQuantifiedImplication);
+					}
+				}
+				// implies false if is final state
 				else {
-					// implies false if is not final state
-					finalConjunction.add(bmgr.implication(bmgr.makeVariable(s + '_' + currentTimeStamp), bmgr.makeBoolean(false)));
+					// create the implication without quantifier
+					BooleanFormula implication = bmgr.implication(left, bmgr.makeBoolean(false));
+					// directly add the implication into the final conjunction if no argument
+					if(arguments.isEmpty()) {
+						finalConjunction.add(implication);
+					}
+					// add universally-quantified implication into the final conjunction if there're arguments
+					else {
+						BooleanFormula universallyQuantifiedImplication = qmgr.forall(arguments, implication);
+						finalConjunction.add(universallyQuantifiedImplication);
+					}
 				}
 			}
-			// add the last block into the list of blocks
+		// add the last block into the list of blocks
+			// add true into the list of blocks if the final conjunction is empty
 			if(finalConjunction.isEmpty()) {
 				blocks.add(bmgr.makeBoolean(true));
 			}
+			// add the final conjunction into the list of blocks if it is not empty
 			else {
 				blocks.add(bmgr.and(finalConjunction));
 			}
-			// check if the conjunction of all blocks is true or compute the interpolants
-			System.out.println("The Blocks:");
-			for(BooleanFormula f : blocks) {
-				System.out.println(f);
-			}
+		// check if the conjunction of all blocks is satisfiable or compute the interpolants
+			/***************/ System.out.println("\tThe Blocks:");
+			/***************/ for(BooleanFormula f : blocks) {
+			/***************/ 	System.out.println("\t\t" + f);
+			/***************/ }
 			@SuppressWarnings("rawtypes")
 			// create prover environment for interpolation
 			InterpolatingProverEnvironment prover = solverContext.newProverEnvironmentWithInterpolation();
@@ -359,24 +487,33 @@ public class Automaton {
 				// add the set into the list
 				listPartitions.add(partitionProverPushObjects);
 			}
+			// check whether the conjunction of all blocks is unsatisfiable
 			try {
+				// compute the interpolants if it is not satisfiable
 				if(prover.isUnsat()) {
-					System.out.println("Interpolants:");
+					/***************/ System.out.println("\tInterpolants:");
 					@SuppressWarnings("unchecked")
+					// compute the interpolants (with time-stamps)
 					List<BooleanFormula> interpolantsWithTimeStamps = prover.getSeqInterpolants(listPartitions);
 					List<BooleanFormula> interpolants = new ArrayList<BooleanFormula>();
+					// remove the time-stamps from the interpolants
 					for(BooleanFormula f : interpolantsWithTimeStamps) {
 						interpolants.add(removeTimeStamps(f));
 					}
-					for(BooleanFormula f : interpolants) {
-						System.out.println(f);
-					}
+					/***************/ for(BooleanFormula f : interpolants) {
+					/***************/ 	System.out.println("\t\t" + f);
+					/***************/ }
 				}
+				// print out the model and return false if it is satisfiable
 				else {
-					System.out.println("SAT");
-					System.out.println(prover.getModel());
+					/***************/ System.out.println("SAT");
+					/***************/ System.out.println(toOriginalNames(prover.getModel().toString()));
+					return false;
 				}
 			}
+		// refine the current nodes among the path
+			
+		
 			catch (SolverException e) {
 				throw new InterpolatingProverEnvironmentException(e);
 			}
