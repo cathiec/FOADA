@@ -21,7 +21,7 @@ final: none.
 
 (* { s = m(j) /\ m(j) < m(i) - 1 }  s++ : j  { s < m(i) } *)
 {s<m}(i) --( s++ : j )-> {s=m}(j) /\ {mi<mj-1}(j,i).
-{s<m}(i) --( m=t++ : j )-> if i = j then {s<t}() else {s<m}(i).
+{s<m}(i) --( m=t++ : j )-> (i = j /\ {s<t}()) \/ (i != j /\ {s<m}(i)).
 
 (* { s = m(i) /\ m(i) < t-1 }  s++ : i  { s < t } *)
 {s<t}() --( s++ : i )-> {s=m}(i) /\ {m<t-1}(i).
@@ -32,10 +32,10 @@ final: none.
 {fls}() --( [m>s] : i )-> {s=m}(i) \/ {fls}().
 
 (* { old(s) <= s /\ s < t }  m(i)=t++ { old(s) < m(i) } *)
-{olds<m}(i) --( m=t++ : j )-> if i = j then {olds<=s}() /\ {s<t}() else {olds<m}(i).
+{olds<m}(i) --( m=t++ : j )-> (i = j /\ {olds<=s}() /\ {s<t}()) \/ (i != j /\ {olds<m}(i)).
 
 (* { old(s) <= s } [m>s] : i { old(s) < m(i) } *)
-{olds<m}(i) --( [m>s] : j )-> if i = j then {olds<=s}() else {olds<m}(i).
+{olds<m}(i) --( [m>s] : j )-> (i = j /\ {olds<=s}()) \/ (i != j /\ {olds<m}(i)).
 
 (* { old(s) <= s /\ s < m } s++ : j { old(s) < m }  *)
 {olds<m}(i) --( s++ : j )-> {olds<=s}() /\ {s<m}(i).
@@ -44,8 +44,7 @@ final: none.
 {olds<s}() --( s++ : i )-> {olds<=s}().
 
 
-{s=m}(i) --( m=t++ : j )-> if i = j then {s=t}()
-                           else {s=m}(i).
+{s=m}(i) --( m=t++ : j )-> (i = j /\ {s=t}()) \/ (i != j /\ {s=m}(i)).
 {s=m}(i) --( [m<=s] : j )-> {s=m}(i).
 
 

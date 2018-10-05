@@ -39,6 +39,7 @@ import org.sosy_lab.java_smt.api.FormulaManager;
 import org.sosy_lab.java_smt.api.FormulaType;
 import org.sosy_lab.java_smt.api.IntegerFormulaManager;
 import org.sosy_lab.java_smt.api.InterpolatingProverEnvironment;
+import org.sosy_lab.java_smt.api.Model.ValueAssignment;
 import org.sosy_lab.java_smt.api.ProverEnvironment;
 import org.sosy_lab.java_smt.api.QuantifiedFormulaManager;
 import org.sosy_lab.java_smt.api.SolverContext;
@@ -47,7 +48,10 @@ import org.sosy_lab.java_smt.api.UFManager;
 import exception.FOADAException;
 import exception.InterpolatingProverEnvironmentException;
 import exception.JavaSMTInvalidConfigurationException;
+import structure.FOADAExpression.ExpressionCategory;
 import structure.FOADAExpression.ExpressionType;
+import utility.Console;
+import utility.Console.ConsoleType;
 
 public class Automaton {
 	
@@ -398,9 +402,10 @@ public class Automaton {
 	 * @return	<b> true </b> if the automaton is empty </br>
 	 * 			<b> false </b> if the automaton is not empty
 	 */
-	public boolean isEmpty()
+	public boolean isEmpty(boolean print)
 			throws FOADAException
 	{	
+		long begintime = System.currentTimeMillis();
 	// start with the initial state
 		// configuration number (starting from 0)
 		int configurationNumber = 0;
@@ -420,19 +425,11 @@ public class Automaton {
 		while(!workList.isEmpty()) {
 		// pick the currentNode
 			// pick the first node of workList
-			
 			FOADAConfiguration currentNode = workList.get(0);
-			/***************/ System.out.println(currentNode);
+			/***************/ if(print) System.out.println(currentNode);
 			// remove the first node from workList
 			workList.remove(0);
-			allNodes.add(currentNode);
-			
-			//FOADAConfiguration currentNode = workList.get(workList.size() - 1);
-			///***************/ System.out.println(currentNode);
-			// remove the first node from workList
-			//workList.remove(workList.size() - 1);
-			//allNodes.add(currentNode);
-			
+			allNodes.add(currentNode);	
 		// calculate the path from the initial node to the currentNode
 			// create a new list for symbols along the path
 			List<String> pathFromInitialToCurrent = new ArrayList<String>();
@@ -445,7 +442,7 @@ public class Automaton {
 				// set "c" to the father node(configuration)
 				c = c.father;
 			}
-			/***************/ System.out.println("\tpath : " + pathFromInitialToCurrent);
+			/***************/ if(print) System.out.println("\tpath : " + pathFromInitialToCurrent);
 		// determine whether currentNode is accepted
 			// create a new list for blocks of time-stamped conjunctions in the path formula
 			List<BooleanFormula> blocks = new ArrayList<BooleanFormula>();
@@ -487,6 +484,10 @@ public class Automaton {
 					BooleanFormula left = ufmgr.declareAndCallUF(s + '_' + currentTimeStamp, FormulaType.BooleanType, arguments);
 					// create the right part of the universally-quantified implication without time-stamp
 					FOADAExpression rightWithoutTimeStamps = transitions.get(s + '+' + a);
+					// if no corresponding transition
+					if(rightWithoutTimeStamps == null) {
+						rightWithoutTimeStamps = new FOADAExpression(false);
+					}
 					// create a new set for the predicates in the current part of the new block
 					Set<String> predicatesInCurrentPart = getPredicatesAfterRenaming(rightWithoutTimeStamps);
 					// add the predicates in the current part into the set of predicates in the new block
@@ -585,9 +586,9 @@ public class Automaton {
 				blocks.add(bmgr.and(finalConjunction));
 			}
 		// check if the conjunction of all blocks is satisfiable or compute the interpolants
-			///***************/ System.out.println("\tBlocks:");
+			///***************/ System.out.println("Blocks:");
 			///***************/ for(BooleanFormula f : blocks) {
-			///***************/ 	System.out.println("\t\t" + f);
+			///***************/ 	System.out.println(f);
 			///***************/ }
 			@SuppressWarnings("rawtypes")
 			// create prover environment for interpolation
@@ -633,9 +634,9 @@ public class Automaton {
 						// if the implication if not valid
 						if(!implicationIsValid) {
 							// refine the node by making a conjunction
-							/***************/ System.out.print("\tRefined: {" + currentNodeAmongPath);
+							/***************/ if(print) System.out.print("\tRefined: {" + currentNodeAmongPath);
 							currentNodeAmongPath.expression = bmgr.and(current, interpolant);
-							/***************/ System.out.println("}   --->   {" + currentNodeAmongPath + '}');
+							/***************/ if(print) System.out.println("}   --->   {" + currentNodeAmongPath + '}');
 							// close the node
 							for(FOADAConfiguration node : allNodes) {
 								// according to a certain order
@@ -649,7 +650,7 @@ public class Automaton {
 											if(coverer.isSuccessorOf(currentNodeAmongPath)) {
 												for(FOADAConfiguration covered : e.getValue()) {
 													beCovered.get(covered).remove(coverer);
-													System.out.println("\t{" + covered + "} no longer covered by {" + coverer + '}');
+													/***************/ if(print) System.out.println("\t{" + covered + "} no longer covered by {" + coverer + '}');
 												}
 												toBeRemoved.add(coverer);
 											}
@@ -674,7 +675,7 @@ public class Automaton {
 											covers.add(currentNodeAmongPath);
 											coverOthers.put(node, covers);
 										}
-										/***************/ System.out.println("\t{" + currentNodeAmongPath + "} covered by {" + node + '}');
+										/***************/ if(print) System.out.println("\t{" + currentNodeAmongPath + "} covered by {" + node + '}');
 									}
 								}
 							}
@@ -695,9 +696,27 @@ public class Automaton {
 				}
 				// print out the model and return false if it is satisfiable
 				else {
-					/***************/ System.out.println("SAT with symbol sequence: " + toOriginalNames(pathFromInitialToCurrent.toString()));
-					///***************/ System.out.println(toOriginalNames(prover.getModel().toString()));
-					///***************/ System.out.println(prover.getModel().toString());
+					System.out.println("------------------------------\nSAT with sequence:");
+					Object[][] variablesAssignments = new Object[pathFromInitialToCurrent.size()][variables.size()];
+					for(Object a : prover.getModelAssignments()) {
+						String expressionString = ((ValueAssignment)a).getKey().toString();
+						if(expressionString.charAt(0) == 'v') {
+							int lastIndexOfUnderscore = expressionString.lastIndexOf('_');
+							int variableStep = Integer.valueOf(expressionString.substring(lastIndexOfUnderscore + 1));
+							int variableIndex = Integer.valueOf(expressionString.substring(1, lastIndexOfUnderscore));
+							variablesAssignments[variableStep - 1][variableIndex] = ((ValueAssignment)a).getValue();
+						}
+					}
+					for(int i1 = 0; i1 < pathFromInitialToCurrent.size(); i1++) {
+						System.out.print(toOriginalNames(pathFromInitialToCurrent.get(i1)) + " \tDATA ::: { ");
+						for(int i2 = 0; i2 < variables.size(); i2++) {
+							System.out.print(variablesAssignments[i1][i2] == null ? "any " : variablesAssignments[i1][i2] + " ");
+						}
+						System.out.println('}');
+					}
+					System.out.println("------------------------------");
+					long endtime=System.currentTimeMillis();
+					Console.printInfo(ConsoleType.FOADA, "Time Used : " + (endtime - begintime) + " ms");
 					return false;
 				}
 			// expand the current node if it is not covered
@@ -731,6 +750,8 @@ public class Automaton {
 				throw new InterpolatingProverEnvironmentException(e);
 			}
 		}
+		long endtime=System.currentTimeMillis();
+		Console.printInfo(ConsoleType.FOADA, "Time Used : " + (endtime - begintime) + " ms");
 		return true;
 	}
 

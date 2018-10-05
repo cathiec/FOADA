@@ -85,7 +85,7 @@ public class FOADA {
 	 * FOADA execution with argument <b> -e </b> or <b> --empty </b>
 	 * @param	filename	name of the input file
 	 */
-	private static void checkEmpty(String filename)
+	private static void checkEmpty(String filename, boolean print)
 			throws FOADAException
 	{
 		Automaton a = null;
@@ -101,7 +101,7 @@ public class FOADA {
 		default:			throw new InputFileUnsupportedException(filename);
 		}
 		Console.printInfo(ConsoleType.FOADA, "Start checking emptiness...");
-		if(a.isEmpty()) {
+		if(a.isEmpty(print)) {
 			Console.printInfo(ConsoleType.FOADA, "The automaton is empty...");
 		}
 		else {
@@ -142,8 +142,11 @@ public class FOADA {
 				if(args.length < 2) {
 					throw new InputFileNotFoundException(null);
 				}
+				else if(args[1].equals("-p") || args[0].equals("--print")) {
+					checkEmpty(args[2], true);
+				}
 				else {
-					checkEmpty(args[1]);
+					checkEmpty(args[1], false);
 				}
 			}
 			// installed version
