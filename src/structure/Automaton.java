@@ -420,11 +420,19 @@ public class Automaton {
 		while(!workList.isEmpty()) {
 		// pick the currentNode
 			// pick the first node of workList
+			
 			FOADAConfiguration currentNode = workList.get(0);
 			/***************/ System.out.println(currentNode);
 			// remove the first node from workList
 			workList.remove(0);
 			allNodes.add(currentNode);
+			
+			//FOADAConfiguration currentNode = workList.get(workList.size() - 1);
+			///***************/ System.out.println(currentNode);
+			// remove the first node from workList
+			//workList.remove(workList.size() - 1);
+			//allNodes.add(currentNode);
+			
 		// calculate the path from the initial node to the currentNode
 			// create a new list for symbols along the path
 			List<String> pathFromInitialToCurrent = new ArrayList<String>();

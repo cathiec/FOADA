@@ -56,9 +56,10 @@ public class PAParser {
 	        PAParserANTLR4 parser = new PAParserANTLR4(tokens);
 	        parser.removeErrorListeners();
 	        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
-	        Console.printInfo(ConsoleType.ANTLR4, "Syntax checking succeeded...");
 	        istream.close();
-	        return parser.automaton().jData;
+	        Automaton result = parser.automaton().jData;
+	        Console.printInfo(ConsoleType.ANTLR4, "Syntax checking succeeded...");
+	        return result;
 		}
 		catch(ParseCancellationException e) {
 			throw new ANTLR4ParseCancellationException(e);

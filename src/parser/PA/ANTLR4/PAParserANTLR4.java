@@ -32,7 +32,6 @@ import structure.FOADAExpression.ExpressionType;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
-
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -51,8 +50,8 @@ public class PAParserANTLR4 extends Parser {
 		new PredictionContextCache();
 	public static final int
 		START=1, FINAL=2, NONE=3, FALSE=4, TRUE=5, FORALL=6, EXISTS=7, TL=8, TR=9, 
-		AND=10, OR=11, EQUALS=12, DISTINCTS=13, ID=14, INTEGER=15, FUNCNAME=16, 
-		SYMBOL=17, LP=18, RP=19, POINT=20, TWOPOINTS=21, COM=22, WS=23, COMMENT=24;
+		AND=10, OR=11, EQUALS=12, DISTINCTS=13, INTEGER=14, ID=15, LP=16, RP=17, 
+		POINT=18, TWOPOINTS=19, COM=20, WS=21, COMMENT=22;
 	public static final int
 		RULE_automaton = 0, RULE_final_list = 1, RULE_expression = 2, RULE_or_expression = 3, 
 		RULE_and_expression = 4, RULE_basic_expression = 5, RULE_eq_expression = 6, 
@@ -65,12 +64,12 @@ public class PAParserANTLR4 extends Parser {
 	private static final String[] _LITERAL_NAMES = {
 		null, "'start'", "'final'", "'none'", "'false'", "'true'", "'forall'", 
 		"'exists'", "'--('", "')->'", "'/\\'", "'\\/'", "'='", "'!='", null, null, 
-		null, null, "'('", "')'", "'.'", "':'", "','"
+		"'('", "')'", "'.'", "':'", "','"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
 		null, "START", "FINAL", "NONE", "FALSE", "TRUE", "FORALL", "EXISTS", "TL", 
-		"TR", "AND", "OR", "EQUALS", "DISTINCTS", "ID", "INTEGER", "FUNCNAME", 
-		"SYMBOL", "LP", "RP", "POINT", "TWOPOINTS", "COM", "WS", "COMMENT"
+		"TR", "AND", "OR", "EQUALS", "DISTINCTS", "INTEGER", "ID", "LP", "RP", 
+		"POINT", "TWOPOINTS", "COM", "WS", "COMMENT"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -125,10 +124,10 @@ public class PAParserANTLR4 extends Parser {
 		public Automaton jData;
 		public ExpressionContext e;
 		public Final_listContext fl;
-		public Token FUNCNAME;
-		public Argument_listContext al;
-		public Token SYMBOL;
 		public Token ID;
+		public Argument_listContext al;
+		public Token i1;
+		public Token i2;
 		public TerminalNode START() { return getToken(PAParserANTLR4.START, 0); }
 		public List<TerminalNode> TWOPOINTS() { return getTokens(PAParserANTLR4.TWOPOINTS); }
 		public TerminalNode TWOPOINTS(int i) {
@@ -149,9 +148,9 @@ public class PAParserANTLR4 extends Parser {
 		public Final_listContext final_list() {
 			return getRuleContext(Final_listContext.class,0);
 		}
-		public List<TerminalNode> FUNCNAME() { return getTokens(PAParserANTLR4.FUNCNAME); }
-		public TerminalNode FUNCNAME(int i) {
-			return getToken(PAParserANTLR4.FUNCNAME, i);
+		public List<TerminalNode> ID() { return getTokens(PAParserANTLR4.ID); }
+		public TerminalNode ID(int i) {
+			return getToken(PAParserANTLR4.ID, i);
 		}
 		public List<TerminalNode> LP() { return getTokens(PAParserANTLR4.LP); }
 		public TerminalNode LP(int i) {
@@ -164,14 +163,6 @@ public class PAParserANTLR4 extends Parser {
 		public List<TerminalNode> TL() { return getTokens(PAParserANTLR4.TL); }
 		public TerminalNode TL(int i) {
 			return getToken(PAParserANTLR4.TL, i);
-		}
-		public List<TerminalNode> SYMBOL() { return getTokens(PAParserANTLR4.SYMBOL); }
-		public TerminalNode SYMBOL(int i) {
-			return getToken(PAParserANTLR4.SYMBOL, i);
-		}
-		public List<TerminalNode> ID() { return getTokens(PAParserANTLR4.ID); }
-		public TerminalNode ID(int i) {
-			return getToken(PAParserANTLR4.ID, i);
 		}
 		public List<TerminalNode> TR() { return getTokens(PAParserANTLR4.TR); }
 		public TerminalNode TR(int i) {
@@ -232,11 +223,11 @@ public class PAParserANTLR4 extends Parser {
 			setState(42);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (_la==FUNCNAME) {
+			while (_la==ID) {
 				{
 				{
 				setState(27);
-				((AutomatonContext)_localctx).FUNCNAME = match(FUNCNAME);
+				((AutomatonContext)_localctx).ID = match(ID);
 				setState(28);
 				match(LP);
 				setState(29);
@@ -246,11 +237,11 @@ public class PAParserANTLR4 extends Parser {
 				setState(31);
 				match(TL);
 				setState(32);
-				((AutomatonContext)_localctx).SYMBOL = match(SYMBOL);
+				((AutomatonContext)_localctx).i1 = match(ID);
 				setState(33);
 				match(TWOPOINTS);
 				setState(34);
-				((AutomatonContext)_localctx).ID = match(ID);
+				((AutomatonContext)_localctx).i2 = match(ID);
 				setState(35);
 				match(TR);
 				setState(36);
@@ -259,14 +250,14 @@ public class PAParserANTLR4 extends Parser {
 				match(POINT);
 
 						List<String> variables = new ArrayList<String>();
-						variables.add((((AutomatonContext)_localctx).ID!=null?((AutomatonContext)_localctx).ID.getText():null));
+						variables.add((((AutomatonContext)_localctx).i2!=null?((AutomatonContext)_localctx).i2.getText():null));
 						List<ExpressionType> variablesTypes = new ArrayList<ExpressionType>();
 						variablesTypes.add(ExpressionType.Integer);
 						List<ExpressionType> argumentsTypes = new ArrayList<ExpressionType>();
 						for(String s : ((AutomatonContext)_localctx).al.jData) {
 							argumentsTypes.add(ExpressionType.Integer);
 						}
-						_localctx.jData.addTransition((((AutomatonContext)_localctx).FUNCNAME!=null?((AutomatonContext)_localctx).FUNCNAME.getText():null), ((AutomatonContext)_localctx).al.jData, argumentsTypes, (((AutomatonContext)_localctx).SYMBOL!=null?((AutomatonContext)_localctx).SYMBOL.getText():null), variables, variablesTypes, ((AutomatonContext)_localctx).e.jData);
+						_localctx.jData.addTransition((((AutomatonContext)_localctx).ID!=null?((AutomatonContext)_localctx).ID.getText():null), ((AutomatonContext)_localctx).al.jData, argumentsTypes, (((AutomatonContext)_localctx).i1!=null?((AutomatonContext)_localctx).i1.getText():null), variables, variablesTypes, ((AutomatonContext)_localctx).e.jData);
 					
 				}
 				}
@@ -291,11 +282,11 @@ public class PAParserANTLR4 extends Parser {
 
 	public static class Final_listContext extends ParserRuleContext {
 		public List<String> jData;
-		public Token FUNCNAME;
+		public Token ID;
 		public TerminalNode NONE() { return getToken(PAParserANTLR4.NONE, 0); }
-		public List<TerminalNode> FUNCNAME() { return getTokens(PAParserANTLR4.FUNCNAME); }
-		public TerminalNode FUNCNAME(int i) {
-			return getToken(PAParserANTLR4.FUNCNAME, i);
+		public List<TerminalNode> ID() { return getTokens(PAParserANTLR4.ID); }
+		public TerminalNode ID(int i) {
+			return getToken(PAParserANTLR4.ID, i);
 		}
 		public List<TerminalNode> COM() { return getTokens(PAParserANTLR4.COM); }
 		public TerminalNode COM(int i) {
@@ -333,14 +324,14 @@ public class PAParserANTLR4 extends Parser {
 					
 				}
 				break;
-			case FUNCNAME:
+			case ID:
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(49);
-				((Final_listContext)_localctx).FUNCNAME = match(FUNCNAME);
+				((Final_listContext)_localctx).ID = match(ID);
 
 						((Final_listContext)_localctx).jData =  new ArrayList<String>();
-						_localctx.jData.add((((Final_listContext)_localctx).FUNCNAME!=null?((Final_listContext)_localctx).FUNCNAME.getText():null));		
+						_localctx.jData.add((((Final_listContext)_localctx).ID!=null?((Final_listContext)_localctx).ID.getText():null));		
 					
 				setState(56);
 				_errHandler.sync(this);
@@ -351,9 +342,9 @@ public class PAParserANTLR4 extends Parser {
 					setState(51);
 					match(COM);
 					setState(52);
-					((Final_listContext)_localctx).FUNCNAME = match(FUNCNAME);
+					((Final_listContext)_localctx).ID = match(ID);
 
-							_localctx.jData.add((((Final_listContext)_localctx).FUNCNAME!=null?((Final_listContext)_localctx).FUNCNAME.getText():null));
+							_localctx.jData.add((((Final_listContext)_localctx).ID!=null?((Final_listContext)_localctx).ID.getText():null));
 						
 					}
 					}
@@ -649,7 +640,7 @@ public class PAParserANTLR4 extends Parser {
 		public Argument_listContext al;
 		public ExpressionContext e;
 		public Eq_expressionContext ee;
-		public Token FUNCNAME;
+		public Token ID;
 		public TerminalNode TRUE() { return getToken(PAParserANTLR4.TRUE, 0); }
 		public TerminalNode FALSE() { return getToken(PAParserANTLR4.FALSE, 0); }
 		public TerminalNode EXISTS() { return getToken(PAParserANTLR4.EXISTS, 0); }
@@ -664,7 +655,7 @@ public class PAParserANTLR4 extends Parser {
 		public Eq_expressionContext eq_expression() {
 			return getRuleContext(Eq_expressionContext.class,0);
 		}
-		public TerminalNode FUNCNAME() { return getToken(PAParserANTLR4.FUNCNAME, 0); }
+		public TerminalNode ID() { return getToken(PAParserANTLR4.ID, 0); }
 		public TerminalNode LP() { return getToken(PAParserANTLR4.LP, 0); }
 		public TerminalNode RP() { return getToken(PAParserANTLR4.RP, 0); }
 		public Basic_expressionContext(ParserRuleContext parent, int invokingState) {
@@ -687,8 +678,8 @@ public class PAParserANTLR4 extends Parser {
 		try {
 			setState(133);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case TRUE:
+			switch ( getInterpreter().adaptivePredict(_input,8,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(108);
@@ -698,7 +689,7 @@ public class PAParserANTLR4 extends Parser {
 					
 				}
 				break;
-			case FALSE:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(110);
@@ -708,7 +699,7 @@ public class PAParserANTLR4 extends Parser {
 					
 				}
 				break;
-			case EXISTS:
+			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(112);
@@ -730,7 +721,7 @@ public class PAParserANTLR4 extends Parser {
 					
 				}
 				break;
-			case FORALL:
+			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(118);
@@ -752,8 +743,7 @@ public class PAParserANTLR4 extends Parser {
 					
 				}
 				break;
-			case ID:
-			case LP:
+			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(124);
@@ -763,11 +753,11 @@ public class PAParserANTLR4 extends Parser {
 					
 				}
 				break;
-			case FUNCNAME:
+			case 6:
 				enterOuterAlt(_localctx, 6);
 				{
 				setState(127);
-				((Basic_expressionContext)_localctx).FUNCNAME = match(FUNCNAME);
+				((Basic_expressionContext)_localctx).ID = match(ID);
 				setState(128);
 				match(LP);
 				setState(129);
@@ -780,12 +770,10 @@ public class PAParserANTLR4 extends Parser {
 							FOADAExpression argument = new FOADAExpression(s, ExpressionType.Integer);
 							subExpressions.add(argument);
 						}
-						((Basic_expressionContext)_localctx).jData =  new FOADAExpression((((Basic_expressionContext)_localctx).FUNCNAME!=null?((Basic_expressionContext)_localctx).FUNCNAME.getText():null), ExpressionType.Boolean, subExpressions);
+						((Basic_expressionContext)_localctx).jData =  new FOADAExpression((((Basic_expressionContext)_localctx).ID!=null?((Basic_expressionContext)_localctx).ID.getText():null), ExpressionType.Boolean, subExpressions);
 					
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -977,7 +965,7 @@ public class PAParserANTLR4 extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\32\u00a6\4\2\t\2"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\30\u00a6\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\3\2\3\2\3\2\3"+
 		"\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2"+
 		"\3\2\3\2\3\2\7\2+\n\2\f\2\16\2.\13\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3"+
@@ -990,36 +978,36 @@ public class PAParserANTLR4 extends Parser {
 		"\3\t\3\t\3\t\3\t\3\t\3\t\7\t\u009f\n\t\f\t\16\t\u00a2\13\t\5\t\u00a4\n"+
 		"\t\3\t\2\2\n\2\4\6\b\n\f\16\20\2\2\2\u00ae\2\22\3\2\2\2\4=\3\2\2\2\6?"+
 		"\3\2\2\2\bR\3\2\2\2\nl\3\2\2\2\f\u0087\3\2\2\2\16\u0096\3\2\2\2\20\u0098"+
-		"\3\2\2\2\22\23\b\2\1\2\23\24\7\3\2\2\24\25\7\27\2\2\25\26\5\6\4\2\26\27"+
-		"\b\2\1\2\27\30\7\26\2\2\30\31\7\4\2\2\31\32\7\27\2\2\32\33\5\4\3\2\33"+
-		"\34\b\2\1\2\34,\7\26\2\2\35\36\7\22\2\2\36\37\7\24\2\2\37 \5\20\t\2 !"+
-		"\7\25\2\2!\"\7\n\2\2\"#\7\23\2\2#$\7\27\2\2$%\7\20\2\2%&\7\13\2\2&\'\5"+
-		"\6\4\2\'(\7\26\2\2()\b\2\1\2)+\3\2\2\2*\35\3\2\2\2+.\3\2\2\2,*\3\2\2\2"+
+		"\3\2\2\2\22\23\b\2\1\2\23\24\7\3\2\2\24\25\7\25\2\2\25\26\5\6\4\2\26\27"+
+		"\b\2\1\2\27\30\7\24\2\2\30\31\7\4\2\2\31\32\7\25\2\2\32\33\5\4\3\2\33"+
+		"\34\b\2\1\2\34,\7\24\2\2\35\36\7\21\2\2\36\37\7\22\2\2\37 \5\20\t\2 !"+
+		"\7\23\2\2!\"\7\n\2\2\"#\7\21\2\2#$\7\25\2\2$%\7\21\2\2%&\7\13\2\2&\'\5"+
+		"\6\4\2\'(\7\24\2\2()\b\2\1\2)+\3\2\2\2*\35\3\2\2\2+.\3\2\2\2,*\3\2\2\2"+
 		",-\3\2\2\2-/\3\2\2\2.,\3\2\2\2/\60\7\2\2\3\60\3\3\2\2\2\61\62\7\5\2\2"+
-		"\62>\b\3\1\2\63\64\7\22\2\2\64:\b\3\1\2\65\66\7\30\2\2\66\67\7\22\2\2"+
+		"\62>\b\3\1\2\63\64\7\21\2\2\64:\b\3\1\2\65\66\7\26\2\2\66\67\7\21\2\2"+
 		"\679\b\3\1\28\65\3\2\2\29<\3\2\2\2:8\3\2\2\2:;\3\2\2\2;>\3\2\2\2<:\3\2"+
 		"\2\2=\61\3\2\2\2=\63\3\2\2\2>\5\3\2\2\2?@\5\b\5\2@A\b\4\1\2A\7\3\2\2\2"+
 		"BC\5\n\6\2CJ\b\5\1\2DE\7\r\2\2EF\5\n\6\2FG\b\5\1\2GI\3\2\2\2HD\3\2\2\2"+
-		"IL\3\2\2\2JH\3\2\2\2JK\3\2\2\2KS\3\2\2\2LJ\3\2\2\2MN\7\24\2\2NO\5\b\5"+
-		"\2OP\7\25\2\2PQ\b\5\1\2QS\3\2\2\2RB\3\2\2\2RM\3\2\2\2S\t\3\2\2\2TU\5\f"+
+		"IL\3\2\2\2JH\3\2\2\2JK\3\2\2\2KS\3\2\2\2LJ\3\2\2\2MN\7\22\2\2NO\5\b\5"+
+		"\2OP\7\23\2\2PQ\b\5\1\2QS\3\2\2\2RB\3\2\2\2RM\3\2\2\2S\t\3\2\2\2TU\5\f"+
 		"\7\2U\\\b\6\1\2VW\7\f\2\2WX\5\b\5\2XY\b\6\1\2Y[\3\2\2\2ZV\3\2\2\2[^\3"+
-		"\2\2\2\\Z\3\2\2\2\\]\3\2\2\2]m\3\2\2\2^\\\3\2\2\2_`\7\24\2\2`a\5\b\5\2"+
-		"ab\7\25\2\2bi\b\6\1\2cd\7\f\2\2de\5\b\5\2ef\b\6\1\2fh\3\2\2\2gc\3\2\2"+
+		"\2\2\2\\Z\3\2\2\2\\]\3\2\2\2]m\3\2\2\2^\\\3\2\2\2_`\7\22\2\2`a\5\b\5\2"+
+		"ab\7\23\2\2bi\b\6\1\2cd\7\f\2\2de\5\b\5\2ef\b\6\1\2fh\3\2\2\2gc\3\2\2"+
 		"\2hk\3\2\2\2ig\3\2\2\2ij\3\2\2\2jm\3\2\2\2ki\3\2\2\2lT\3\2\2\2l_\3\2\2"+
 		"\2m\13\3\2\2\2no\7\7\2\2o\u0088\b\7\1\2pq\7\6\2\2q\u0088\b\7\1\2rs\7\t"+
-		"\2\2st\5\20\t\2tu\7\26\2\2uv\5\6\4\2vw\b\7\1\2w\u0088\3\2\2\2xy\7\b\2"+
-		"\2yz\5\20\t\2z{\7\26\2\2{|\5\6\4\2|}\b\7\1\2}\u0088\3\2\2\2~\177\5\16"+
-		"\b\2\177\u0080\b\7\1\2\u0080\u0088\3\2\2\2\u0081\u0082\7\22\2\2\u0082"+
-		"\u0083\7\24\2\2\u0083\u0084\5\20\t\2\u0084\u0085\7\25\2\2\u0085\u0086"+
+		"\2\2st\5\20\t\2tu\7\24\2\2uv\5\6\4\2vw\b\7\1\2w\u0088\3\2\2\2xy\7\b\2"+
+		"\2yz\5\20\t\2z{\7\24\2\2{|\5\6\4\2|}\b\7\1\2}\u0088\3\2\2\2~\177\5\16"+
+		"\b\2\177\u0080\b\7\1\2\u0080\u0088\3\2\2\2\u0081\u0082\7\21\2\2\u0082"+
+		"\u0083\7\22\2\2\u0083\u0084\5\20\t\2\u0084\u0085\7\23\2\2\u0085\u0086"+
 		"\b\7\1\2\u0086\u0088\3\2\2\2\u0087n\3\2\2\2\u0087p\3\2\2\2\u0087r\3\2"+
 		"\2\2\u0087x\3\2\2\2\u0087~\3\2\2\2\u0087\u0081\3\2\2\2\u0088\r\3\2\2\2"+
-		"\u0089\u008a\7\20\2\2\u008a\u008b\7\16\2\2\u008b\u008c\7\20\2\2\u008c"+
-		"\u0097\b\b\1\2\u008d\u008e\7\20\2\2\u008e\u008f\7\17\2\2\u008f\u0090\7"+
-		"\20\2\2\u0090\u0097\b\b\1\2\u0091\u0092\7\24\2\2\u0092\u0093\5\16\b\2"+
-		"\u0093\u0094\7\25\2\2\u0094\u0095\b\b\1\2\u0095\u0097\3\2\2\2\u0096\u0089"+
+		"\u0089\u008a\7\21\2\2\u008a\u008b\7\16\2\2\u008b\u008c\7\21\2\2\u008c"+
+		"\u0097\b\b\1\2\u008d\u008e\7\21\2\2\u008e\u008f\7\17\2\2\u008f\u0090\7"+
+		"\21\2\2\u0090\u0097\b\b\1\2\u0091\u0092\7\22\2\2\u0092\u0093\5\16\b\2"+
+		"\u0093\u0094\7\23\2\2\u0094\u0095\b\b\1\2\u0095\u0097\3\2\2\2\u0096\u0089"+
 		"\3\2\2\2\u0096\u008d\3\2\2\2\u0096\u0091\3\2\2\2\u0097\17\3\2\2\2\u0098"+
-		"\u00a3\b\t\1\2\u0099\u009a\7\20\2\2\u009a\u00a0\b\t\1\2\u009b\u009c\7"+
-		"\30\2\2\u009c\u009d\7\20\2\2\u009d\u009f\b\t\1\2\u009e\u009b\3\2\2\2\u009f"+
+		"\u00a3\b\t\1\2\u0099\u009a\7\21\2\2\u009a\u00a0\b\t\1\2\u009b\u009c\7"+
+		"\26\2\2\u009c\u009d\7\21\2\2\u009d\u009f\b\t\1\2\u009e\u009b\3\2\2\2\u009f"+
 		"\u00a2\3\2\2\2\u00a0\u009e\3\2\2\2\u00a0\u00a1\3\2\2\2\u00a1\u00a4\3\2"+
 		"\2\2\u00a2\u00a0\3\2\2\2\u00a3\u0099\3\2\2\2\u00a3\u00a4\3\2\2\2\u00a4"+
 		"\21\3\2\2\2\16,:=JR\\il\u0087\u0096\u00a0\u00a3";

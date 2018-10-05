@@ -51,16 +51,16 @@ automaton returns [Automaton jData]
 	POINT FINAL TWOPOINTS fl=final_list {
 		$jData.setFinalStates($fl.jData);
 	}
-	POINT (FUNCNAME LP al=argument_list RP TL SYMBOL TWOPOINTS ID TR e=expression POINT {
+	POINT (ID LP al=argument_list RP TL i1=ID TWOPOINTS i2=ID TR e=expression POINT {
 		List<String> variables = new ArrayList<String>();
-		variables.add($ID.text);
+		variables.add($i2.text);
 		List<ExpressionType> variablesTypes = new ArrayList<ExpressionType>();
 		variablesTypes.add(ExpressionType.Integer);
 		List<ExpressionType> argumentsTypes = new ArrayList<ExpressionType>();
 		for(String s : $al.jData) {
 			argumentsTypes.add(ExpressionType.Integer);
 		}
-		$jData.addTransition($FUNCNAME.text, $al.jData, argumentsTypes, $SYMBOL.text, variables, variablesTypes, $e.jData);
+		$jData.addTransition($ID.text, $al.jData, argumentsTypes, $i1.text, variables, variablesTypes, $e.jData);
 	}
 	)* EOF
 ;
@@ -71,12 +71,12 @@ final_list returns [List<String> jData]
 		$jData = new ArrayList<String>();
 	}
 	|
-	FUNCNAME {
+	ID {
 		$jData = new ArrayList<String>();
-		$jData.add($FUNCNAME.text);		
+		$jData.add($ID.text);		
 	}
-	(COM FUNCNAME {
-		$jData.add($FUNCNAME.text);
+	(COM ID {
+		$jData.add($ID.text);
 	}
 	)*
 ;
@@ -156,13 +156,13 @@ basic_expression returns [FOADAExpression jData]
 		$jData = $ee.jData;
 	}
 	|
-	FUNCNAME LP al=argument_list RP {
+	ID LP al=argument_list RP {
 		List<FOADAExpression> subExpressions = new ArrayList<FOADAExpression>();
 		for(String s : $al.jData) {
 			FOADAExpression argument = new FOADAExpression(s, ExpressionType.Integer);
 			subExpressions.add(argument);
 		}
-		$jData = new FOADAExpression($FUNCNAME.text, ExpressionType.Boolean, subExpressions);
+		$jData = new FOADAExpression($ID.text, ExpressionType.Boolean, subExpressions);
 	}
 ;
 
