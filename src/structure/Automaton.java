@@ -48,6 +48,7 @@ import org.sosy_lab.java_smt.api.UFManager;
 import exception.FOADAException;
 import exception.InterpolatingProverEnvironmentException;
 import exception.JavaSMTInvalidConfigurationException;
+import scala.actors.threadpool.ThreadPoolExecutor.Worker;
 import structure.FOADAExpression.ExpressionCategory;
 import structure.FOADAExpression.ExpressionType;
 import utility.Console;
@@ -398,7 +399,141 @@ public class Automaton {
 		return implicationIsValid;
 	}
 	
+	/** check if a node is covered
+	 * @param	node			the node to be checked
+	 * @param	beCoveredMap	the map of coverage (covered : coverers)
+	 * @return	<b> true </b> if the node is covered </br>
+	 * 			<b> false </b> if the node is not covered
+	 */
+	public boolean isCovered(FOADAConfiguration node, Map<FOADAConfiguration, Set<FOADAConfiguration>> beCoveredMap)
+	{
+		for(FOADAConfiguration current = node; current != null; current = current.father) {
+			if(beCoveredMap.containsKey(current)) {
+				//System.out.println("\t\t#" + current.number + " $$$ " + beCoveredMap.get(current));
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/** re-enable a node and all its successors (add them back to the work list)
+	 * @param print		the value is set to <b> true </b> if is going to print the important steps
+	 * @param node		the node to be re-enabled
+	 * @param workList	the work list
+	 */
+	public void reEnableWithAllSuccessors(boolean print, FOADAConfiguration node, List<FOADAConfiguration> workList)
+	{
+		// re-enable the node
+		workList.add(node);
+		/***************/ if(print) System.out.println("\tAdd back: #" + node.number);
+		// re-enable all the successors
+		for(FOADAConfiguration successor : node.successors) {
+			reEnableWithAllSuccessors(print, successor, workList);
+		}
+	}
+	
+	public void refreshCoverage(boolean print, FOADAConfiguration node, Map<FOADAConfiguration, Set<FOADAConfiguration>> coverOthersMap, Map<FOADAConfiguration, Set<FOADAConfiguration>> beCoveredMap, List<FOADAConfiguration> workList)
+			throws FOADAException
+	{
+		Set<FOADAConfiguration> previouslyCoveredNodes = coverOthersMap.get(node);
+		if(previouslyCoveredNodes != null) {
+			List<FOADAConfiguration> toBeRemoved = new ArrayList<FOADAConfiguration>();
+			// check all the nodes that are previously covered by the given node
+			for(FOADAConfiguration covered : previouslyCoveredNodes) {
+				// if a previously covered node (picking node) is not covered by the given node anymore
+				if(!implies(covered.expression, node.expression)) {
+					// remove the picking node from the set of nodes that are covered by the given node
+					toBeRemoved.add(covered);
+					// remove the given node from the set of coverers of the picking node
+					beCoveredMap.get(covered).remove(node);
+					// if the set of coverers of the picking node becomes empty
+					if(beCoveredMap.get(covered).isEmpty()) {
+						// remove the picking node from the map of coverage (covered node : coverers)
+						beCoveredMap.remove(covered);
+					}
+					/***************/ if(print) System.out.println("\t#" + covered.number + " no longer covered by #" + node.number);
+					// re-enable the previous covered node and all its successors
+					reEnableWithAllSuccessors(print, covered, workList);
+				}
+			}
+			for(FOADAConfiguration c : toBeRemoved) {
+				coverOthersMap.get(node).remove(c);
+			}
+			// if the set of nodes that are covered by given node becomes empty (if the given node does not cover any other node)
+			if(coverOthersMap.get(node).isEmpty()) {
+				// remove the given node from the map of coverage (coverer : covered nodes)
+				coverOthersMap.remove(node);
+			}
+		}
+	}
+	
+	/** function close for the coverage
+	 * @param	print					the value is set to <b> true </b> if is going to print the important steps
+	 * @param	currentNodeAlongPath	the node to be closed
+	 * @param	allNodes				set of all nodes
+	 * @param	coverOthersMap			the map of coverage (coverer : covered nodes)
+	 * @param	beCoveredMap			the map of coverage (covered node : coverers)
+	 * @param	workList				the work list
+	 * @return							<b> true </b> if successfully close the node </br>
+	 * 									<b> false </b> if the node is not closed
+	 * @throws FOADAException
+	 */
+	public boolean close(boolean print, FOADAConfiguration currentNodeAlongPath, Set<FOADAConfiguration> allNodes, Map<FOADAConfiguration, Set<FOADAConfiguration>> coverOthersMap, Map<FOADAConfiguration, Set<FOADAConfiguration>> beCoveredMap, List<FOADAConfiguration> workList)
+			throws FOADAException
+	{
+		for(FOADAConfiguration targetNode : allNodes) {
+			// pick a target node (which is not covered) from all nodes according to a certain order
+			if(targetNode.number < currentNodeAlongPath.number && !isCovered(targetNode, beCoveredMap)) {
+				// if the current node along path is covered by the target node
+				if(implies(currentNodeAlongPath.expression, targetNode.expression)) {
+					// remove all the coverage where the current node along path or any of its successors covers another
+					List<FOADAConfiguration> toBeRemoved = new ArrayList<FOADAConfiguration>();
+					for(Entry<FOADAConfiguration, Set<FOADAConfiguration>> e : coverOthersMap.entrySet()) {
+						FOADAConfiguration coverer = e.getKey();
+						if(coverer.isSuccessorOf(currentNodeAlongPath)) {
+							for(FOADAConfiguration covered : e.getValue()) {
+								beCoveredMap.get(covered).remove(coverer);
+								if(beCoveredMap.get(covered).isEmpty()) {
+									beCoveredMap.remove(covered);
+								}
+								/***************/ if(print) System.out.println("\t#" + covered.number + " no longer covered by #" + coverer.number);
+								// re-enable the previous covered node and all its successors
+								reEnableWithAllSuccessors(print, covered, workList);
+							}
+							toBeRemoved.add(coverer);
+						}
+					}
+					for(FOADAConfiguration c2 : toBeRemoved) {
+						coverOthersMap.remove(c2);
+					}
+					// add coverage where the current node along path is covered
+					if(beCoveredMap.containsKey(currentNodeAlongPath)) {
+						beCoveredMap.get(currentNodeAlongPath).add(targetNode);
+					}
+					else {
+						Set<FOADAConfiguration> isCoveredBy = new HashSet<FOADAConfiguration>();
+						isCoveredBy.add(targetNode);
+						beCoveredMap.put(currentNodeAlongPath, isCoveredBy);
+					}
+					if(coverOthersMap.containsKey(targetNode)) {
+						coverOthersMap.get(targetNode).add(currentNodeAlongPath);
+					}
+					else {
+						Set<FOADAConfiguration> covers = new HashSet<FOADAConfiguration>();
+						covers.add(currentNodeAlongPath);
+						coverOthersMap.put(targetNode, covers);
+					}
+					/***************/ if(print) System.out.println("\t#" + currentNodeAlongPath.number + " covered by #" + targetNode.number);
+					/***************/ if(print) System.out.println("\t#" + currentNodeAlongPath.number + " closed");
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	/** check if the automaton is empty
+	 * @param	print	the value is set to <b> true </b> if is going to print the important steps
 	 * @return	<b> true </b> if the automaton is empty </br>
 	 * 			<b> false </b> if the automaton is not empty
 	 */
@@ -407,13 +542,13 @@ public class Automaton {
 	{	
 		long begintime = System.currentTimeMillis();
 	// start with the initial state
-		// configuration number (starting from 0)
+		// node (configuration) number (starting from 0)
 		int configurationNumber = 0;
 		// create node(configuration) for the initial state
 		FOADAConfiguration initialConfiguration = new FOADAConfiguration(configurationNumber++, (BooleanFormula)initialState.toJavaSMTFormula(fmgr), null, null);
 	// initialize the coverage management
-		Map<FOADAConfiguration, Set<FOADAConfiguration>> coverOthers = new LinkedHashMap<FOADAConfiguration, Set<FOADAConfiguration>>();
-		Map<FOADAConfiguration, Set<FOADAConfiguration>> beCovered = new LinkedHashMap<FOADAConfiguration, Set<FOADAConfiguration>>();
+		Map<FOADAConfiguration, Set<FOADAConfiguration>> coverOthersMap = new LinkedHashMap<FOADAConfiguration, Set<FOADAConfiguration>>();
+		Map<FOADAConfiguration, Set<FOADAConfiguration>> beCoveredMap = new LinkedHashMap<FOADAConfiguration, Set<FOADAConfiguration>>();
 	// initialize the set of nodes
 		Set<FOADAConfiguration> allNodes = new HashSet<FOADAConfiguration>();
 	// start working with workList
@@ -429,14 +564,14 @@ public class Automaton {
 			/***************/ if(print) System.out.println(currentNode);
 			// remove the first node from workList
 			workList.remove(0);
-			allNodes.add(currentNode);	
+			allNodes.add(currentNode);
 		// calculate the path from the initial node to the currentNode
 			// create a new list for symbols along the path
 			List<String> pathFromInitialToCurrent = new ArrayList<String>();
 			// create "c" for the loop and initialize it to currentNode
 			FOADAConfiguration c = currentNode;
 			// looped working for finding the path (end if father node is null)
-			while(c.fatherSymbol != null) {
+			while(c.father != null) {
 				// add the father symbol in the beginning (position index = 0) of the list
 				pathFromInitialToCurrent.add(0, c.fatherSymbol);
 				// set "c" to the father node(configuration)
@@ -586,10 +721,10 @@ public class Automaton {
 				blocks.add(bmgr.and(finalConjunction));
 			}
 		// check if the conjunction of all blocks is satisfiable or compute the interpolants
-			///***************/ System.out.println("Blocks:");
-			///***************/ for(BooleanFormula f : blocks) {
-			///***************/ 	System.out.println(f);
-			///***************/ }
+			//***************/ System.out.println("Blocks:");
+			//***************/ for(BooleanFormula f : blocks) {
+			//***************/ 	System.out.println(f);
+			//***************/ }
 			@SuppressWarnings("rawtypes")
 			// create prover environment for interpolation
 			InterpolatingProverEnvironment prover = solverContext.newProverEnvironmentWithInterpolation();
@@ -608,7 +743,6 @@ public class Automaton {
 			try {
 				// compute the interpolants if it is not satisfiable
 				if(prover.isUnsat()) {
-					///***************/ System.out.println("\tInterpolants:");
 					@SuppressWarnings("unchecked")
 					// compute the interpolants (with time-stamps)
 					List<BooleanFormula> interpolantsWithTimeStamps = prover.getSeqInterpolants(listPartitions);
@@ -617,67 +751,32 @@ public class Automaton {
 					for(BooleanFormula f : interpolantsWithTimeStamps) {
 						interpolants.add(removeTimeStamps(f));
 					}
-				// refine the nodes among the path
+				// refine the nodes along the path
 					// starting from the root node
-					FOADAConfiguration currentNodeAmongPath = initialConfiguration;
+					FOADAConfiguration currentNodeAlongPath = initialConfiguration;
 					int step = 0;
 					// loop check the path
+					boolean oneNodeIsClosed = false;
 					while(true) {
 						// get the corresponding interpolant according to the current step
 						BooleanFormula interpolant = interpolants.get(step);
 						// get the expression in the current node
-						BooleanFormula current = currentNodeAmongPath.expression;
-						///***************/ System.out.println("\t\t" + interpolant);
+						BooleanFormula currentExpression = currentNodeAlongPath.expression;
+						//***************/ System.out.println("\t\t" + interpolant);
 						// check the validity of the implication: current -> interpolant
-						boolean implicationIsValid = implies(current, interpolant);
-						///***************/ System.out.println("\t\t\tchecking: " + current + " -> " + interpolant + "   {" + implicationIsValid + '}');
+						boolean implicationIsValid = implies(currentExpression, interpolant);
+						//***************/ System.out.println("\t\t\tchecking: " + current + " -> " + interpolant + "   {" + implicationIsValid + '}');
 						// if the implication if not valid
 						if(!implicationIsValid) {
 							// refine the node by making a conjunction
-							/***************/ if(print) System.out.print("\tRefined: {" + currentNodeAmongPath);
-							currentNodeAmongPath.expression = bmgr.and(current, interpolant);
-							/***************/ if(print) System.out.println("}   --->   {" + currentNodeAmongPath + '}');
-							// close the node
-							for(FOADAConfiguration node : allNodes) {
-								// according to a certain order
-								if(node.number > currentNodeAmongPath.number) {
-									// if current node is covered by another node
-									if(implies(currentNodeAmongPath.expression, node.expression)) {
-										// remove all the coverage where current node or any of its successors covers another
-										List<FOADAConfiguration> toBeRemoved = new ArrayList<FOADAConfiguration>();
-										for(Entry<FOADAConfiguration, Set<FOADAConfiguration>> e : coverOthers.entrySet()) {
-											FOADAConfiguration coverer = e.getKey();
-											if(coverer.isSuccessorOf(currentNodeAmongPath)) {
-												for(FOADAConfiguration covered : e.getValue()) {
-													beCovered.get(covered).remove(coverer);
-													/***************/ if(print) System.out.println("\t{" + covered + "} no longer covered by {" + coverer + '}');
-												}
-												toBeRemoved.add(coverer);
-											}
-										}
-										for(FOADAConfiguration c2 : toBeRemoved) {
-											coverOthers.remove(c2);
-										}
-										// add coverage where current node is covered
-										if(beCovered.containsKey(currentNodeAmongPath)) {
-											beCovered.get(currentNodeAmongPath).add(node);
-										}
-										else {
-											Set<FOADAConfiguration> isCoveredBy = new HashSet<FOADAConfiguration>();
-											isCoveredBy.add(node);
-											beCovered.put(currentNodeAmongPath, isCoveredBy);
-										}
-										if(coverOthers.containsKey(node)) {
-											coverOthers.get(node).add(currentNodeAmongPath);
-										}
-										else {
-											Set<FOADAConfiguration> covers = new HashSet<FOADAConfiguration>();
-											covers.add(currentNodeAmongPath);
-											coverOthers.put(node, covers);
-										}
-										/***************/ if(print) System.out.println("\t{" + currentNodeAmongPath + "} covered by {" + node + '}');
-									}
-								}
+							/***************/ if(print) System.out.print("\tRefined #" + currentNodeAlongPath.number);
+							currentNodeAlongPath.expression = bmgr.and(currentExpression, interpolant);
+							/***************/ if(print) System.out.println(" : " + currentNodeAlongPath.expression);
+							// refresh the coverage (maybe the node does not cover another node anymore)
+							refreshCoverage(print, currentNodeAlongPath, coverOthersMap, beCoveredMap, workList);
+							// close the current node along path
+							if(!oneNodeIsClosed) {
+								oneNodeIsClosed = close(print, currentNodeAlongPath, allNodes, coverOthersMap, beCoveredMap, workList);
 							}
 						}
 						// if finish looping the path
@@ -686,9 +785,9 @@ public class Automaton {
 						}
 						// if not finish looping the path
 						else {
-							// refresh the current node among the path
-							int indexOfSuccessor = currentNodeAmongPath.successorSymbolIndexMap.get(pathFromInitialToCurrent.get(step));
-							currentNodeAmongPath = currentNodeAmongPath.successors.get(indexOfSuccessor);
+							// refresh the current node along path
+							int indexOfSuccessor = currentNodeAlongPath.successorSymbolIndexMap.get(pathFromInitialToCurrent.get(step));
+							currentNodeAlongPath = currentNodeAlongPath.successors.get(indexOfSuccessor);
 							// refresh the current step
 							step++;
 						}
@@ -697,50 +796,58 @@ public class Automaton {
 				// print out the model and return false if it is satisfiable
 				else {
 					System.out.println("------------------------------\nSAT with sequence:");
-					Object[][] variablesAssignments = new Object[pathFromInitialToCurrent.size()][variables.size()];
-					for(Object a : prover.getModelAssignments()) {
-						String expressionString = ((ValueAssignment)a).getKey().toString();
-						if(expressionString.charAt(0) == 'v') {
-							int lastIndexOfUnderscore = expressionString.lastIndexOf('_');
-							int variableStep = Integer.valueOf(expressionString.substring(lastIndexOfUnderscore + 1));
-							int variableIndex = Integer.valueOf(expressionString.substring(1, lastIndexOfUnderscore));
-							variablesAssignments[variableStep - 1][variableIndex] = ((ValueAssignment)a).getValue();
-						}
+					if(pathFromInitialToCurrent.size() == 0) {
+						System.out.println("empty trace");
 					}
-					for(int i1 = 0; i1 < pathFromInitialToCurrent.size(); i1++) {
-						System.out.print(toOriginalNames(pathFromInitialToCurrent.get(i1)) + " \tDATA ::: { ");
-						for(int i2 = 0; i2 < variables.size(); i2++) {
-							System.out.print(variablesAssignments[i1][i2] == null ? "any " : variablesAssignments[i1][i2] + " ");
+					else {
+						Object[][] variablesAssignments = new Object[pathFromInitialToCurrent.size()][variables.size()];
+						for(Object a : prover.getModelAssignments()) {
+							String expressionString = ((ValueAssignment)a).getKey().toString();
+							if(expressionString.charAt(0) == 'v') {
+								int lastIndexOfUnderscore = expressionString.lastIndexOf('_');
+								int variableStep = Integer.valueOf(expressionString.substring(lastIndexOfUnderscore + 1));
+								int variableIndex = Integer.valueOf(expressionString.substring(1, lastIndexOfUnderscore));
+								variablesAssignments[variableStep - 1][variableIndex] = ((ValueAssignment)a).getValue();
+							}
 						}
-						System.out.println('}');
+						for(int i1 = 0; i1 < pathFromInitialToCurrent.size(); i1++) {
+							System.out.print(toOriginalNames(pathFromInitialToCurrent.get(i1)) + " \tDATA ::: { ");
+							for(int i2 = 0; i2 < variables.size(); i2++) {
+								System.out.print(variablesAssignments[i1][i2] == null ? "any " : variablesAssignments[i1][i2] + " ");
+							}
+							System.out.println('}');
+						}
 					}
 					System.out.println("------------------------------");
 					long endtime=System.currentTimeMillis();
+					Console.printInfo(ConsoleType.FOADA, "Nodes Expanded : " + (configurationNumber + 1));
 					Console.printInfo(ConsoleType.FOADA, "Time Used : " + (endtime - begintime) + " ms");
 					return false;
 				}
 			// expand the current node if it is not covered
 				// skip expanding if the current node is false
 				if(implies(currentNode.expression, bmgr.makeBoolean(false))) {
+					if(allNodes.remove(currentNode)) {
+						/***************/ if(print) System.out.println("\t#" + currentNode.number + " removed (false node)");
+					}
+					else {
+						System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$");
+					}
 					continue;
 				}
-				// create a Boolean for coverage checking
-				boolean isCovered = false;
-				for(FOADAConfiguration current = currentNode; current != null; current = current.father) {
-					if(beCovered.containsKey(current)) {
-						isCovered = true;
-						break;
-					}
-				}
-				if(!isCovered) {
+				// check if the current node is covered, if not then expand it
+				if(!isCovered(currentNode, beCoveredMap) && currentNode.successors.isEmpty()) {
 					// try all the event symbols
 					for(String a : eventSymbols) {
-						///***************/ System.out.println("\tExpand with " + a + ':');
+						//***************/ System.out.println("\tExpand with " + a + ':');
 						FOADAConfiguration newNode = new FOADAConfiguration(configurationNumber++, bmgr.makeBoolean(true), currentNode, a);
 						currentNode.addSuccessor(a, newNode);
-						///***************/ System.out.println("\t\t" + newNode);
+						//***************/ System.out.println("\t\t" + newNode);
 						workList.add(newNode);
 					}
+				}
+				else {
+					/***************/ if(print) System.out.println("\tnot going to expand (covered)");
 				}
 			}
 			catch (SolverException e) {
@@ -751,8 +858,9 @@ public class Automaton {
 			}
 		}
 		long endtime=System.currentTimeMillis();
+		Console.printInfo(ConsoleType.FOADA, "Nodes Expanded : " + (configurationNumber + 1));
 		Console.printInfo(ConsoleType.FOADA, "Time Used : " + (endtime - begintime) + " ms");
 		return true;
 	}
-
+	
 }

@@ -107,6 +107,7 @@ public class FOADA {
 		else {
 			Console.printInfo(ConsoleType.FOADA, "The automaton is not empty...");
 		}
+		//a.test();
 		Console.printFOADAEndOfSession();
 	}
 	
