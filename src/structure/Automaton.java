@@ -45,6 +45,8 @@ import org.sosy_lab.java_smt.api.QuantifiedFormulaManager;
 import org.sosy_lab.java_smt.api.SolverContext;
 import org.sosy_lab.java_smt.api.SolverException;
 import org.sosy_lab.java_smt.api.UFManager;
+
+import exception.ANTLR4ParseCancellationException;
 import exception.FOADAException;
 import exception.InterpolatingProverEnvironmentException;
 import exception.JavaSMTInvalidConfigurationException;
@@ -160,7 +162,7 @@ public class Automaton {
 	/** get predicates (before renaming) from an expression
 	 * 
 	 */
-	public Set<String> getPredicatesBeforeRenaming(FOADAExpression expression)
+	private Set<String> getPredicatesBeforeRenaming(FOADAExpression expression)
 	{
 		Set<String> predicates = new HashSet<String>();
 		switch(expression.category)
@@ -197,7 +199,7 @@ public class Automaton {
 	/** get predicates (before renaming) from an expression
 	 * 
 	 */
-	public Set<String> getPredicatesAfterRenaming(FOADAExpression expression)
+	private Set<String> getPredicatesAfterRenaming(FOADAExpression expression)
 	{
 		Set<String> predicates = new HashSet<String>();
 		switch(expression.category)
@@ -307,8 +309,9 @@ public class Automaton {
 	
 	/** replace all the event symbols and predicates in a string by their original names
 	 * @param	stringWithNewNames	the string to be modified
+	 * @return	the string after replacement
 	 */
-	public String toOriginalNames(String stringWithNewNames)
+	private String toOriginalNames(String stringWithNewNames)
 	{
 		String result = stringWithNewNames;
 		// change event symbols back to the original names
@@ -334,7 +337,7 @@ public class Automaton {
 	 * @param	freeVariables	the free variables in the original Boolean formula
 	 * @return	the Boolean formula after adding time-stamps
 	 */
-	public BooleanFormula addTimeStamps(BooleanFormula expression, Set<String> predicates, int timeStamp)
+	private BooleanFormula addTimeStamps(BooleanFormula expression, Set<String> predicates, int timeStamp)
 	{
 		BooleanFormula result = expression;
 		String resultToString = fmgr.dumpFormula(result).toString();
@@ -354,7 +357,7 @@ public class Automaton {
 	 * @param	expression	the original Boolean formula
 	 * @return	the Boolean formula after removing time-stamps
 	 */
-	public BooleanFormula removeTimeStamps(BooleanFormula expression)
+	private BooleanFormula removeTimeStamps(BooleanFormula expression)
 	{
 		BooleanFormula result = expression;
 		String resultToString = fmgr.dumpFormula(result).toString();
@@ -370,8 +373,10 @@ public class Automaton {
 	/** check the validity of an implication <b> f1 -> f2 </b>
 	 * @param	f1	first Boolean formula
 	 * @param	f2	second Boolean formula
+	 * @return	<b> true </b> if f1 -> f2 </br>
+	 * 			<b> false </b> if f1 doesn't imply f2
 	 */
-	public boolean implies(BooleanFormula f1, BooleanFormula f2)
+	private boolean implies(BooleanFormula f1, BooleanFormula f2)
 			throws FOADAException
 	{
 		BooleanFormula implication = bmgr.implication(f1, f2);
@@ -405,7 +410,7 @@ public class Automaton {
 	 * @return	<b> true </b> if the node is covered </br>
 	 * 			<b> false </b> if the node is not covered
 	 */
-	public boolean isCovered(FOADAConfiguration node, Map<FOADAConfiguration, Set<FOADAConfiguration>> beCoveredMap)
+	private boolean isCovered(FOADAConfiguration node, Map<FOADAConfiguration, Set<FOADAConfiguration>> beCoveredMap)
 	{
 		for(FOADAConfiguration current = node; current != null; current = current.father) {
 			if(beCoveredMap.containsKey(current)) {
@@ -417,22 +422,34 @@ public class Automaton {
 	}
 	
 	/** re-enable a node and all its successors (add them back to the work list)
-	 * @param print		the value is set to <b> true </b> if is going to print the important steps
-	 * @param node		the node to be re-enabled
-	 * @param workList	the work list
+	 * @param	print		the value is set to <b> true </b> if is going to print the important steps
+	 * @param	node		the node to be re-enabled
+	 * @param	workList	the work list
+	 * @throws	FOADAException 
 	 */
-	public void reEnableWithAllSuccessors(boolean print, FOADAConfiguration node, List<FOADAConfiguration> workList)
+	private void reEnableWithAllSuccessors(boolean print, FOADAConfiguration node, List<FOADAConfiguration> workList)
+			throws FOADAException
 	{
 		// re-enable the node
-		workList.add(node);
-		/***************/ if(print) System.out.println("\tAdd back: #" + node.number);
+		if(!implies(node.expression, bmgr.makeBoolean(false)) && !workList.contains(node)) {
+			workList.add(0, node);
+			/***************/ if(print) System.out.println("\tAdd back: #" + node.number);
+		}
 		// re-enable all the successors
 		for(FOADAConfiguration successor : node.successors) {
 			reEnableWithAllSuccessors(print, successor, workList);
 		}
 	}
 	
-	public void refreshCoverage(boolean print, FOADAConfiguration node, Map<FOADAConfiguration, Set<FOADAConfiguration>> coverOthersMap, Map<FOADAConfiguration, Set<FOADAConfiguration>> beCoveredMap, List<FOADAConfiguration> workList)
+	/** remove all the invalid coverage of a given node (re-check the previous coverage)
+	 * @param	print			the value is set to <b> true </b> if is going to print the important steps
+	 * @param	node			the node to be checked
+	 * @param	coverOthersMap	the map of coverage (coverer : covered nodes)
+	 * @param	beCoveredMap	the map of coverage (covered node : coverers)
+	 * @param	workList		the work list
+	 * @throws	FOADAException
+	 */
+	private void removeInvalidCoverage(boolean print, FOADAConfiguration node, Map<FOADAConfiguration, Set<FOADAConfiguration>> coverOthersMap, Map<FOADAConfiguration, Set<FOADAConfiguration>> beCoveredMap, List<FOADAConfiguration> workList)
 			throws FOADAException
 	{
 		Set<FOADAConfiguration> previouslyCoveredNodes = coverOthersMap.get(node);
@@ -476,9 +493,9 @@ public class Automaton {
 	 * @param	workList				the work list
 	 * @return							<b> true </b> if successfully close the node </br>
 	 * 									<b> false </b> if the node is not closed
-	 * @throws FOADAException
+	 * @throws	FOADAException
 	 */
-	public boolean close(boolean print, FOADAConfiguration currentNodeAlongPath, Set<FOADAConfiguration> allNodes, Map<FOADAConfiguration, Set<FOADAConfiguration>> coverOthersMap, Map<FOADAConfiguration, Set<FOADAConfiguration>> beCoveredMap, List<FOADAConfiguration> workList)
+	private boolean close(boolean print, FOADAConfiguration currentNodeAlongPath, Set<FOADAConfiguration> allNodes, Map<FOADAConfiguration, Set<FOADAConfiguration>> coverOthersMap, Map<FOADAConfiguration, Set<FOADAConfiguration>> beCoveredMap, List<FOADAConfiguration> workList)
 			throws FOADAException
 	{
 		for(FOADAConfiguration targetNode : allNodes) {
@@ -564,6 +581,9 @@ public class Automaton {
 			/***************/ if(print) System.out.println(currentNode);
 			// remove the first node from workList
 			workList.remove(0);
+			if(implies(currentNode.expression, bmgr.makeBoolean(false))) {
+				throw new ANTLR4ParseCancellationException(null);
+			}
 			allNodes.add(currentNode);
 		// calculate the path from the initial node to the currentNode
 			// create a new list for symbols along the path
@@ -769,14 +789,18 @@ public class Automaton {
 						// if the implication if not valid
 						if(!implicationIsValid) {
 							// refine the node by making a conjunction
-							/***************/ if(print) System.out.print("\tRefined #" + currentNodeAlongPath.number);
+							/***************/ if(print) System.out.print("\t#" + currentNodeAlongPath.number + " refined ");
 							currentNodeAlongPath.expression = bmgr.and(currentExpression, interpolant);
 							/***************/ if(print) System.out.println(" : " + currentNodeAlongPath.expression);
 							// refresh the coverage (maybe the node does not cover another node anymore)
-							refreshCoverage(print, currentNodeAlongPath, coverOthersMap, beCoveredMap, workList);
+							removeInvalidCoverage(print, currentNodeAlongPath, coverOthersMap, beCoveredMap, workList);
 							// close the current node along path
 							if(!oneNodeIsClosed) {
 								oneNodeIsClosed = close(print, currentNodeAlongPath, allNodes, coverOthersMap, beCoveredMap, workList);
+							}
+							if(implies(currentNodeAlongPath.expression, bmgr.makeBoolean(false))) {
+								workList.remove(currentNodeAlongPath);
+								/***************/ if(print) System.out.println("\t#" + currentNodeAlongPath.number + " removed (false node)");
 							}
 						}
 						// if finish looping the path
@@ -825,18 +849,17 @@ public class Automaton {
 					return false;
 				}
 			// expand the current node if it is not covered
-				// skip expanding if the current node is false
-				if(implies(currentNode.expression, bmgr.makeBoolean(false))) {
-					if(allNodes.remove(currentNode)) {
-						/***************/ if(print) System.out.println("\t#" + currentNode.number + " removed (false node)");
-					}
-					else {
-						System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$");
-					}
-					continue;
-				}
 				// check if the current node is covered, if not then expand it
-				if(!isCovered(currentNode, beCoveredMap) && currentNode.successors.isEmpty()) {
+				boolean notGoingToExpand = false;
+				if(!currentNode.successors.isEmpty()) {
+					/***************/ if(print) System.out.println("\tnot going to expand (already expanded)");
+					notGoingToExpand = true;
+				}
+				if(!notGoingToExpand && isCovered(currentNode, beCoveredMap)) {
+					/***************/ if(print) System.out.println("\tnot going to expand (covered)");
+					notGoingToExpand = true;
+				}
+				if(!notGoingToExpand) {
 					// try all the event symbols
 					for(String a : eventSymbols) {
 						//***************/ System.out.println("\tExpand with " + a + ':');
@@ -845,9 +868,6 @@ public class Automaton {
 						//***************/ System.out.println("\t\t" + newNode);
 						workList.add(newNode);
 					}
-				}
-				else {
-					/***************/ if(print) System.out.println("\tnot going to expand (covered)");
 				}
 			}
 			catch (SolverException e) {

@@ -24,11 +24,9 @@ package app;
 
 import exception.FOADAException;
 import exception.InputFileNotFoundException;
-import exception.InputFileUnsupportedException;
 import exception.UnknownConsoleOptionException;
-import parser.Parser;
-import parser.Parser.ParserType;
-import parser.PA.PAParser;
+import parser.ParserTools;
+import parser.ParserTools.ParserType;
 import structure.Automaton;
 import utility.Console;
 import utility.Console.ConsoleType;
@@ -58,13 +56,15 @@ public class FOADA {
 	{
 		Console.printInfo(ConsoleType.FOADA, "Showing all the options...");
 		// -h , --help
-		System.out.println("\t-h, --help \t\t help menu");
+		System.out.println("\t-h, --help \t\thelp menu");
 		// -c , --check
-		System.out.println("\t-c, --check \t\t solver checking");
+		System.out.println("\t-c, --check \t\tsolver checking");
 		// -e, --empty
-		System.out.println("\t-e, --empty <input> \t emptiness checking");
+		System.out.println("\t-e, --empty <input> \temptiness checking");
+		// -p, --print
+		System.out.println("\t\t-p, --print\tadd this option after -e, --empty to print out important steps during emptiness checking");
 		// -v , --version
-		System.out.println("\t-v, --version \t\t installed version");
+		System.out.println("\t-v, --version \t\tinstalled version");
 		Console.printFOADAEndOfSession();
 	}
 	
@@ -88,20 +88,10 @@ public class FOADA {
 	private static void checkEmpty(String filename, boolean print)
 			throws FOADAException
 	{
-		Automaton a = null;
-		ParserType type = Parser.selectAccordingToInputFile(filename);
-		switch(type)
-		{
-		case PAParser:		a = PAParser.buildAutomatonFromFile(filename);
-							break;
-		case ADAParser:		a = null;
-							break;
-		case FOADAParser:	a = null;
-							break;
-		default:			throw new InputFileUnsupportedException(filename);
-		}
+		ParserType parserType = ParserTools.selectAccordingToInputFile(filename);
+		Automaton automaton = ParserTools.buildAutomatonFromFile(filename, parserType);
 		Console.printInfo(ConsoleType.FOADA, "Start checking emptiness...");
-		if(a.isEmpty(print)) {
+		if(automaton.isEmpty(print)) {
 			Console.printInfo(ConsoleType.FOADA, "The automaton is empty...");
 		}
 		else {
@@ -143,7 +133,7 @@ public class FOADA {
 				if(args.length < 2) {
 					throw new InputFileNotFoundException(null);
 				}
-				else if(args[1].equals("-p") || args[0].equals("--print")) {
+				else if(args[1].equals("-p") || args[1].equals("--print")) {
 					checkEmpty(args[2], true);
 				}
 				else {
