@@ -829,7 +829,7 @@ public class Automaton {
 							}
 						}
 						for(int i1 = 0; i1 < pathFromInitialToCurrent.size(); i1++) {
-							System.out.print(toOriginalNames(pathFromInitialToCurrent.get(i1)) + " \tDATA ::: { ");
+							System.out.print(renameMap2.get((pathFromInitialToCurrent.get(i1))) + " \tDATA ::: { ");
 							for(int i2 = 0; i2 < variables.size(); i2++) {
 								System.out.print(variablesAssignments[i1][i2] == null ? "any " : variablesAssignments[i1][i2] + " ");
 							}
