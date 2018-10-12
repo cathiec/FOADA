@@ -51,16 +51,16 @@ automaton returns [Automaton jData]
 	POINT FINAL TWOPOINTS fl=final_list {
 		$jData.setFinalStates($fl.jData);
 	}
-	POINT (ID LP al=argument_list RP TL i1=ID TWOPOINTS i2=ID TR e=expression POINT {
+	POINT (i1=ID LP al=argument_list RP TL i2=ID TWOPOINTS i3=ID TR e=expression POINT {
 		List<String> variables = new ArrayList<String>();
-		variables.add($i2.text);
+		variables.add($i3.text.replaceAll("\\s*", ""));
 		List<ExpressionType> variablesTypes = new ArrayList<ExpressionType>();
 		variablesTypes.add(ExpressionType.Integer);
 		List<ExpressionType> argumentsTypes = new ArrayList<ExpressionType>();
 		for(String s : $al.jData) {
 			argumentsTypes.add(ExpressionType.Integer);
 		}
-		$jData.addTransition($ID.text, $al.jData, argumentsTypes, $i1.text, variables, variablesTypes, $e.jData);
+		$jData.addTransition($i1.text.replaceAll("\\s*", ""), $al.jData, argumentsTypes, $i2.text.replaceAll("\\s*", ""), variables, variablesTypes, $e.jData);
 	}
 	)* EOF
 ;
@@ -73,10 +73,10 @@ final_list returns [List<String> jData]
 	|
 	ID {
 		$jData = new ArrayList<String>();
-		$jData.add($ID.text);		
+		$jData.add($ID.text.replaceAll("\\s*", ""));		
 	}
 	(COM ID {
-		$jData.add($ID.text);
+		$jData.add($ID.text.replaceAll("\\s*", ""));
 	}
 	)*
 ;
@@ -162,21 +162,21 @@ basic_expression returns [FOADAExpression jData]
 			FOADAExpression argument = new FOADAExpression(s, ExpressionType.Integer);
 			subExpressions.add(argument);
 		}
-		$jData = new FOADAExpression($ID.text, ExpressionType.Boolean, subExpressions);
+		$jData = new FOADAExpression($ID.text.replaceAll("\\s*", ""), ExpressionType.Boolean, subExpressions);
 	}
 ;
 
 eq_expression returns [FOADAExpression jData]
 :
 	i1=ID EQUALS i2=ID {
-		FOADAExpression left = new FOADAExpression($i1.text, ExpressionType.Integer);
-		FOADAExpression right = new FOADAExpression($i2.text, ExpressionType.Integer);
+		FOADAExpression left = new FOADAExpression($i1.text.replaceAll("\\s*", ""), ExpressionType.Integer);
+		FOADAExpression right = new FOADAExpression($i2.text.replaceAll("\\s*", ""), ExpressionType.Integer);
 		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Equals, left, right);
 	}
 	|
 	i1=ID DISTINCTS i2=ID {
-		FOADAExpression left = new FOADAExpression($i1.text, ExpressionType.Integer);
-		FOADAExpression right = new FOADAExpression($i2.text, ExpressionType.Integer);
+		FOADAExpression left = new FOADAExpression($i1.text.replaceAll("\\s*", ""), ExpressionType.Integer);
+		FOADAExpression right = new FOADAExpression($i2.text.replaceAll("\\s*", ""), ExpressionType.Integer);
 		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Distincts, left, right);
 	}
 	|
@@ -191,10 +191,10 @@ argument_list returns [List<String> jData]
 		$jData = new ArrayList<String>();
 	}
 	(i1=ID {
-		$jData.add($i1.text);
+		$jData.add($i1.text.replaceAll("\\s*", ""));
 	}
 	(COM i2=ID {
-		$jData.add($i2.text);
+		$jData.add($i2.text.replaceAll("\\s*", ""));
 	}
 	)*
 	)?

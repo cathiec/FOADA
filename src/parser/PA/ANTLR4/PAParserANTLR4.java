@@ -125,10 +125,10 @@ public class PAParserANTLR4 extends Parser {
 		public Automaton jData;
 		public ExpressionContext e;
 		public Final_listContext fl;
-		public Token ID;
-		public Argument_listContext al;
 		public Token i1;
+		public Argument_listContext al;
 		public Token i2;
+		public Token i3;
 		public TerminalNode START() { return getToken(PAParserANTLR4.START, 0); }
 		public List<TerminalNode> TWOPOINTS() { return getTokens(PAParserANTLR4.TWOPOINTS); }
 		public TerminalNode TWOPOINTS(int i) {
@@ -149,10 +149,6 @@ public class PAParserANTLR4 extends Parser {
 		public Final_listContext final_list() {
 			return getRuleContext(Final_listContext.class,0);
 		}
-		public List<TerminalNode> ID() { return getTokens(PAParserANTLR4.ID); }
-		public TerminalNode ID(int i) {
-			return getToken(PAParserANTLR4.ID, i);
-		}
 		public List<TerminalNode> LP() { return getTokens(PAParserANTLR4.LP); }
 		public TerminalNode LP(int i) {
 			return getToken(PAParserANTLR4.LP, i);
@@ -168,6 +164,10 @@ public class PAParserANTLR4 extends Parser {
 		public List<TerminalNode> TR() { return getTokens(PAParserANTLR4.TR); }
 		public TerminalNode TR(int i) {
 			return getToken(PAParserANTLR4.TR, i);
+		}
+		public List<TerminalNode> ID() { return getTokens(PAParserANTLR4.ID); }
+		public TerminalNode ID(int i) {
+			return getToken(PAParserANTLR4.ID, i);
 		}
 		public List<Argument_listContext> argument_list() {
 			return getRuleContexts(Argument_listContext.class);
@@ -228,7 +228,7 @@ public class PAParserANTLR4 extends Parser {
 				{
 				{
 				setState(27);
-				((AutomatonContext)_localctx).ID = match(ID);
+				((AutomatonContext)_localctx).i1 = match(ID);
 				setState(28);
 				match(LP);
 				setState(29);
@@ -238,11 +238,11 @@ public class PAParserANTLR4 extends Parser {
 				setState(31);
 				match(TL);
 				setState(32);
-				((AutomatonContext)_localctx).i1 = match(ID);
+				((AutomatonContext)_localctx).i2 = match(ID);
 				setState(33);
 				match(TWOPOINTS);
 				setState(34);
-				((AutomatonContext)_localctx).i2 = match(ID);
+				((AutomatonContext)_localctx).i3 = match(ID);
 				setState(35);
 				match(TR);
 				setState(36);
@@ -251,14 +251,14 @@ public class PAParserANTLR4 extends Parser {
 				match(POINT);
 
 						List<String> variables = new ArrayList<String>();
-						variables.add((((AutomatonContext)_localctx).i2!=null?((AutomatonContext)_localctx).i2.getText():null));
+						variables.add((((AutomatonContext)_localctx).i3!=null?((AutomatonContext)_localctx).i3.getText():null).replaceAll("\\s*", ""));
 						List<ExpressionType> variablesTypes = new ArrayList<ExpressionType>();
 						variablesTypes.add(ExpressionType.Integer);
 						List<ExpressionType> argumentsTypes = new ArrayList<ExpressionType>();
 						for(String s : ((AutomatonContext)_localctx).al.jData) {
 							argumentsTypes.add(ExpressionType.Integer);
 						}
-						_localctx.jData.addTransition((((AutomatonContext)_localctx).ID!=null?((AutomatonContext)_localctx).ID.getText():null), ((AutomatonContext)_localctx).al.jData, argumentsTypes, (((AutomatonContext)_localctx).i1!=null?((AutomatonContext)_localctx).i1.getText():null), variables, variablesTypes, ((AutomatonContext)_localctx).e.jData);
+						_localctx.jData.addTransition((((AutomatonContext)_localctx).i1!=null?((AutomatonContext)_localctx).i1.getText():null).replaceAll("\\s*", ""), ((AutomatonContext)_localctx).al.jData, argumentsTypes, (((AutomatonContext)_localctx).i2!=null?((AutomatonContext)_localctx).i2.getText():null).replaceAll("\\s*", ""), variables, variablesTypes, ((AutomatonContext)_localctx).e.jData);
 					
 				}
 				}
@@ -332,7 +332,7 @@ public class PAParserANTLR4 extends Parser {
 				((Final_listContext)_localctx).ID = match(ID);
 
 						((Final_listContext)_localctx).jData =  new ArrayList<String>();
-						_localctx.jData.add((((Final_listContext)_localctx).ID!=null?((Final_listContext)_localctx).ID.getText():null));		
+						_localctx.jData.add((((Final_listContext)_localctx).ID!=null?((Final_listContext)_localctx).ID.getText():null).replaceAll("\\s*", ""));		
 					
 				setState(56);
 				_errHandler.sync(this);
@@ -345,7 +345,7 @@ public class PAParserANTLR4 extends Parser {
 					setState(52);
 					((Final_listContext)_localctx).ID = match(ID);
 
-							_localctx.jData.add((((Final_listContext)_localctx).ID!=null?((Final_listContext)_localctx).ID.getText():null));
+							_localctx.jData.add((((Final_listContext)_localctx).ID!=null?((Final_listContext)_localctx).ID.getText():null).replaceAll("\\s*", ""));
 						
 					}
 					}
@@ -771,7 +771,7 @@ public class PAParserANTLR4 extends Parser {
 							FOADAExpression argument = new FOADAExpression(s, ExpressionType.Integer);
 							subExpressions.add(argument);
 						}
-						((Basic_expressionContext)_localctx).jData =  new FOADAExpression((((Basic_expressionContext)_localctx).ID!=null?((Basic_expressionContext)_localctx).ID.getText():null), ExpressionType.Boolean, subExpressions);
+						((Basic_expressionContext)_localctx).jData =  new FOADAExpression((((Basic_expressionContext)_localctx).ID!=null?((Basic_expressionContext)_localctx).ID.getText():null).replaceAll("\\s*", ""), ExpressionType.Boolean, subExpressions);
 					
 				}
 				break;
@@ -835,8 +835,8 @@ public class PAParserANTLR4 extends Parser {
 				setState(137);
 				((Eq_expressionContext)_localctx).i2 = match(ID);
 
-						FOADAExpression left = new FOADAExpression((((Eq_expressionContext)_localctx).i1!=null?((Eq_expressionContext)_localctx).i1.getText():null), ExpressionType.Integer);
-						FOADAExpression right = new FOADAExpression((((Eq_expressionContext)_localctx).i2!=null?((Eq_expressionContext)_localctx).i2.getText():null), ExpressionType.Integer);
+						FOADAExpression left = new FOADAExpression((((Eq_expressionContext)_localctx).i1!=null?((Eq_expressionContext)_localctx).i1.getText():null).replaceAll("\\s*", ""), ExpressionType.Integer);
+						FOADAExpression right = new FOADAExpression((((Eq_expressionContext)_localctx).i2!=null?((Eq_expressionContext)_localctx).i2.getText():null).replaceAll("\\s*", ""), ExpressionType.Integer);
 						((Eq_expressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Equals, left, right);
 					
 				}
@@ -851,8 +851,8 @@ public class PAParserANTLR4 extends Parser {
 				setState(141);
 				((Eq_expressionContext)_localctx).i2 = match(ID);
 
-						FOADAExpression left = new FOADAExpression((((Eq_expressionContext)_localctx).i1!=null?((Eq_expressionContext)_localctx).i1.getText():null), ExpressionType.Integer);
-						FOADAExpression right = new FOADAExpression((((Eq_expressionContext)_localctx).i2!=null?((Eq_expressionContext)_localctx).i2.getText():null), ExpressionType.Integer);
+						FOADAExpression left = new FOADAExpression((((Eq_expressionContext)_localctx).i1!=null?((Eq_expressionContext)_localctx).i1.getText():null).replaceAll("\\s*", ""), ExpressionType.Integer);
+						FOADAExpression right = new FOADAExpression((((Eq_expressionContext)_localctx).i2!=null?((Eq_expressionContext)_localctx).i2.getText():null).replaceAll("\\s*", ""), ExpressionType.Integer);
 						((Eq_expressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Distincts, left, right);
 					
 				}
@@ -928,7 +928,7 @@ public class PAParserANTLR4 extends Parser {
 				setState(151);
 				((Argument_listContext)_localctx).i1 = match(ID);
 
-						_localctx.jData.add((((Argument_listContext)_localctx).i1!=null?((Argument_listContext)_localctx).i1.getText():null));
+						_localctx.jData.add((((Argument_listContext)_localctx).i1!=null?((Argument_listContext)_localctx).i1.getText():null).replaceAll("\\s*", ""));
 					
 				setState(158);
 				_errHandler.sync(this);
@@ -941,7 +941,7 @@ public class PAParserANTLR4 extends Parser {
 					setState(154);
 					((Argument_listContext)_localctx).i2 = match(ID);
 
-							_localctx.jData.add((((Argument_listContext)_localctx).i2!=null?((Argument_listContext)_localctx).i2.getText():null));
+							_localctx.jData.add((((Argument_listContext)_localctx).i2!=null?((Argument_listContext)_localctx).i2.getText():null).replaceAll("\\s*", ""));
 						
 					}
 					}

@@ -37,7 +37,6 @@ import org.sosy_lab.java_smt.api.BooleanFormulaManager;
 import org.sosy_lab.java_smt.api.Formula;
 import org.sosy_lab.java_smt.api.FormulaManager;
 import org.sosy_lab.java_smt.api.FormulaType;
-import org.sosy_lab.java_smt.api.IntegerFormulaManager;
 import org.sosy_lab.java_smt.api.InterpolatingProverEnvironment;
 import org.sosy_lab.java_smt.api.Model.ValueAssignment;
 import org.sosy_lab.java_smt.api.ProverEnvironment;
@@ -45,13 +44,9 @@ import org.sosy_lab.java_smt.api.QuantifiedFormulaManager;
 import org.sosy_lab.java_smt.api.SolverContext;
 import org.sosy_lab.java_smt.api.SolverException;
 import org.sosy_lab.java_smt.api.UFManager;
-
-import exception.ANTLR4ParseCancellationException;
 import exception.FOADAException;
 import exception.InterpolatingProverEnvironmentException;
 import exception.JavaSMTInvalidConfigurationException;
-import scala.actors.threadpool.ThreadPoolExecutor.Worker;
-import structure.FOADAExpression.ExpressionCategory;
 import structure.FOADAExpression.ExpressionType;
 import utility.Console;
 import utility.Console.ConsoleType;
@@ -60,7 +55,7 @@ public class Automaton {
 	
 	/** name of the automaton
 	 */
-	private String name;
+	//private String name;
 	
 	/** rename map used for replacing all the variable/function/symbol names by simpler standard names
 	 */
@@ -107,7 +102,7 @@ public class Automaton {
 	private SolverContext solverContext;
 	private FormulaManager fmgr;
 	private BooleanFormulaManager bmgr;
-	private IntegerFormulaManager imgr;
+	//private IntegerFormulaManager imgr;
 	private QuantifiedFormulaManager qmgr;
 	private UFManager ufmgr;
 	
@@ -118,7 +113,7 @@ public class Automaton {
 	public Automaton(String name)
 			throws FOADAException
 	{
-		this.name = name;
+		//this.name = name;
 		renameMap = new LinkedHashMap<String, String>();
 		renameMap2 = new LinkedHashMap<String, String>();
 		eventSymbols = new ArrayList<String>();
@@ -133,7 +128,7 @@ public class Automaton {
 			solverContext = SolverContextFactory.createSolverContext(Solvers.Z3);
 			fmgr = solverContext.getFormulaManager();
 			bmgr = fmgr.getBooleanFormulaManager();
-			imgr = fmgr.getIntegerFormulaManager();
+			//imgr = fmgr.getIntegerFormulaManager();
 			qmgr = fmgr.getQuantifiedFormulaManager();
 			ufmgr = fmgr.getUFManager();
 		}
@@ -196,7 +191,7 @@ public class Automaton {
 		return predicates;
 	}
 	
-	/** get predicates (before renaming) from an expression
+	/** get predicates (after renaming) from an expression
 	 * 
 	 */
 	private Set<String> getPredicatesAfterRenaming(FOADAExpression expression)
@@ -256,10 +251,10 @@ public class Automaton {
 		// rename variables and add variables and their types
 		for(int i = 0; i < variables.size(); i++) {
 			if(this.variables.isEmpty()) {
-				this.variables.add("v" + i);
-				variableTypeMap.put("v" + i, variablesTypes.get(i));
+				this.variables.add("v" + i + "c");
+				variableTypeMap.put("v" + i + "c", variablesTypes.get(i));
 			}
-			post.substitue(variables.get(i), "v" + i);
+			post.substitue(variables.get(i), "v" + i + "c");
 		}
 		// rename arguments of predicates
 		for(int i = 0; i < arguments.size(); i++) {
@@ -281,7 +276,7 @@ public class Automaton {
 	public void addPredicate(String predicate)
 	{
 		if(!renameMap.containsKey(predicate)) {
-			String newName = "q" + predicates.size();
+			String newName = "q" + predicates.size() + "c";
 			renameMap.put(predicate, newName);
 			renameMap2.put(newName, predicate);
 			predicates.add(newName);
@@ -427,17 +422,17 @@ public class Automaton {
 	 * @param	workList	the work list
 	 * @throws	FOADAException 
 	 */
-	private void reEnableWithAllSuccessors(boolean print, FOADAConfiguration node, List<FOADAConfiguration> workList)
+	private void reEnableWithAllSuccessors(boolean print, FOADAConfiguration node, Map<FOADAConfiguration, Set<FOADAConfiguration>> beCoveredMap, List<FOADAConfiguration> workList)
 			throws FOADAException
 	{
 		// re-enable the node
-		if(!implies(node.expression, bmgr.makeBoolean(false)) && !workList.contains(node)) {
+		if(node.successors.isEmpty() && !isCovered(node, beCoveredMap) && !implies(node.expression, bmgr.makeBoolean(false)) && !workList.contains(node)) {
 			workList.add(0, node);
 			/***************/ if(print) System.out.println("\tAdd back: #" + node.number);
 		}
 		// re-enable all the successors
 		for(FOADAConfiguration successor : node.successors) {
-			reEnableWithAllSuccessors(print, successor, workList);
+			reEnableWithAllSuccessors(print, successor, beCoveredMap, workList);
 		}
 	}
 	
@@ -470,7 +465,7 @@ public class Automaton {
 					}
 					/***************/ if(print) System.out.println("\t#" + covered.number + " no longer covered by #" + node.number);
 					// re-enable the previous covered node and all its successors
-					reEnableWithAllSuccessors(print, covered, workList);
+					reEnableWithAllSuccessors(print, covered, beCoveredMap, workList);
 				}
 			}
 			for(FOADAConfiguration c : toBeRemoved) {
@@ -515,7 +510,7 @@ public class Automaton {
 								}
 								/***************/ if(print) System.out.println("\t#" + covered.number + " no longer covered by #" + coverer.number);
 								// re-enable the previous covered node and all its successors
-								reEnableWithAllSuccessors(print, covered, workList);
+								reEnableWithAllSuccessors(print, covered, beCoveredMap, workList);
 							}
 							toBeRemoved.add(coverer);
 						}
@@ -558,6 +553,7 @@ public class Automaton {
 			throws FOADAException
 	{	
 		long begintime = System.currentTimeMillis();
+		int nodeVisited = 0;
 	// start with the initial state
 		// node (configuration) number (starting from 0)
 		int configurationNumber = 0;
@@ -581,9 +577,7 @@ public class Automaton {
 			/***************/ if(print) System.out.println(currentNode);
 			// remove the first node from workList
 			workList.remove(0);
-			if(implies(currentNode.expression, bmgr.makeBoolean(false))) {
-				throw new ANTLR4ParseCancellationException(null);
-			}
+			nodeVisited++;
 			allNodes.add(currentNode);
 		// calculate the path from the initial node to the currentNode
 			// create a new list for symbols along the path
@@ -830,7 +824,7 @@ public class Automaton {
 							if(expressionString.charAt(0) == 'v') {
 								int lastIndexOfUnderscore = expressionString.lastIndexOf('_');
 								int variableStep = Integer.valueOf(expressionString.substring(lastIndexOfUnderscore + 1));
-								int variableIndex = Integer.valueOf(expressionString.substring(1, lastIndexOfUnderscore));
+								int variableIndex = Integer.valueOf(expressionString.substring(1, lastIndexOfUnderscore - 1));
 								variablesAssignments[variableStep - 1][variableIndex] = ((ValueAssignment)a).getValue();
 							}
 						}
@@ -845,6 +839,7 @@ public class Automaton {
 					System.out.println("------------------------------");
 					long endtime=System.currentTimeMillis();
 					Console.printInfo(ConsoleType.FOADA, "Nodes Expanded : " + (configurationNumber + 1));
+					Console.printInfo(ConsoleType.FOADA, "Nodes Visited : " + nodeVisited);
 					Console.printInfo(ConsoleType.FOADA, "Time Used : " + (endtime - begintime) + " ms");
 					return false;
 				}
@@ -879,6 +874,7 @@ public class Automaton {
 		}
 		long endtime=System.currentTimeMillis();
 		Console.printInfo(ConsoleType.FOADA, "Nodes Expanded : " + (configurationNumber + 1));
+		Console.printInfo(ConsoleType.FOADA, "Nodes Visited : " + nodeVisited);
 		Console.printInfo(ConsoleType.FOADA, "Time Used : " + (endtime - begintime) + " ms");
 		return true;
 	}

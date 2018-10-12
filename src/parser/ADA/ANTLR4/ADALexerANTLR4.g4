@@ -30,6 +30,8 @@ options {
 package parser.ADA.ANTLR4;
 }
 
+WS : (' ' | '\t' | '\r' | '\n') {skip();};
+
 // key words
 START : 'start';
 FINAL : 'final';
@@ -64,8 +66,6 @@ RP : ')';
 POINT : '.';
 TWOPOINTS : ':';
 COM : ',';
-
-WS : (' ' | '\t' | '\r' | '\n') {skip();};
 
 COMMENT
 : '(*' ( ~('\n') )* '*)' {skip();}
