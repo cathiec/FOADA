@@ -1,0 +1,8 @@
+start: {a}() /\ {b}().
+final: none.
+
+{a}() --( event1 : i )-> {c}(i).
+{b}() --( event1 : i )-> {d}(i).
+{c}(i) --( event2 : j )-> {f}(i).
+{d}(i) --( event2 : j )-> {f}(j).
+{f}(i) --( event3 : j )-> true.

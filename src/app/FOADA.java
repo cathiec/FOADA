@@ -60,7 +60,11 @@ public class FOADA {
 		// -c , --check
 		System.out.println("\t-c, --check \t\tsolver checking");
 		// -e, --empty
-		System.out.println("\t-e, --empty <input> \temptiness checking");
+		System.out.println("\t-e, --empty <input> \temptiness checking / BFS");
+		// -e2, --empty2
+		System.out.println("\t-e2, --empty2 <input> \temptiness checking using path quantifier elimination / BFS");
+		// -e3, --empty3
+		System.out.println("\t-e3, --empty3 <input> \temptiness checking using path quantifier elimination / DFS");
 		// -p, --print
 		System.out.println("\t\t-p, --print\tadd this option after -e, --empty to print out important steps during emptiness checking");
 		// -v , --version
@@ -81,7 +85,7 @@ public class FOADA {
 		Console.printFOADAEndOfSession();
 	}
 	
-	/** < FOADA emptiness checking > </br>
+	/** < FOADA emptiness checking / BFS > </br>
 	 * FOADA execution with argument <b> -e </b> or <b> --empty </b>
 	 * @param	filename	name of the input file
 	 */
@@ -91,7 +95,49 @@ public class FOADA {
 		ParserType parserType = ParserTools.selectAccordingToInputFile(filename);
 		Automaton automaton = ParserTools.buildAutomatonFromFile(filename, parserType);
 		Console.printInfo(ConsoleType.FOADA, "Start checking emptiness...");
-		if(automaton.isEmpty(print)) {
+		if(automaton.isEmpty1(print)) {
+			Console.printInfo(ConsoleType.FOADA, "The automaton is empty...");
+		}
+		else {
+			Console.printInfo(ConsoleType.FOADA, "The automaton is not empty...");
+		}
+		//a.test();
+		Console.printFOADAEndOfSession();
+	}
+	
+	/** < FOADA emptiness checking using path quantifier elimination / BFS > </br>
+	 * FOADA execution with argument <b> -e2 </b> or <b> --empty2 </b>
+	 * @param	filename	name of the input file
+	 */
+	private static void checkEmpty2(String filename, boolean print)
+			throws FOADAException
+	{
+		ParserType parserType = ParserTools.selectAccordingToInputFile(filename);
+		Automaton automaton = ParserTools.buildAutomatonFromFile(filename, parserType);
+		Console.printInfo(ConsoleType.FOADA, Console.RED_BRIGHT + "The current version DOES NOT work with transition quantifiers !!!" + Console.RESET);
+		Console.printInfo(ConsoleType.FOADA, "Start checking emptiness...");
+		if(automaton.isEmpty2(print)) {
+			Console.printInfo(ConsoleType.FOADA, "The automaton is empty...");
+		}
+		else {
+			Console.printInfo(ConsoleType.FOADA, "The automaton is not empty...");
+		}
+		//a.test();
+		Console.printFOADAEndOfSession();
+	}
+	
+	/** < FOADA emptiness checking using path quantifier elimination / DFS > </br>
+	 * FOADA execution with argument <b> -e3 </b> or <b> --empty3 </b>
+	 * @param	filename	name of the input file
+	 */
+	private static void checkEmpty3(String filename, boolean print)
+			throws FOADAException
+	{
+		ParserType parserType = ParserTools.selectAccordingToInputFile(filename);
+		Automaton automaton = ParserTools.buildAutomatonFromFile(filename, parserType);
+		Console.printInfo(ConsoleType.FOADA, Console.RED_BRIGHT + "The current version DOES NOT work with transition quantifiers !!!" + Console.RESET);
+		Console.printInfo(ConsoleType.FOADA, "Start checking emptiness...");
+		if(automaton.isEmpty3(print)) {
 			Console.printInfo(ConsoleType.FOADA, "The automaton is empty...");
 		}
 		else {
@@ -128,7 +174,7 @@ public class FOADA {
 			else if(args[0].equals("-c") || args[0].equals("--check")) {
 				checkSolvers();
 			}
-			// emptiness checking
+			// emptiness checking / BFS
 			else if(args[0].equals("-e") || args[0].equals("--empty")) {
 				if(args.length < 2) {
 					throw new InputFileNotFoundException(null);
@@ -138,6 +184,30 @@ public class FOADA {
 				}
 				else {
 					checkEmpty(args[1], false);
+				}
+			}
+			// emptiness checking using path quantifier elimination / BFS
+			else if(args[0].equals("-e2") || args[0].equals("--empty2")) {
+				if(args.length < 2) {
+					throw new InputFileNotFoundException(null);
+				}
+				else if(args[1].equals("-p") || args[1].equals("--print")) {
+					checkEmpty2(args[2], true);
+				}
+				else {
+					checkEmpty2(args[1], false);
+				}
+			}
+			// emptiness checking using path quantifier elimination / DFS
+			else if(args[0].equals("-e3") || args[0].equals("--empty3")) {
+				if(args.length < 2) {
+					throw new InputFileNotFoundException(null);
+				}
+				else if(args[1].equals("-p") || args[1].equals("--print")) {
+					checkEmpty3(args[2], true);
+				}
+				else {
+					checkEmpty3(args[1], false);
 				}
 			}
 			// installed version

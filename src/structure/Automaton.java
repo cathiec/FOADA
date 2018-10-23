@@ -258,7 +258,7 @@ public class Automaton {
 		}
 		// rename arguments of predicates
 		for(int i = 0; i < arguments.size(); i++) {
-			post.substitue(arguments.get(i), "a" + i);
+			post.substitue(arguments.get(i), "a" + i + "c");
 		}
 		// add predicate and its arguments' types into map
 		String newName = renameMap.get(predicate);
@@ -302,34 +302,10 @@ public class Automaton {
 		}
 	}
 	
-	/** replace all the event symbols and predicates in a string by their original names
-	 * @param	stringWithNewNames	the string to be modified
-	 * @return	the string after replacement
-	 */
-	private String toOriginalNames(String stringWithNewNames)
-	{
-		String result = stringWithNewNames;
-		// change event symbols back to the original names
-		for(int i = eventSymbols.size() - 1; i >= 0; i--) {
-			String eventSymbol = eventSymbols.get(i);
-			if(result.contains(eventSymbol)) {
-				result = result.replace(eventSymbol, renameMap2.get(eventSymbol));
-			}
-		}
-		// change predicates back to the original names
-		for(int i = predicates.size() - 1; i >= 0; i--) {
-			String predicate = predicates.get(i);
-			if(result.contains(predicate)) {
-				result = result.replace(predicate, renameMap2.get(predicate));
-			}
-		}
-		return result;
-	}
-	
 	/** add time-stamps on the variables and the predicates in a Boolean formula
 	 * @param	expression		the original Boolean formula
+	 * @param	predicates		the set of predicates in the original Boolean formula
 	 * @param	timeStamp		the time-stamp to be added
-	 * @param	freeVariables	the free variables in the original Boolean formula
 	 * @return	the Boolean formula after adding time-stamps
 	 */
 	private BooleanFormula addTimeStamps(BooleanFormula expression, Set<String> predicates, int timeStamp)
@@ -544,12 +520,12 @@ public class Automaton {
 		return false;
 	}
 	
-	/** check if the automaton is empty
+	/** check if the automaton is empty / BFS
 	 * @param	print	the value is set to <b> true </b> if is going to print the important steps
 	 * @return	<b> true </b> if the automaton is empty </br>
 	 * 			<b> false </b> if the automaton is not empty
 	 */
-	public boolean isEmpty(boolean print)
+	public boolean isEmpty1(boolean print)
 			throws FOADAException
 	{	
 		long begintime = System.currentTimeMillis();
@@ -620,11 +596,11 @@ public class Automaton {
 					for(ExpressionType t : argumentsTypes) {
 						Formula argument;
 						if(t == ExpressionType.Integer) {
-							argument = ufmgr.declareAndCallUF("a" + argumentIndex, FormulaType.IntegerType);
+							argument = ufmgr.declareAndCallUF("a" + argumentIndex + "c", FormulaType.IntegerType);
 							argumentIndex++;
 						}
 						else {
-							argument = ufmgr.declareAndCallUF("a" + argumentIndex, FormulaType.BooleanType);
+							argument = ufmgr.declareAndCallUF("a" + argumentIndex + "c", FormulaType.BooleanType);
 							argumentIndex++;
 						}
 						arguments.add(argument);
@@ -685,11 +661,11 @@ public class Automaton {
 				for(ExpressionType t : argumentsTypes) {
 					Formula argument;
 					if(t == ExpressionType.Integer) {
-						argument = ufmgr.declareAndCallUF("a" + argumentIndex, FormulaType.IntegerType);
+						argument = ufmgr.declareAndCallUF("a" + argumentIndex + "c", FormulaType.IntegerType);
 						argumentIndex++;
 					}
 					else {
-						argument = ufmgr.declareAndCallUF("a" + argumentIndex, FormulaType.BooleanType);
+						argument = ufmgr.declareAndCallUF("a" + argumentIndex + "c", FormulaType.BooleanType);
 						argumentIndex++;
 					}
 					arguments.add(argument);
@@ -780,6 +756,618 @@ public class Automaton {
 						// check the validity of the implication: current -> interpolant
 						boolean implicationIsValid = implies(currentExpression, interpolant);
 						//***************/ System.out.println("\t\t\tchecking: " + current + " -> " + interpolant + "   {" + implicationIsValid + '}');
+						// if the implication if not valid
+						if(!implicationIsValid) {
+							// refine the node by making a conjunction
+							/***************/ if(print) System.out.print("\t#" + currentNodeAlongPath.number + " refined ");
+							currentNodeAlongPath.expression = bmgr.and(currentExpression, interpolant);
+							/***************/ if(print) System.out.println(" : " + currentNodeAlongPath.expression);
+							// refresh the coverage (maybe the node does not cover another node anymore)
+							removeInvalidCoverage(print, currentNodeAlongPath, coverOthersMap, beCoveredMap, workList);
+							// close the current node along path
+							if(!oneNodeIsClosed) {
+								oneNodeIsClosed = close(print, currentNodeAlongPath, allNodes, coverOthersMap, beCoveredMap, workList);
+							}
+							if(implies(currentNodeAlongPath.expression, bmgr.makeBoolean(false))) {
+								workList.remove(currentNodeAlongPath);
+								/***************/ if(print) System.out.println("\t#" + currentNodeAlongPath.number + " removed (false node)");
+							}
+						}
+						// if finish looping the path
+						if(step >= pathFromInitialToCurrent.size()) {
+							break;
+						}
+						// if not finish looping the path
+						else {
+							// refresh the current node along path
+							int indexOfSuccessor = currentNodeAlongPath.successorSymbolIndexMap.get(pathFromInitialToCurrent.get(step));
+							currentNodeAlongPath = currentNodeAlongPath.successors.get(indexOfSuccessor);
+							// refresh the current step
+							step++;
+						}
+					}
+				}
+				// print out the model and return false if it is satisfiable
+				else {
+					System.out.println("------------------------------\nSAT with sequence:");
+					if(pathFromInitialToCurrent.size() == 0) {
+						System.out.println("empty trace");
+					}
+					else {
+						Object[][] variablesAssignments = new Object[pathFromInitialToCurrent.size()][variables.size()];
+						for(Object a : prover.getModelAssignments()) {
+							String expressionString = ((ValueAssignment)a).getKey().toString();
+							if(expressionString.charAt(0) == 'v') {
+								int lastIndexOfUnderscore = expressionString.lastIndexOf('_');
+								int variableStep = Integer.valueOf(expressionString.substring(lastIndexOfUnderscore + 1));
+								int variableIndex = Integer.valueOf(expressionString.substring(1, lastIndexOfUnderscore - 1));
+								variablesAssignments[variableStep - 1][variableIndex] = ((ValueAssignment)a).getValue();
+							}
+						}
+						for(int i1 = 0; i1 < pathFromInitialToCurrent.size(); i1++) {
+							System.out.print(renameMap2.get((pathFromInitialToCurrent.get(i1))) + " \tDATA ::: { ");
+							for(int i2 = 0; i2 < variables.size(); i2++) {
+								System.out.print(variablesAssignments[i1][i2] == null ? "any " : variablesAssignments[i1][i2] + " ");
+							}
+							System.out.println('}');
+						}
+					}
+					System.out.println("------------------------------");
+					long endtime=System.currentTimeMillis();
+					Console.printInfo(ConsoleType.FOADA, "Nodes Expanded : " + (configurationNumber + 1));
+					Console.printInfo(ConsoleType.FOADA, "Nodes Visited : " + nodeVisited);
+					Console.printInfo(ConsoleType.FOADA, "Time Used : " + (endtime - begintime) + " ms");
+					return false;
+				}
+			// expand the current node if it is not covered
+				// check if the current node is covered, if not then expand it
+				boolean notGoingToExpand = false;
+				if(!currentNode.successors.isEmpty()) {
+					/***************/ if(print) System.out.println("\tnot going to expand (already expanded)");
+					notGoingToExpand = true;
+				}
+				if(!notGoingToExpand && isCovered(currentNode, beCoveredMap)) {
+					/***************/ if(print) System.out.println("\tnot going to expand (covered)");
+					notGoingToExpand = true;
+				}
+				if(!notGoingToExpand) {
+					// try all the event symbols
+					for(String a : eventSymbols) {
+						//***************/ System.out.println("\tExpand with " + a + ':');
+						FOADAConfiguration newNode = new FOADAConfiguration(configurationNumber++, bmgr.makeBoolean(true), currentNode, a);
+						currentNode.addSuccessor(a, newNode);
+						//***************/ System.out.println("\t\t" + newNode);
+						workList.add(newNode);
+					}
+				}
+			}
+			catch (SolverException e) {
+				throw new InterpolatingProverEnvironmentException(e);
+			}
+			catch (InterruptedException e) {
+				throw new InterpolatingProverEnvironmentException(e);
+			}
+		}
+		long endtime=System.currentTimeMillis();
+		Console.printInfo(ConsoleType.FOADA, "Nodes Expanded : " + (configurationNumber + 1));
+		Console.printInfo(ConsoleType.FOADA, "Nodes Visited : " + nodeVisited);
+		Console.printInfo(ConsoleType.FOADA, "Time Used : " + (endtime - begintime) + " ms");
+		return true;
+	}
+	
+	/** take out all the predicates' occurrences from an expression
+	 * @param	expression	the FOADA expression from which we take out the predicates' occurrences
+	 * @return	a set containing all the predicates' occurrences
+	 */
+	Set<FOADAExpression> takePredicatesOccurrences(FOADAExpression expression)
+	{
+		Set<FOADAExpression> predicatesOccurrences = new HashSet<FOADAExpression>();
+		switch(expression.category)
+		{
+		case Constant:	break;
+		case Function:	if(expression.type == ExpressionType.Boolean && expression.name.charAt(0) == 'q') {
+							predicatesOccurrences.add(expression);
+						}
+						break;
+		case Exists:	predicatesOccurrences.addAll(takePredicatesOccurrences(expression.subData.get(expression.subData.size() - 1)));
+						break;
+		case Forall:	predicatesOccurrences.addAll(takePredicatesOccurrences(expression.subData.get(expression.subData.size() - 1)));
+						break;
+		case Not:		predicatesOccurrences.addAll(takePredicatesOccurrences(expression.subData.get(expression.subData.size() - 1)));
+						break;	
+		case And:		for(FOADAExpression e : expression.subData) {
+							predicatesOccurrences.addAll(takePredicatesOccurrences(e));
+						}
+						break;
+		case Or:		for(FOADAExpression e : expression.subData) {
+							predicatesOccurrences.addAll(takePredicatesOccurrences(e));
+						}
+						break;
+		case Equals:	predicatesOccurrences.addAll(takePredicatesOccurrences(expression.subData.get(0)));
+						predicatesOccurrences.addAll(takePredicatesOccurrences(expression.subData.get(1)));
+						break;
+		case Distincts:	predicatesOccurrences.addAll(takePredicatesOccurrences(expression.subData.get(0)));
+						predicatesOccurrences.addAll(takePredicatesOccurrences(expression.subData.get(1)));
+						break;
+		}
+		return predicatesOccurrences;
+	}
+	
+	/** check if the automaton is empty using path quantifier elimination / BFS
+	 * @param	print	the value is set to <b> true </b> if is going to print the important steps
+	 * @return	<b> true </b> if the automaton is empty </br>
+	 * 			<b> false </b> if the automaton is not empty
+	 */
+	public boolean isEmpty2(boolean print)
+			throws FOADAException
+	{	
+		long begintime = System.currentTimeMillis();
+		int nodeVisited = 0;
+	// start with the initial state
+		// node (configuration) number (starting from 0)
+		int configurationNumber = 0;
+		// create node(configuration) for the initial state
+		FOADAConfiguration initialConfiguration = new FOADAConfiguration(configurationNumber++, (BooleanFormula)initialState.toJavaSMTFormula(fmgr), null, null);
+	// initialize the coverage management
+		Map<FOADAConfiguration, Set<FOADAConfiguration>> coverOthersMap = new LinkedHashMap<FOADAConfiguration, Set<FOADAConfiguration>>();
+		Map<FOADAConfiguration, Set<FOADAConfiguration>> beCoveredMap = new LinkedHashMap<FOADAConfiguration, Set<FOADAConfiguration>>();
+	// initialize the set of nodes
+		Set<FOADAConfiguration> allNodes = new HashSet<FOADAConfiguration>();
+	// start working with workList
+		// create workList
+		List<FOADAConfiguration> workList = new ArrayList<FOADAConfiguration>();
+		// add the initial node(configuration) into workList
+		workList.add(initialConfiguration);
+		// looped working with workList until it becomes empty
+		while(!workList.isEmpty()) {
+		// pick the currentNode
+			// pick the first node of workList
+			FOADAConfiguration currentNode = workList.get(0);
+			/***************/ if(print) System.out.println(currentNode);
+			// remove the first node from workList
+			workList.remove(0);
+			nodeVisited++;
+			allNodes.add(currentNode);
+		// calculate the path from the initial node to the currentNode
+			// create a new list for symbols along the path
+			List<String> pathFromInitialToCurrent = new ArrayList<String>();
+			// create "c" for the loop and initialize it to currentNode
+			FOADAConfiguration c = currentNode;
+			// looped working for finding the path (end if father node is null)
+			while(c.father != null) {
+				// add the father symbol in the beginning (position index = 0) of the list
+				pathFromInitialToCurrent.add(0, c.fatherSymbol);
+				// set "c" to the father node(configuration)
+				c = c.father;
+			}
+			/***************/ if(print) System.out.println("\tpath : " + pathFromInitialToCurrent);
+		// determine whether currentNode is accepted
+			// create a new list for blocks of time-stamped conjunctions in the path formula
+			List<BooleanFormula> blocks = new ArrayList<BooleanFormula>();
+			// make the initial state time-stamped
+			FOADAExpression timeStampedInitialState = initialState.copy();
+			timeStampedInitialState.addTimeStamps(0);
+			// add time-stamped initial state into the blocks
+			blocks.add((BooleanFormula)timeStampedInitialState.toJavaSMTFormula(fmgr));
+			// create a new set for the predicates' occurrences in the current block
+			Set<FOADAExpression> predicatesOccurrencesInCurrentBlock = takePredicatesOccurrences(timeStampedInitialState);
+			// create an integer indicating the current time-stamp
+			int currentTimeStamp = 0;
+			// compute next blocks (except the last block) according to the path
+			for(String a : pathFromInitialToCurrent) {
+				// create a new list for the small parts (of conjunction) of the new block
+				List<BooleanFormula> block = new ArrayList<BooleanFormula>();
+				// create a new set for the predicates' occurrences in the new block
+				Set<FOADAExpression> predicatesOccurrencesInNewBlock = new HashSet<FOADAExpression>();
+				// compute one part of the new block
+				for(FOADAExpression anOccurrenceInCurrentBlock : predicatesOccurrencesInCurrentBlock) {
+					// create the left part of the implication
+					FOADAExpression left = anOccurrenceInCurrentBlock;
+					// compute the right part of the implication but without time-stamps
+					FOADAExpression rightWithoutTimeStamps = transitions.get(anOccurrenceInCurrentBlock.name.substring(0, anOccurrenceInCurrentBlock.name.indexOf("_")) + '+' + a);
+					// if no corresponding transition
+					if(rightWithoutTimeStamps == null) {
+						rightWithoutTimeStamps = new FOADAExpression(false);
+					}
+					// create the right part of the implication
+					FOADAExpression right = rightWithoutTimeStamps.copy();
+					right.addTimeStamps(currentTimeStamp + 1);
+					// rename the unrenamed arguments of the predicates in the right part of the implication (like a0, a1, etc.)
+					// they must remain the same as in the left part
+					for(int i = 0; i < anOccurrenceInCurrentBlock.subData.size(); i++) {
+						right.substitue("a" + i + "c", anOccurrenceInCurrentBlock.subData.get(i).name);
+					}
+					// create the implication without quantifier
+					BooleanFormula implication = bmgr.implication((BooleanFormula)left.toJavaSMTFormula(fmgr), (BooleanFormula)right.toJavaSMTFormula(fmgr));
+					// add the implication into the new block
+					block.add(implication);
+					// create a new set for the predicates' occurrences in the current part of the new block
+					Set<FOADAExpression> predicatesOccurrencesInCurrentPart = takePredicatesOccurrences(right);
+					// add the predicates' occurrences in the current part into the set of predicates' occurrences in the new block
+					predicatesOccurrencesInNewBlock.addAll(predicatesOccurrencesInCurrentPart);
+				}
+			// add the new block into the list of blocks
+				// add true into the list of blocks if the new block is empty
+				if(block.isEmpty()) {
+					blocks.add(bmgr.makeBoolean(true));
+				}
+				// and the new block into the list of blocks if it is not empty
+				else {
+					blocks.add(bmgr.and(block));
+				}
+				// refresh
+				predicatesOccurrencesInCurrentBlock = predicatesOccurrencesInNewBlock;
+				currentTimeStamp++;
+			}
+		// compute the last block containing the final conjunction according to the set of final states
+			// create a new list for the final conjunction
+			List<BooleanFormula> finalConjunction = new ArrayList<BooleanFormula>();
+			// check all the predicates' occurrences in the current block
+			for(FOADAExpression anOccurrenceInCurrentBlock : predicatesOccurrencesInCurrentBlock) {
+				FOADAExpression left = anOccurrenceInCurrentBlock;
+				// implies true if is final state
+				if(finalStates.contains(anOccurrenceInCurrentBlock.name.substring(0, anOccurrenceInCurrentBlock.name.indexOf("_")))) {
+					BooleanFormula right = bmgr.makeBoolean(true);
+					finalConjunction.add(bmgr.implication((BooleanFormula)left.toJavaSMTFormula(fmgr), right));
+				}
+				else {
+					BooleanFormula right = bmgr.makeBoolean(false);
+					finalConjunction.add(bmgr.implication((BooleanFormula)left.toJavaSMTFormula(fmgr), right));
+				}
+			}
+		// add the last block into the list of blocks
+				// add true into the list of blocks if the final conjunction is empty
+				if(finalConjunction.isEmpty()) {
+					blocks.add(bmgr.makeBoolean(true));
+				}
+				// add the final conjunction into the list of blocks if it is not empty
+				else {
+					blocks.add(bmgr.and(finalConjunction));
+				}
+		// check if the conjunction of all blocks is satisfiable or compute the interpolants
+			//***************/ System.out.println("Blocks:");
+			//***************/ for(BooleanFormula f : blocks) {
+			//***************/ 	System.out.println(f);
+			//***************/ }
+			@SuppressWarnings("rawtypes")
+			// create prover environment for interpolation
+			InterpolatingProverEnvironment prover = solverContext.newProverEnvironmentWithInterpolation();
+			// create a new list for sets of objects received when pushing different partitions into the prover
+			List<Set<Object>> listPartitions = new ArrayList<Set<Object>>();
+			// each block is a partition
+			for(BooleanFormula f : blocks) {
+				// create a set for objects received when pushing different partitions into the prover
+				Set<Object> partitionProverPushObjects = new HashSet<Object>();
+				// push the partition (block) into the prover and add the received object into the set
+				partitionProverPushObjects.add(prover.push(f));
+				// add the set into the list
+				listPartitions.add(partitionProverPushObjects);
+			}
+			// check whether the conjunction of all blocks is unsatisfiable
+			try {
+				// compute the interpolants if it is not satisfiable
+				if(prover.isUnsat()) {
+					@SuppressWarnings("unchecked")
+					// compute the interpolants (with time-stamps)
+					List<BooleanFormula> interpolantsWithTimeStamps = prover.getSeqInterpolants(listPartitions);
+					List<BooleanFormula> interpolants = new ArrayList<BooleanFormula>();
+					// remove the time-stamps from the interpolants
+					for(BooleanFormula f : interpolantsWithTimeStamps) {
+						BooleanFormula interpolantWithoutTimeStamps = removeTimeStamps(f);
+						List<Formula> arguments = new ArrayList<Formula>();
+						for(Formula argument : fmgr.extractVariables(interpolantWithoutTimeStamps).values()) {
+							if(argument.toString().charAt(0) == 'v') {
+								arguments.add(argument);
+							}
+						}
+						if(arguments.isEmpty()) {
+							interpolants.add(interpolantWithoutTimeStamps);
+						}
+						else {
+							BooleanFormula quantifiedInterpolant = qmgr.exists(arguments, interpolantWithoutTimeStamps);
+							interpolants.add(quantifiedInterpolant);
+						}
+					}
+				// refine the nodes along the path
+					// starting from the root node
+					FOADAConfiguration currentNodeAlongPath = initialConfiguration;
+					int step = 0;
+					// loop check the path
+					boolean oneNodeIsClosed = false;
+					while(true) {
+						// get the corresponding interpolant according to the current step
+						BooleanFormula interpolant = interpolants.get(step);
+						// get the expression in the current node
+						BooleanFormula currentExpression = currentNodeAlongPath.expression;
+						// check the validity of the implication: current -> interpolant
+						boolean implicationIsValid = implies(currentExpression, interpolant);
+						// if the implication if not valid
+						if(!implicationIsValid) {
+							// refine the node by making a conjunction
+							/***************/ if(print) System.out.print("\t#" + currentNodeAlongPath.number + " refined ");
+							currentNodeAlongPath.expression = bmgr.and(currentExpression, interpolant);
+							/***************/ if(print) System.out.println(" : " + currentNodeAlongPath.expression);
+							// refresh the coverage (maybe the node does not cover another node anymore)
+							removeInvalidCoverage(print, currentNodeAlongPath, coverOthersMap, beCoveredMap, workList);
+							// close the current node along path
+							if(!oneNodeIsClosed) {
+								oneNodeIsClosed = close(print, currentNodeAlongPath, allNodes, coverOthersMap, beCoveredMap, workList);
+							}
+							if(implies(currentNodeAlongPath.expression, bmgr.makeBoolean(false))) {
+								workList.remove(currentNodeAlongPath);
+								/***************/ if(print) System.out.println("\t#" + currentNodeAlongPath.number + " removed (false node)");
+							}
+						}
+						// if finish looping the path
+						if(step >= pathFromInitialToCurrent.size()) {
+							break;
+						}
+						// if not finish looping the path
+						else {
+							// refresh the current node along path
+							int indexOfSuccessor = currentNodeAlongPath.successorSymbolIndexMap.get(pathFromInitialToCurrent.get(step));
+							currentNodeAlongPath = currentNodeAlongPath.successors.get(indexOfSuccessor);
+							// refresh the current step
+							step++;
+						}
+					}
+				}
+				// print out the model and return false if it is satisfiable
+				else {
+					System.out.println("------------------------------\nSAT with sequence:");
+					if(pathFromInitialToCurrent.size() == 0) {
+						System.out.println("empty trace");
+					}
+					else {
+						Object[][] variablesAssignments = new Object[pathFromInitialToCurrent.size()][variables.size()];
+						for(Object a : prover.getModelAssignments()) {
+							String expressionString = ((ValueAssignment)a).getKey().toString();
+							if(expressionString.charAt(0) == 'v') {
+								int lastIndexOfUnderscore = expressionString.lastIndexOf('_');
+								int variableStep = Integer.valueOf(expressionString.substring(lastIndexOfUnderscore + 1));
+								int variableIndex = Integer.valueOf(expressionString.substring(1, lastIndexOfUnderscore - 1));
+								variablesAssignments[variableStep - 1][variableIndex] = ((ValueAssignment)a).getValue();
+							}
+						}
+						for(int i1 = 0; i1 < pathFromInitialToCurrent.size(); i1++) {
+							System.out.print(renameMap2.get((pathFromInitialToCurrent.get(i1))) + " \tDATA ::: { ");
+							for(int i2 = 0; i2 < variables.size(); i2++) {
+								System.out.print(variablesAssignments[i1][i2] == null ? "any " : variablesAssignments[i1][i2] + " ");
+							}
+							System.out.println('}');
+						}
+					}
+					System.out.println("------------------------------");
+					long endtime=System.currentTimeMillis();
+					Console.printInfo(ConsoleType.FOADA, "Nodes Expanded : " + (configurationNumber + 1));
+					Console.printInfo(ConsoleType.FOADA, "Nodes Visited : " + nodeVisited);
+					Console.printInfo(ConsoleType.FOADA, "Time Used : " + (endtime - begintime) + " ms");
+					return false;
+				}
+			// expand the current node if it is not covered
+				// check if the current node is covered, if not then expand it
+				boolean notGoingToExpand = false;
+				if(!currentNode.successors.isEmpty()) {
+					/***************/ if(print) System.out.println("\tnot going to expand (already expanded)");
+					notGoingToExpand = true;
+				}
+				if(!notGoingToExpand && isCovered(currentNode, beCoveredMap)) {
+					/***************/ if(print) System.out.println("\tnot going to expand (covered)");
+					notGoingToExpand = true;
+				}
+				if(!notGoingToExpand) {
+					// try all the event symbols
+					for(String a : eventSymbols) {
+						//***************/ System.out.println("\tExpand with " + a + ':');
+						FOADAConfiguration newNode = new FOADAConfiguration(configurationNumber++, bmgr.makeBoolean(true), currentNode, a);
+						currentNode.addSuccessor(a, newNode);
+						//***************/ System.out.println("\t\t" + newNode);
+						workList.add(newNode);
+					}
+				}
+			}
+			catch (SolverException e) {
+				throw new InterpolatingProverEnvironmentException(e);
+			}
+			catch (InterruptedException e) {
+				throw new InterpolatingProverEnvironmentException(e);
+			}
+		}
+		long endtime=System.currentTimeMillis();
+		Console.printInfo(ConsoleType.FOADA, "Nodes Expanded : " + (configurationNumber + 1));
+		Console.printInfo(ConsoleType.FOADA, "Nodes Visited : " + nodeVisited);
+		Console.printInfo(ConsoleType.FOADA, "Time Used : " + (endtime - begintime) + " ms");
+		return true;
+	}
+	
+	/** check if the automaton is empty using path quantifier elimination / DFS
+	 * @param	print	the value is set to <b> true </b> if is going to print the important steps
+	 * @return	<b> true </b> if the automaton is empty </br>
+	 * 			<b> false </b> if the automaton is not empty
+	 */
+	public boolean isEmpty3(boolean print)
+			throws FOADAException
+	{	
+		long begintime = System.currentTimeMillis();
+		int nodeVisited = 0;
+	// start with the initial state
+		// node (configuration) number (starting from 0)
+		int configurationNumber = 0;
+		// create node(configuration) for the initial state
+		FOADAConfiguration initialConfiguration = new FOADAConfiguration(configurationNumber++, (BooleanFormula)initialState.toJavaSMTFormula(fmgr), null, null);
+	// initialize the coverage management
+		Map<FOADAConfiguration, Set<FOADAConfiguration>> coverOthersMap = new LinkedHashMap<FOADAConfiguration, Set<FOADAConfiguration>>();
+		Map<FOADAConfiguration, Set<FOADAConfiguration>> beCoveredMap = new LinkedHashMap<FOADAConfiguration, Set<FOADAConfiguration>>();
+	// initialize the set of nodes
+		Set<FOADAConfiguration> allNodes = new HashSet<FOADAConfiguration>();
+	// start working with workList
+		// create workList
+		List<FOADAConfiguration> workList = new ArrayList<FOADAConfiguration>();
+		// add the initial node(configuration) into workList
+		workList.add(initialConfiguration);
+		// looped working with workList until it becomes empty
+		while(!workList.isEmpty()) {
+		// pick the currentNode
+			// pick the first node of workList
+			FOADAConfiguration currentNode = workList.get(workList.size() - 1);
+			/***************/ if(print) System.out.println(currentNode);
+			// remove the first node from workList
+			workList.remove(workList.size() - 1);
+			nodeVisited++;
+			allNodes.add(currentNode);
+		// calculate the path from the initial node to the currentNode
+			// create a new list for symbols along the path
+			List<String> pathFromInitialToCurrent = new ArrayList<String>();
+			// create "c" for the loop and initialize it to currentNode
+			FOADAConfiguration c = currentNode;
+			// looped working for finding the path (end if father node is null)
+			while(c.father != null) {
+				// add the father symbol in the beginning (position index = 0) of the list
+				pathFromInitialToCurrent.add(0, c.fatherSymbol);
+				// set "c" to the father node(configuration)
+				c = c.father;
+			}
+			/***************/ if(print) System.out.println("\tpath : " + pathFromInitialToCurrent);
+		// determine whether currentNode is accepted
+			// create a new list for blocks of time-stamped conjunctions in the path formula
+			List<BooleanFormula> blocks = new ArrayList<BooleanFormula>();
+			// make the initial state time-stamped
+			FOADAExpression timeStampedInitialState = initialState.copy();
+			timeStampedInitialState.addTimeStamps(0);
+			// add time-stamped initial state into the blocks
+			blocks.add((BooleanFormula)timeStampedInitialState.toJavaSMTFormula(fmgr));
+			// create a new set for the predicates' occurrences in the current block
+			Set<FOADAExpression> predicatesOccurrencesInCurrentBlock = takePredicatesOccurrences(timeStampedInitialState);
+			// create an integer indicating the current time-stamp
+			int currentTimeStamp = 0;
+			// compute next blocks (except the last block) according to the path
+			for(String a : pathFromInitialToCurrent) {
+				// create a new list for the small parts (of conjunction) of the new block
+				List<BooleanFormula> block = new ArrayList<BooleanFormula>();
+				// create a new set for the predicates' occurrences in the new block
+				Set<FOADAExpression> predicatesOccurrencesInNewBlock = new HashSet<FOADAExpression>();
+				// compute one part of the new block
+				for(FOADAExpression anOccurrenceInCurrentBlock : predicatesOccurrencesInCurrentBlock) {
+					// create the left part of the implication
+					FOADAExpression left = anOccurrenceInCurrentBlock;
+					// compute the right part of the implication but without time-stamps
+					FOADAExpression rightWithoutTimeStamps = transitions.get(anOccurrenceInCurrentBlock.name.substring(0, anOccurrenceInCurrentBlock.name.indexOf("_")) + '+' + a);
+					// if no corresponding transition
+					if(rightWithoutTimeStamps == null) {
+						rightWithoutTimeStamps = new FOADAExpression(false);
+					}
+					// create the right part of the implication
+					FOADAExpression right = rightWithoutTimeStamps.copy();
+					right.addTimeStamps(currentTimeStamp + 1);
+					// rename the unrenamed arguments of the predicates in the right part of the implication (like a0, a1, etc.)
+					// they must remain the same as in the left part
+					for(int i = 0; i < anOccurrenceInCurrentBlock.subData.size(); i++) {
+						right.substitue("a" + i + "c", anOccurrenceInCurrentBlock.subData.get(i).name);
+					}
+					// create the implication without quantifier
+					BooleanFormula implication = bmgr.implication((BooleanFormula)left.toJavaSMTFormula(fmgr), (BooleanFormula)right.toJavaSMTFormula(fmgr));
+					// add the implication into the new block
+					block.add(implication);
+					// create a new set for the predicates' occurrences in the current part of the new block
+					Set<FOADAExpression> predicatesOccurrencesInCurrentPart = takePredicatesOccurrences(right);
+					// add the predicates' occurrences in the current part into the set of predicates' occurrences in the new block
+					predicatesOccurrencesInNewBlock.addAll(predicatesOccurrencesInCurrentPart);
+				}
+			// add the new block into the list of blocks
+				// add true into the list of blocks if the new block is empty
+				if(block.isEmpty()) {
+					blocks.add(bmgr.makeBoolean(true));
+				}
+				// and the new block into the list of blocks if it is not empty
+				else {
+					blocks.add(bmgr.and(block));
+				}
+				// refresh
+				predicatesOccurrencesInCurrentBlock = predicatesOccurrencesInNewBlock;
+				currentTimeStamp++;
+			}
+		// compute the last block containing the final conjunction according to the set of final states
+			// create a new list for the final conjunction
+			List<BooleanFormula> finalConjunction = new ArrayList<BooleanFormula>();
+			// check all the predicates' occurrences in the current block
+			for(FOADAExpression anOccurrenceInCurrentBlock : predicatesOccurrencesInCurrentBlock) {
+				FOADAExpression left = anOccurrenceInCurrentBlock;
+				// implies true if is final state
+				if(finalStates.contains(anOccurrenceInCurrentBlock.name.substring(0, anOccurrenceInCurrentBlock.name.indexOf("_")))) {
+					BooleanFormula right = bmgr.makeBoolean(true);
+					finalConjunction.add(bmgr.implication((BooleanFormula)left.toJavaSMTFormula(fmgr), right));
+				}
+				else {
+					BooleanFormula right = bmgr.makeBoolean(false);
+					finalConjunction.add(bmgr.implication((BooleanFormula)left.toJavaSMTFormula(fmgr), right));
+				}
+			}
+		// add the last block into the list of blocks
+				// add true into the list of blocks if the final conjunction is empty
+				if(finalConjunction.isEmpty()) {
+					blocks.add(bmgr.makeBoolean(true));
+				}
+				// add the final conjunction into the list of blocks if it is not empty
+				else {
+					blocks.add(bmgr.and(finalConjunction));
+				}
+		// check if the conjunction of all blocks is satisfiable or compute the interpolants
+			//***************/ System.out.println("Blocks:");
+			//***************/ for(BooleanFormula f : blocks) {
+			//***************/ 	System.out.println(f);
+			//***************/ }
+			@SuppressWarnings("rawtypes")
+			// create prover environment for interpolation
+			InterpolatingProverEnvironment prover = solverContext.newProverEnvironmentWithInterpolation();
+			// create a new list for sets of objects received when pushing different partitions into the prover
+			List<Set<Object>> listPartitions = new ArrayList<Set<Object>>();
+			// each block is a partition
+			for(BooleanFormula f : blocks) {
+				// create a set for objects received when pushing different partitions into the prover
+				Set<Object> partitionProverPushObjects = new HashSet<Object>();
+				// push the partition (block) into the prover and add the received object into the set
+				partitionProverPushObjects.add(prover.push(f));
+				// add the set into the list
+				listPartitions.add(partitionProverPushObjects);
+			}
+			// check whether the conjunction of all blocks is unsatisfiable
+			try {
+				// compute the interpolants if it is not satisfiable
+				if(prover.isUnsat()) {
+					@SuppressWarnings("unchecked")
+					// compute the interpolants (with time-stamps)
+					List<BooleanFormula> interpolantsWithTimeStamps = prover.getSeqInterpolants(listPartitions);
+					List<BooleanFormula> interpolants = new ArrayList<BooleanFormula>();
+					// remove the time-stamps from the interpolants
+					for(BooleanFormula f : interpolantsWithTimeStamps) {
+						BooleanFormula interpolantWithoutTimeStamps = removeTimeStamps(f);
+						List<Formula> arguments = new ArrayList<Formula>();
+						for(Formula argument : fmgr.extractVariables(interpolantWithoutTimeStamps).values()) {
+							if(argument.toString().charAt(0) == 'v') {
+								arguments.add(argument);
+							}
+						}
+						if(arguments.isEmpty()) {
+							interpolants.add(interpolantWithoutTimeStamps);
+						}
+						else {
+							BooleanFormula quantifiedInterpolant = qmgr.exists(arguments, interpolantWithoutTimeStamps);
+							interpolants.add(quantifiedInterpolant);
+						}
+					}
+				// refine the nodes along the path
+					// starting from the root node
+					FOADAConfiguration currentNodeAlongPath = initialConfiguration;
+					int step = 0;
+					// loop check the path
+					boolean oneNodeIsClosed = false;
+					while(true) {
+						// get the corresponding interpolant according to the current step
+						BooleanFormula interpolant = interpolants.get(step);
+						// get the expression in the current node
+						BooleanFormula currentExpression = currentNodeAlongPath.expression;
+						// check the validity of the implication: current -> interpolant
+						boolean implicationIsValid = implies(currentExpression, interpolant);
 						// if the implication if not valid
 						if(!implicationIsValid) {
 							// refine the node by making a conjunction

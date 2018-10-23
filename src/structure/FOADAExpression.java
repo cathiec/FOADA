@@ -192,6 +192,41 @@ public class FOADAExpression {
 	
 	// utilities
 	
+	public void addTimeStamps(int timeStamp)
+	{
+		switch(category)
+		{
+		case Constant:	break;
+		case Function:	if(name.charAt(0) == 'v' || name.charAt(0) == 'q') {
+							name = name + '_' + timeStamp;
+						}
+						for(FOADAExpression e : subData) {
+							e.addTimeStamps(timeStamp);
+						}
+						break;
+		case Exists:	subData.get(subData.size() - 1).addTimeStamps(timeStamp);
+						break;
+		case Forall:	subData.get(subData.size() - 1).addTimeStamps(timeStamp);
+						break;
+		case Not:		subData.get(subData.size() - 1).addTimeStamps(timeStamp);
+						break;
+		case And:		for(FOADAExpression e : subData) {
+							e.addTimeStamps(timeStamp);
+						}
+						break;
+		case Or:		for(FOADAExpression e : subData) {
+							e.addTimeStamps(timeStamp);
+						}
+						break;
+		case Equals:	subData.get(0).addTimeStamps(timeStamp);
+						subData.get(1).addTimeStamps(timeStamp);
+						break;
+		case Distincts:	subData.get(0).addTimeStamps(timeStamp);
+						subData.get(1).addTimeStamps(timeStamp);
+						break;
+		}
+	}
+	
 	/** replace a part of the expression
 	 * @param	from	the part to be replaced
 	 * @param	to		used to replace the part
