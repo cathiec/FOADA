@@ -42,5 +42,30 @@ import java.util.ArrayList;
 
 automaton returns [Automaton jData]
 :
+	{
+		$jData = new Automaton("A");
+	}
+	STATES (i1=ID {
+		$jData.addPredicate($i1.text);
+	}
+	)*
+	INITIAL e1=expression {
+		$jData.setInitialState($e1.jData);
+	}
+	FINAL {
+		List<String> finalStates = new ArrayList<String>();
+	}
+	(i2=ID {
+		finalStates.add($i2.text);
+	}
+	)*
+	{
+		$jData.setFinalStates(finalStates);
+	}
+	SYMBOLS (i3=ID {
+		$jData.addEventSymbol($i3.text);
+	}
+	)*
 	
+;
 ;

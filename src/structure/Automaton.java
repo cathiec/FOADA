@@ -527,7 +527,7 @@ public class Automaton {
 	 */
 	public boolean isEmpty1(boolean print)
 			throws FOADAException
-	{	
+	{
 		long begintime = System.currentTimeMillis();
 		int nodeVisited = 0;
 	// start with the initial state

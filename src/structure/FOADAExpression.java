@@ -47,7 +47,15 @@ public class FOADAExpression {
 		And,
 		Or,
 		Equals,
-		Distincts
+		Distincts,
+		Plus,
+		Minus,
+		Times,
+		Slash,
+		GT,
+		LT,
+		GEQ,
+		LEQ
 	}
 	
 	// data
@@ -224,6 +232,30 @@ public class FOADAExpression {
 		case Distincts:	subData.get(0).addTimeStamps(timeStamp);
 						subData.get(1).addTimeStamps(timeStamp);
 						break;
+		case Plus:		subData.get(0).addTimeStamps(timeStamp);
+						subData.get(1).addTimeStamps(timeStamp);
+						break;
+		case Minus:		subData.get(0).addTimeStamps(timeStamp);
+						subData.get(1).addTimeStamps(timeStamp);
+						break;
+		case Times:		subData.get(0).addTimeStamps(timeStamp);
+						subData.get(1).addTimeStamps(timeStamp);
+						break;
+		case Slash:		subData.get(0).addTimeStamps(timeStamp);
+						subData.get(1).addTimeStamps(timeStamp);
+						break;
+		case GT:		subData.get(0).addTimeStamps(timeStamp);
+						subData.get(1).addTimeStamps(timeStamp);
+						break;
+		case LT:		subData.get(0).addTimeStamps(timeStamp);
+						subData.get(1).addTimeStamps(timeStamp);
+						break;
+		case GEQ:		subData.get(0).addTimeStamps(timeStamp);
+						subData.get(1).addTimeStamps(timeStamp);
+						break;
+		case LEQ:		subData.get(0).addTimeStamps(timeStamp);
+						subData.get(1).addTimeStamps(timeStamp);
+						break;
 		}
 	}
 	
@@ -261,6 +293,30 @@ public class FOADAExpression {
 						subData.get(1).substitue(from, to);
 						break;
 		case Distincts:	subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case Plus:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case Minus:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case Times:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case Slash:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case GT:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case LT:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case GEQ:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case LEQ:		subData.get(0).substitue(from, to);
 						subData.get(1).substitue(from, to);
 						break;
 		}
@@ -331,6 +387,14 @@ public class FOADAExpression {
 						else {
 							return fmgr.getBooleanFormulaManager().xor((BooleanFormula)subData.get(0).toJavaSMTFormula(fmgr), (BooleanFormula)subData.get(1).toJavaSMTFormula(fmgr));
 						}
+		case Plus:		return fmgr.getIntegerFormulaManager().add((IntegerFormula)subData.get(0).toJavaSMTFormula(fmgr), (IntegerFormula)subData.get(1).toJavaSMTFormula(fmgr));
+		case Minus:		return fmgr.getIntegerFormulaManager().subtract((IntegerFormula)subData.get(0).toJavaSMTFormula(fmgr), (IntegerFormula)subData.get(1).toJavaSMTFormula(fmgr));
+		case Times:		return fmgr.getIntegerFormulaManager().multiply((IntegerFormula)subData.get(0).toJavaSMTFormula(fmgr), (IntegerFormula)subData.get(1).toJavaSMTFormula(fmgr));
+		case Slash:		return fmgr.getIntegerFormulaManager().divide((IntegerFormula)subData.get(0).toJavaSMTFormula(fmgr), (IntegerFormula)subData.get(1).toJavaSMTFormula(fmgr));
+		case GT:		return fmgr.getIntegerFormulaManager().greaterThan((IntegerFormula)subData.get(0).toJavaSMTFormula(fmgr), (IntegerFormula)subData.get(1).toJavaSMTFormula(fmgr));
+		case LT:		return fmgr.getIntegerFormulaManager().lessThan((IntegerFormula)subData.get(0).toJavaSMTFormula(fmgr), (IntegerFormula)subData.get(1).toJavaSMTFormula(fmgr));
+		case GEQ:		return fmgr.getIntegerFormulaManager().greaterOrEquals((IntegerFormula)subData.get(0).toJavaSMTFormula(fmgr), (IntegerFormula)subData.get(1).toJavaSMTFormula(fmgr));
+		case LEQ:		return fmgr.getIntegerFormulaManager().lessOrEquals((IntegerFormula)subData.get(0).toJavaSMTFormula(fmgr), (IntegerFormula)subData.get(1).toJavaSMTFormula(fmgr));
 		/* never reach here */ default: return null;
 		}
 	}
@@ -417,6 +481,22 @@ public class FOADAExpression {
 		case Equals:	resultString = subData.get(0).toString() + " = " + subData.get(1).toString();
 						return resultString;
 		case Distincts:	resultString = subData.get(0).toString() + " != " + subData.get(1).toString();
+						return resultString;
+		case Plus:		resultString = subData.get(0).toString() + " + " + subData.get(1).toString();
+						return resultString;
+		case Minus:		resultString = subData.get(0).toString() + " - " + subData.get(1).toString();
+						return resultString;
+		case Times:		resultString = subData.get(0).toString() + " * " + subData.get(1).toString();
+						return resultString;
+		case Slash:		resultString = subData.get(0).toString() + " / " + subData.get(1).toString();
+						return resultString;
+		case GT:		resultString = subData.get(0).toString() + " > " + subData.get(1).toString();
+						return resultString;
+		case LT:		resultString = subData.get(0).toString() + " < " + subData.get(1).toString();
+						return resultString;
+		case GEQ:		resultString = subData.get(0).toString() + " >= " + subData.get(1).toString();
+						return resultString;
+		case LEQ:		resultString = subData.get(0).toString() + " <= " + subData.get(1).toString();
 						return resultString;
 		/* never reach here */ default: return "";
 		}

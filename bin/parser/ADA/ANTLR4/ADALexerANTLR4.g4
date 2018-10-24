@@ -30,43 +30,45 @@ options {
 package parser.ADA.ANTLR4;
 }
 
-WS : (' ' | '\t' | '\r' | '\n') {skip();};
-
 // key words
-START : 'start';
-FINAL : 'final';
-NONE : 'none';
-FALSE : 'false';
+STATES : 'STATES';
+INITIAL : 'INITIAL';
+FINAL : 'FINAL';
+SYMBOLS : 'SYMBOLS';
+VARIABLES : 'VARIABLES';
+TRANSITIONS : 'TRANSITIONS';
 TRUE : 'true';
-FORALL : 'forall';
+FALSE : 'false';
+INT : 'Int';
+BOOL : 'Bool';
 EXISTS : 'exists';
-TL : '--(';
-TR : ')->';
-AND : '/\\';
-OR : '\\/';
-EQUALS : '=';
-DISTINCTS : '!=';
+FORALL : 'forall';
+NOT : 'not';
+AND : 'and';
+OR : 'or';
+DISTINCT : 'distinct';
 
 fragment LETTER : 'a' .. 'z' | 'A' .. 'Z';
 fragment DIGIT : '0' .. '9';
 
+ID : (LETTER | '$' | '_')(LETTER | DIGIT | '$' | '_')*;
 INTEGER : '0' | ('1' .. '9' DIGIT*);
-ID : (LETTER)(LETTER | DIGIT | '+' | '-' | '*' | '/' | '>' | '<' | '=')*
-		|
-		('<' (~('>'))* '>')
-		|
-		('[' (~(']'))* ']')
-		|
-		('{' (~('}'))* '}')
-		|
-		'$';
 
+SHARP : '#';
 LP : '(';
 RP : ')';
-POINT : '.';
-TWOPOINTS : ':';
-COM : ',';
+PLUS : '+';
+MINUS : '-';
+TIMES : '*';
+SLASH : '/';
+GT : '>';
+LT : '<';
+GEQ : '>=';
+LEQ : '<=';
+EQUALS : '=';
+
+WS : (' ' | '\t' | '\r' | '\n') {skip();};
 
 COMMENT
-: '(*' ( ~('\n') )* '*)' {skip();}
+: ';' ( ~('\n') )* {skip();}
 ;
