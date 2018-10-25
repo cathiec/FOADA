@@ -47,7 +47,7 @@ public class FOADAExpression {
 		And,
 		Or,
 		Equals,
-		Distincts,
+		Distinct,
 		Plus,
 		Minus,
 		Times,
@@ -112,6 +112,19 @@ public class FOADAExpression {
 		name = null;
 		bValue = true;
 		subData = null;
+	}
+	
+	/** constructor for "unknown-type function"
+	 */
+	public FOADAExpression(String name)
+	{
+		type = null;
+		this.name = name;
+		category = ExpressionCategory.Function;
+		subData = new ArrayList<FOADAExpression>();
+		// data not used
+		bValue = true;
+		iValue = 0;
 	}
 	
 	/** constructor for "function"
@@ -200,6 +213,23 @@ public class FOADAExpression {
 	
 	// utilities
 	
+	/** add recursively arguments to all the predicates in the expression
+	 * @param	arguments	list of arguments to be added
+	 */
+	public void addArguments(List<FOADAExpression> arguments)
+	{
+		if(type == ExpressionType.Boolean && category == ExpressionCategory.Function) {
+			for(FOADAExpression argument : arguments) {
+				subData.add(argument.copy());
+			}
+		}
+		if(subData != null) {
+			for(FOADAExpression subexpression : subData) {
+				subexpression.addArguments(arguments);
+			}
+		}
+	}
+	
 	public void addTimeStamps(int timeStamp)
 	{
 		switch(category)
@@ -229,7 +259,7 @@ public class FOADAExpression {
 		case Equals:	subData.get(0).addTimeStamps(timeStamp);
 						subData.get(1).addTimeStamps(timeStamp);
 						break;
-		case Distincts:	subData.get(0).addTimeStamps(timeStamp);
+		case Distinct:	subData.get(0).addTimeStamps(timeStamp);
 						subData.get(1).addTimeStamps(timeStamp);
 						break;
 		case Plus:		subData.get(0).addTimeStamps(timeStamp);
@@ -292,7 +322,7 @@ public class FOADAExpression {
 		case Equals:	subData.get(0).substitue(from, to);
 						subData.get(1).substitue(from, to);
 						break;
-		case Distincts:	subData.get(0).substitue(from, to);
+		case Distinct:	subData.get(0).substitue(from, to);
 						subData.get(1).substitue(from, to);
 						break;
 		case Plus:		subData.get(0).substitue(from, to);
@@ -381,7 +411,7 @@ public class FOADAExpression {
 						else {
 							return fmgr.getBooleanFormulaManager().equivalence((BooleanFormula)subData.get(0).toJavaSMTFormula(fmgr), (BooleanFormula)subData.get(1).toJavaSMTFormula(fmgr));
 						}
-		case Distincts:	if(subData.get(0).type == ExpressionType.Integer) {
+		case Distinct:	if(subData.get(0).type == ExpressionType.Integer) {
 							return fmgr.getBooleanFormulaManager().not(fmgr.getIntegerFormulaManager().equal((IntegerFormula)subData.get(0).toJavaSMTFormula(fmgr), (IntegerFormula)subData.get(1).toJavaSMTFormula(fmgr)));
 						}
 						else {
@@ -480,7 +510,7 @@ public class FOADAExpression {
 						return resultString;
 		case Equals:	resultString = subData.get(0).toString() + " = " + subData.get(1).toString();
 						return resultString;
-		case Distincts:	resultString = subData.get(0).toString() + " != " + subData.get(1).toString();
+		case Distinct:	resultString = subData.get(0).toString() + " != " + subData.get(1).toString();
 						return resultString;
 		case Plus:		resultString = subData.get(0).toString() + " + " + subData.get(1).toString();
 						return resultString;

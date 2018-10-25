@@ -50,27 +50,27 @@ public class ADAParserANTLR4 extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		START=1, FINAL=2, NONE=3, FALSE=4, TRUE=5, FORALL=6, EXISTS=7, TL=8, TR=9, 
-		AND=10, OR=11, EQUALS=12, DISTINCTS=13, INTEGER=14, ID=15, LP=16, RP=17, 
-		POINT=18, TWOPOINTS=19, COM=20, WS=21, COMMENT=22;
+		STATES=1, INITIAL=2, FINAL=3, SYMBOLS=4, VARIABLES=5, TRANSITIONS=6, TRUE=7, 
+		FALSE=8, NOT=9, AND=10, OR=11, DISTINCT=12, ID=13, INTEGER=14, SHARP=15, 
+		LP=16, RP=17, PLUS=18, MINUS=19, TIMES=20, SLASH=21, GT=22, LT=23, GEQ=24, 
+		LEQ=25, EQUALS=26, WS=27, COMMENT=28;
 	public static final int
-		RULE_automaton = 0, RULE_final_list = 1, RULE_expression = 2, RULE_or_expression = 3, 
-		RULE_and_expression = 4, RULE_basic_expression = 5, RULE_eq_expression = 6, 
-		RULE_argument_list = 7;
+		RULE_automaton = 0, RULE_expression = 1;
 	public static final String[] ruleNames = {
-		"automaton", "final_list", "expression", "or_expression", "and_expression", 
-		"basic_expression", "eq_expression", "argument_list"
+		"automaton", "expression"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, "'start'", "'final'", "'none'", "'false'", "'true'", "'forall'", 
-		"'exists'", "'--('", "')->'", "'/\\'", "'\\/'", "'='", "'!='", null, null, 
-		"'('", "')'", "'.'", "':'", "','"
+		null, "'STATES'", "'INITIAL'", "'FINAL'", "'SYMBOLS'", "'VARIABLES'", 
+		"'TRANSITIONS'", "'true'", "'false'", "'not'", "'and'", "'or'", "'distinct'", 
+		null, null, "'#'", "'('", "')'", "'+'", "'-'", "'*'", "'/'", "'>'", "'<'", 
+		"'>='", "'<='", "'='"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, "START", "FINAL", "NONE", "FALSE", "TRUE", "FORALL", "EXISTS", "TL", 
-		"TR", "AND", "OR", "EQUALS", "DISTINCTS", "INTEGER", "ID", "LP", "RP", 
-		"POINT", "TWOPOINTS", "COM", "WS", "COMMENT"
+		null, "STATES", "INITIAL", "FINAL", "SYMBOLS", "VARIABLES", "TRANSITIONS", 
+		"TRUE", "FALSE", "NOT", "AND", "OR", "DISTINCT", "ID", "INTEGER", "SHARP", 
+		"LP", "RP", "PLUS", "MINUS", "TIMES", "SLASH", "GT", "LT", "GEQ", "LEQ", 
+		"EQUALS", "WS", "COMMENT"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -123,57 +123,29 @@ public class ADAParserANTLR4 extends Parser {
 	}
 	public static class AutomatonContext extends ParserRuleContext {
 		public Automaton jData;
+		public Token i;
 		public ExpressionContext e;
-		public Final_listContext fl;
-		public Token ID;
-		public Argument_listContext al;
 		public Token i1;
 		public Token i2;
-		public TerminalNode START() { return getToken(ADAParserANTLR4.START, 0); }
-		public List<TerminalNode> TWOPOINTS() { return getTokens(ADAParserANTLR4.TWOPOINTS); }
-		public TerminalNode TWOPOINTS(int i) {
-			return getToken(ADAParserANTLR4.TWOPOINTS, i);
-		}
-		public List<TerminalNode> POINT() { return getTokens(ADAParserANTLR4.POINT); }
-		public TerminalNode POINT(int i) {
-			return getToken(ADAParserANTLR4.POINT, i);
-		}
+		public TerminalNode STATES() { return getToken(ADAParserANTLR4.STATES, 0); }
+		public TerminalNode INITIAL() { return getToken(ADAParserANTLR4.INITIAL, 0); }
 		public TerminalNode FINAL() { return getToken(ADAParserANTLR4.FINAL, 0); }
-		public TerminalNode EOF() { return getToken(ADAParserANTLR4.EOF, 0); }
+		public TerminalNode SYMBOLS() { return getToken(ADAParserANTLR4.SYMBOLS, 0); }
+		public TerminalNode VARIABLES() { return getToken(ADAParserANTLR4.VARIABLES, 0); }
+		public TerminalNode TRANSITIONS() { return getToken(ADAParserANTLR4.TRANSITIONS, 0); }
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
 		public ExpressionContext expression(int i) {
 			return getRuleContext(ExpressionContext.class,i);
 		}
-		public Final_listContext final_list() {
-			return getRuleContext(Final_listContext.class,0);
+		public List<TerminalNode> SHARP() { return getTokens(ADAParserANTLR4.SHARP); }
+		public TerminalNode SHARP(int i) {
+			return getToken(ADAParserANTLR4.SHARP, i);
 		}
 		public List<TerminalNode> ID() { return getTokens(ADAParserANTLR4.ID); }
 		public TerminalNode ID(int i) {
 			return getToken(ADAParserANTLR4.ID, i);
-		}
-		public List<TerminalNode> LP() { return getTokens(ADAParserANTLR4.LP); }
-		public TerminalNode LP(int i) {
-			return getToken(ADAParserANTLR4.LP, i);
-		}
-		public List<TerminalNode> RP() { return getTokens(ADAParserANTLR4.RP); }
-		public TerminalNode RP(int i) {
-			return getToken(ADAParserANTLR4.RP, i);
-		}
-		public List<TerminalNode> TL() { return getTokens(ADAParserANTLR4.TL); }
-		public TerminalNode TL(int i) {
-			return getToken(ADAParserANTLR4.TL, i);
-		}
-		public List<TerminalNode> TR() { return getTokens(ADAParserANTLR4.TR); }
-		public TerminalNode TR(int i) {
-			return getToken(ADAParserANTLR4.TR, i);
-		}
-		public List<Argument_listContext> argument_list() {
-			return getRuleContexts(Argument_listContext.class);
-		}
-		public Argument_listContext argument_list(int i) {
-			return getRuleContext(Argument_listContext.class,i);
 		}
 		public AutomatonContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -199,164 +171,126 @@ public class ADAParserANTLR4 extends Parser {
 
 					((AutomatonContext)_localctx).jData =  new Automaton("A");
 				
-			setState(17);
-			match(START);
-			setState(18);
-			match(TWOPOINTS);
-			setState(19);
+			setState(5);
+			match(STATES);
+			setState(10);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==ID) {
+				{
+				{
+				setState(6);
+				((AutomatonContext)_localctx).i = match(ID);
+
+						_localctx.jData.preDefinePredicate((((AutomatonContext)_localctx).i!=null?((AutomatonContext)_localctx).i.getText():null));
+					
+				}
+				}
+				setState(12);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+			setState(13);
+			match(INITIAL);
+			setState(14);
 			((AutomatonContext)_localctx).e = expression();
 
+					_localctx.jData.defineFunctionType(((AutomatonContext)_localctx).e.jData);
 					_localctx.jData.setInitialState(((AutomatonContext)_localctx).e.jData);
 				
-			setState(21);
-			match(POINT);
-			setState(22);
+			setState(16);
 			match(FINAL);
-			setState(23);
-			match(TWOPOINTS);
-			setState(24);
-			((AutomatonContext)_localctx).fl = final_list();
 
-					_localctx.jData.setFinalStates(((AutomatonContext)_localctx).fl.jData);
+					List<String> finalStates = new ArrayList<String>();
+				
+			setState(22);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==ID) {
+				{
+				{
+				setState(18);
+				((AutomatonContext)_localctx).i = match(ID);
+
+						finalStates.add((((AutomatonContext)_localctx).i!=null?((AutomatonContext)_localctx).i.getText():null));
+					
+				}
+				}
+				setState(24);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
+
+					_localctx.jData.setFinalStates(finalStates);
 				
 			setState(26);
-			match(POINT);
-			setState(42);
+			match(SYMBOLS);
+			setState(31);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==ID) {
 				{
 				{
 				setState(27);
-				((AutomatonContext)_localctx).ID = match(ID);
-				setState(28);
-				match(LP);
-				setState(29);
-				((AutomatonContext)_localctx).al = argument_list();
-				setState(30);
-				match(RP);
-				setState(31);
-				match(TL);
-				setState(32);
-				((AutomatonContext)_localctx).i1 = match(ID);
+				((AutomatonContext)_localctx).i = match(ID);
+
+						_localctx.jData.addEventSymbol((((AutomatonContext)_localctx).i!=null?((AutomatonContext)_localctx).i.getText():null));
+					
+				}
+				}
 				setState(33);
-				match(TWOPOINTS);
-				setState(34);
-				((AutomatonContext)_localctx).i2 = match(ID);
-				setState(35);
-				match(TR);
-				setState(36);
-				((AutomatonContext)_localctx).e = expression();
-				setState(37);
-				match(POINT);
-
-						List<String> variables = new ArrayList<String>();
-						variables.add((((AutomatonContext)_localctx).i2!=null?((AutomatonContext)_localctx).i2.getText():null));
-						List<ExpressionType> variablesTypes = new ArrayList<ExpressionType>();
-						variablesTypes.add(ExpressionType.Integer);
-						List<ExpressionType> argumentsTypes = new ArrayList<ExpressionType>();
-						for(String s : ((AutomatonContext)_localctx).al.jData) {
-							argumentsTypes.add(ExpressionType.Integer);
-						}
-						_localctx.jData.addTransition((((AutomatonContext)_localctx).ID!=null?((AutomatonContext)_localctx).ID.getText():null), ((AutomatonContext)_localctx).al.jData, argumentsTypes, (((AutomatonContext)_localctx).i1!=null?((AutomatonContext)_localctx).i1.getText():null), variables, variablesTypes, ((AutomatonContext)_localctx).e.jData);
-					
-				}
-				}
-				setState(44);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			setState(45);
-			match(EOF);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class Final_listContext extends ParserRuleContext {
-		public List<String> jData;
-		public Token ID;
-		public TerminalNode NONE() { return getToken(ADAParserANTLR4.NONE, 0); }
-		public List<TerminalNode> ID() { return getTokens(ADAParserANTLR4.ID); }
-		public TerminalNode ID(int i) {
-			return getToken(ADAParserANTLR4.ID, i);
-		}
-		public List<TerminalNode> COM() { return getTokens(ADAParserANTLR4.COM); }
-		public TerminalNode COM(int i) {
-			return getToken(ADAParserANTLR4.COM, i);
-		}
-		public Final_listContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_final_list; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ADAParserANTLR4Listener ) ((ADAParserANTLR4Listener)listener).enterFinal_list(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ADAParserANTLR4Listener ) ((ADAParserANTLR4Listener)listener).exitFinal_list(this);
-		}
-	}
-
-	public final Final_listContext final_list() throws RecognitionException {
-		Final_listContext _localctx = new Final_listContext(_ctx, getState());
-		enterRule(_localctx, 2, RULE_final_list);
-		int _la;
-		try {
-			setState(59);
+			setState(34);
+			match(VARIABLES);
+			setState(39);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case NONE:
-				enterOuterAlt(_localctx, 1);
+			_la = _input.LA(1);
+			while (_la==ID) {
 				{
-				setState(47);
-				match(NONE);
+				{
+				setState(35);
+				((AutomatonContext)_localctx).i = match(ID);
 
-						((Final_listContext)_localctx).jData =  new ArrayList<String>();
+						_localctx.jData.addVariable((((AutomatonContext)_localctx).i!=null?((AutomatonContext)_localctx).i.getText():null));
 					
 				}
-				break;
-			case ID:
-				enterOuterAlt(_localctx, 2);
-				{
-				setState(49);
-				((Final_listContext)_localctx).ID = match(ID);
-
-						((Final_listContext)_localctx).jData =  new ArrayList<String>();
-						_localctx.jData.add((((Final_listContext)_localctx).ID!=null?((Final_listContext)_localctx).ID.getText():null));		
-					
-				setState(56);
+				}
+				setState(41);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==COM) {
-					{
-					{
-					setState(51);
-					match(COM);
-					setState(52);
-					((Final_listContext)_localctx).ID = match(ID);
+			}
 
-							_localctx.jData.add((((Final_listContext)_localctx).ID!=null?((Final_listContext)_localctx).ID.getText():null));
-						
-					}
-					}
-					setState(58);
-					_errHandler.sync(this);
-					_la = _input.LA(1);
+					_localctx.jData.finalisePredicatesArguments();
+					_localctx.jData.finaliseInitAndFinal();
+				
+			setState(43);
+			match(TRANSITIONS);
+			setState(52);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==ID) {
+				{
+				{
+				setState(44);
+				((AutomatonContext)_localctx).i1 = match(ID);
+				setState(45);
+				((AutomatonContext)_localctx).i2 = match(ID);
+				setState(46);
+				((AutomatonContext)_localctx).e = expression();
+				setState(47);
+				match(SHARP);
+
+						_localctx.jData.defineFunctionType(((AutomatonContext)_localctx).e.jData);
+						_localctx.jData.addADATransition((((AutomatonContext)_localctx).i2!=null?((AutomatonContext)_localctx).i2.getText():null), (((AutomatonContext)_localctx).i1!=null?((AutomatonContext)_localctx).i1.getText():null), ((AutomatonContext)_localctx).e.jData);
+					
 				}
 				}
-				break;
-			default:
-				throw new NoViableAltException(this);
+				setState(54);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -372,10 +306,36 @@ public class ADAParserANTLR4 extends Parser {
 
 	public static class ExpressionContext extends ParserRuleContext {
 		public FOADAExpression jData;
-		public Or_expressionContext oe;
-		public Or_expressionContext or_expression() {
-			return getRuleContext(Or_expressionContext.class,0);
+		public ExpressionContext e;
+		public ExpressionContext e1;
+		public ExpressionContext e2;
+		public Token i;
+		public Token INTEGER;
+		public TerminalNode TRUE() { return getToken(ADAParserANTLR4.TRUE, 0); }
+		public TerminalNode FALSE() { return getToken(ADAParserANTLR4.FALSE, 0); }
+		public TerminalNode LP() { return getToken(ADAParserANTLR4.LP, 0); }
+		public TerminalNode NOT() { return getToken(ADAParserANTLR4.NOT, 0); }
+		public TerminalNode RP() { return getToken(ADAParserANTLR4.RP, 0); }
+		public List<ExpressionContext> expression() {
+			return getRuleContexts(ExpressionContext.class);
 		}
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
+		}
+		public TerminalNode AND() { return getToken(ADAParserANTLR4.AND, 0); }
+		public TerminalNode OR() { return getToken(ADAParserANTLR4.OR, 0); }
+		public TerminalNode GT() { return getToken(ADAParserANTLR4.GT, 0); }
+		public TerminalNode LT() { return getToken(ADAParserANTLR4.LT, 0); }
+		public TerminalNode GEQ() { return getToken(ADAParserANTLR4.GEQ, 0); }
+		public TerminalNode LEQ() { return getToken(ADAParserANTLR4.LEQ, 0); }
+		public TerminalNode EQUALS() { return getToken(ADAParserANTLR4.EQUALS, 0); }
+		public TerminalNode DISTINCT() { return getToken(ADAParserANTLR4.DISTINCT, 0); }
+		public TerminalNode ID() { return getToken(ADAParserANTLR4.ID, 0); }
+		public TerminalNode INTEGER() { return getToken(ADAParserANTLR4.INTEGER, 0); }
+		public TerminalNode PLUS() { return getToken(ADAParserANTLR4.PLUS, 0); }
+		public TerminalNode TIMES() { return getToken(ADAParserANTLR4.TIMES, 0); }
+		public TerminalNode MINUS() { return getToken(ADAParserANTLR4.MINUS, 0); }
+		public TerminalNode SLASH() { return getToken(ADAParserANTLR4.SLASH, 0); }
 		public ExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -392,566 +352,344 @@ public class ADAParserANTLR4 extends Parser {
 
 	public final ExpressionContext expression() throws RecognitionException {
 		ExpressionContext _localctx = new ExpressionContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_expression);
+		enterRule(_localctx, 2, RULE_expression);
+		int _la;
 		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(61);
-			((ExpressionContext)_localctx).oe = or_expression();
-
-					((ExpressionContext)_localctx).jData =  ((ExpressionContext)_localctx).oe.jData;
-				
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class Or_expressionContext extends ParserRuleContext {
-		public FOADAExpression jData;
-		public And_expressionContext ae1;
-		public And_expressionContext ae2;
-		public Or_expressionContext oe;
-		public List<And_expressionContext> and_expression() {
-			return getRuleContexts(And_expressionContext.class);
-		}
-		public And_expressionContext and_expression(int i) {
-			return getRuleContext(And_expressionContext.class,i);
-		}
-		public List<TerminalNode> OR() { return getTokens(ADAParserANTLR4.OR); }
-		public TerminalNode OR(int i) {
-			return getToken(ADAParserANTLR4.OR, i);
-		}
-		public TerminalNode LP() { return getToken(ADAParserANTLR4.LP, 0); }
-		public TerminalNode RP() { return getToken(ADAParserANTLR4.RP, 0); }
-		public Or_expressionContext or_expression() {
-			return getRuleContext(Or_expressionContext.class,0);
-		}
-		public Or_expressionContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_or_expression; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ADAParserANTLR4Listener ) ((ADAParserANTLR4Listener)listener).enterOr_expression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ADAParserANTLR4Listener ) ((ADAParserANTLR4Listener)listener).exitOr_expression(this);
-		}
-	}
-
-	public final Or_expressionContext or_expression() throws RecognitionException {
-		Or_expressionContext _localctx = new Or_expressionContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_or_expression);
-		try {
-			int _alt;
-			setState(80);
+			setState(177);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(64);
-				((Or_expressionContext)_localctx).ae1 = and_expression();
-
-						((Or_expressionContext)_localctx).jData =  ((Or_expressionContext)_localctx).ae1.jData;
-					
-				setState(72);
-				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,3,_ctx);
-				while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
-					if ( _alt==1 ) {
-						{
-						{
-						setState(66);
-						match(OR);
-						setState(67);
-						((Or_expressionContext)_localctx).ae2 = and_expression();
-
-								((Or_expressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Or, ((Or_expressionContext)_localctx).ae1.jData, ((Or_expressionContext)_localctx).ae2.jData);
-							
-						}
-						} 
-					}
-					setState(74);
-					_errHandler.sync(this);
-					_alt = getInterpreter().adaptivePredict(_input,3,_ctx);
-				}
-				}
-				break;
-			case 2:
-				enterOuterAlt(_localctx, 2);
-				{
-				setState(75);
-				match(LP);
-				setState(76);
-				((Or_expressionContext)_localctx).oe = or_expression();
-				setState(77);
-				match(RP);
-
-						((Or_expressionContext)_localctx).jData =  ((Or_expressionContext)_localctx).oe.jData;
-					
-				}
-				break;
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class And_expressionContext extends ParserRuleContext {
-		public FOADAExpression jData;
-		public Basic_expressionContext be;
-		public Or_expressionContext oe;
-		public Or_expressionContext oe1;
-		public Or_expressionContext oe2;
-		public Basic_expressionContext basic_expression() {
-			return getRuleContext(Basic_expressionContext.class,0);
-		}
-		public List<TerminalNode> AND() { return getTokens(ADAParserANTLR4.AND); }
-		public TerminalNode AND(int i) {
-			return getToken(ADAParserANTLR4.AND, i);
-		}
-		public List<Or_expressionContext> or_expression() {
-			return getRuleContexts(Or_expressionContext.class);
-		}
-		public Or_expressionContext or_expression(int i) {
-			return getRuleContext(Or_expressionContext.class,i);
-		}
-		public TerminalNode LP() { return getToken(ADAParserANTLR4.LP, 0); }
-		public TerminalNode RP() { return getToken(ADAParserANTLR4.RP, 0); }
-		public And_expressionContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_and_expression; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ADAParserANTLR4Listener ) ((ADAParserANTLR4Listener)listener).enterAnd_expression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ADAParserANTLR4Listener ) ((ADAParserANTLR4Listener)listener).exitAnd_expression(this);
-		}
-	}
-
-	public final And_expressionContext and_expression() throws RecognitionException {
-		And_expressionContext _localctx = new And_expressionContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_and_expression);
-		try {
-			int _alt;
-			setState(106);
-			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
-			case 1:
-				enterOuterAlt(_localctx, 1);
-				{
-				setState(82);
-				((And_expressionContext)_localctx).be = basic_expression();
-
-						((And_expressionContext)_localctx).jData =  ((And_expressionContext)_localctx).be.jData;
-					
-				setState(90);
-				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
-				while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
-					if ( _alt==1 ) {
-						{
-						{
-						setState(84);
-						match(AND);
-						setState(85);
-						((And_expressionContext)_localctx).oe = or_expression();
-
-								((And_expressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.And, ((And_expressionContext)_localctx).be.jData, ((And_expressionContext)_localctx).oe.jData);
-							
-						}
-						} 
-					}
-					setState(92);
-					_errHandler.sync(this);
-					_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
-				}
-				}
-				break;
-			case 2:
-				enterOuterAlt(_localctx, 2);
-				{
-				setState(93);
-				match(LP);
-				setState(94);
-				((And_expressionContext)_localctx).oe1 = or_expression();
-				setState(95);
-				match(RP);
-
-						((And_expressionContext)_localctx).jData =  ((And_expressionContext)_localctx).oe1.jData;
-					
-				setState(103);
-				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,6,_ctx);
-				while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
-					if ( _alt==1 ) {
-						{
-						{
-						setState(97);
-						match(AND);
-						setState(98);
-						((And_expressionContext)_localctx).oe2 = or_expression();
-
-								((And_expressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.And, ((And_expressionContext)_localctx).oe1.jData, ((And_expressionContext)_localctx).oe2.jData);
-							
-						}
-						} 
-					}
-					setState(105);
-					_errHandler.sync(this);
-					_alt = getInterpreter().adaptivePredict(_input,6,_ctx);
-				}
-				}
-				break;
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class Basic_expressionContext extends ParserRuleContext {
-		public FOADAExpression jData;
-		public Argument_listContext al;
-		public ExpressionContext e;
-		public Eq_expressionContext ee;
-		public Token ID;
-		public TerminalNode TRUE() { return getToken(ADAParserANTLR4.TRUE, 0); }
-		public TerminalNode FALSE() { return getToken(ADAParserANTLR4.FALSE, 0); }
-		public TerminalNode EXISTS() { return getToken(ADAParserANTLR4.EXISTS, 0); }
-		public TerminalNode POINT() { return getToken(ADAParserANTLR4.POINT, 0); }
-		public Argument_listContext argument_list() {
-			return getRuleContext(Argument_listContext.class,0);
-		}
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
-		}
-		public TerminalNode FORALL() { return getToken(ADAParserANTLR4.FORALL, 0); }
-		public Eq_expressionContext eq_expression() {
-			return getRuleContext(Eq_expressionContext.class,0);
-		}
-		public TerminalNode ID() { return getToken(ADAParserANTLR4.ID, 0); }
-		public TerminalNode LP() { return getToken(ADAParserANTLR4.LP, 0); }
-		public TerminalNode RP() { return getToken(ADAParserANTLR4.RP, 0); }
-		public Basic_expressionContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_basic_expression; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ADAParserANTLR4Listener ) ((ADAParserANTLR4Listener)listener).enterBasic_expression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ADAParserANTLR4Listener ) ((ADAParserANTLR4Listener)listener).exitBasic_expression(this);
-		}
-	}
-
-	public final Basic_expressionContext basic_expression() throws RecognitionException {
-		Basic_expressionContext _localctx = new Basic_expressionContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_basic_expression);
-		try {
-			setState(133);
-			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,8,_ctx) ) {
-			case 1:
-				enterOuterAlt(_localctx, 1);
-				{
-				setState(108);
+				setState(55);
 				match(TRUE);
 
-						((Basic_expressionContext)_localctx).jData =  new FOADAExpression(true);
+						((ExpressionContext)_localctx).jData =  new FOADAExpression(true);
 					
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(110);
+				setState(57);
 				match(FALSE);
 
-						((Basic_expressionContext)_localctx).jData =  new FOADAExpression(false);
+						((ExpressionContext)_localctx).jData =  new FOADAExpression(false);
 					
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(112);
-				match(EXISTS);
-				setState(113);
-				((Basic_expressionContext)_localctx).al = argument_list();
-				setState(114);
-				match(POINT);
-				setState(115);
-				((Basic_expressionContext)_localctx).e = expression();
+				setState(59);
+				match(LP);
+				setState(60);
+				match(NOT);
+				setState(61);
+				((ExpressionContext)_localctx).e = expression();
+				setState(62);
+				match(RP);
 
-						List<FOADAExpression> subExpressions = new ArrayList<FOADAExpression>();
-						for(String s : ((Basic_expressionContext)_localctx).al.jData) {
-							FOADAExpression argument = new FOADAExpression(s, ExpressionType.Integer);
-							subExpressions.add(argument);
-						}
-						subExpressions.add(((Basic_expressionContext)_localctx).e.jData);
-						((Basic_expressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Exists, subExpressions);
+						((ExpressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Not, ((ExpressionContext)_localctx).e.jData);
 					
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(118);
-				match(FORALL);
-				setState(119);
-				((Basic_expressionContext)_localctx).al = argument_list();
-				setState(120);
-				match(POINT);
-				setState(121);
-				((Basic_expressionContext)_localctx).e = expression();
+				setState(65);
+				match(LP);
+				setState(66);
+				match(AND);
+				setState(67);
+				((ExpressionContext)_localctx).e1 = expression();
 
-						List<FOADAExpression> subExpressions = new ArrayList<FOADAExpression>();
-						for(String s : ((Basic_expressionContext)_localctx).al.jData) {
-							FOADAExpression argument = new FOADAExpression(s, ExpressionType.Integer);
-							subExpressions.add(argument);
-						}
-						subExpressions.add(((Basic_expressionContext)_localctx).e.jData);
-						((Basic_expressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Forall, subExpressions);
+						((ExpressionContext)_localctx).jData =  ((ExpressionContext)_localctx).e1.jData; 
 					
+				setState(72); 
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				do {
+					{
+					{
+					setState(69);
+					((ExpressionContext)_localctx).e2 = expression();
+
+							((ExpressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.And, _localctx.jData, ((ExpressionContext)_localctx).e2.jData);
+						
+					}
+					}
+					setState(74); 
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TRUE) | (1L << FALSE) | (1L << ID) | (1L << INTEGER) | (1L << LP))) != 0) );
+				setState(76);
+				match(RP);
 				}
 				break;
 			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(124);
-				((Basic_expressionContext)_localctx).ee = eq_expression();
+				setState(78);
+				match(LP);
+				setState(79);
+				match(OR);
+				setState(80);
+				((ExpressionContext)_localctx).e1 = expression();
 
-						((Basic_expressionContext)_localctx).jData =  ((Basic_expressionContext)_localctx).ee.jData;
+						((ExpressionContext)_localctx).jData =  ((ExpressionContext)_localctx).e1.jData; 
 					
+				setState(85); 
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				do {
+					{
+					{
+					setState(82);
+					((ExpressionContext)_localctx).e2 = expression();
+
+							((ExpressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Or, _localctx.jData, ((ExpressionContext)_localctx).e2.jData);
+						
+					}
+					}
+					setState(87); 
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TRUE) | (1L << FALSE) | (1L << ID) | (1L << INTEGER) | (1L << LP))) != 0) );
+				setState(89);
+				match(RP);
 				}
 				break;
 			case 6:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(127);
-				((Basic_expressionContext)_localctx).ID = match(ID);
-				setState(128);
+				setState(91);
 				match(LP);
+				setState(92);
+				match(GT);
+				setState(93);
+				((ExpressionContext)_localctx).e1 = expression();
+				setState(94);
+				((ExpressionContext)_localctx).e2 = expression();
+				setState(95);
+				match(RP);
+
+						((ExpressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.GT, ((ExpressionContext)_localctx).e1.jData, ((ExpressionContext)_localctx).e2.jData);
+					
+				}
+				break;
+			case 7:
+				enterOuterAlt(_localctx, 7);
+				{
+				setState(98);
+				match(LP);
+				setState(99);
+				match(LT);
+				setState(100);
+				((ExpressionContext)_localctx).e1 = expression();
+				setState(101);
+				((ExpressionContext)_localctx).e2 = expression();
+				setState(102);
+				match(RP);
+
+						((ExpressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.LT, ((ExpressionContext)_localctx).e1.jData, ((ExpressionContext)_localctx).e2.jData);
+					
+				}
+				break;
+			case 8:
+				enterOuterAlt(_localctx, 8);
+				{
+				setState(105);
+				match(LP);
+				setState(106);
+				match(GEQ);
+				setState(107);
+				((ExpressionContext)_localctx).e1 = expression();
+				setState(108);
+				((ExpressionContext)_localctx).e2 = expression();
+				setState(109);
+				match(RP);
+
+						((ExpressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.GEQ, ((ExpressionContext)_localctx).e1.jData, ((ExpressionContext)_localctx).e2.jData);
+					
+				}
+				break;
+			case 9:
+				enterOuterAlt(_localctx, 9);
+				{
+				setState(112);
+				match(LP);
+				setState(113);
+				match(LEQ);
+				setState(114);
+				((ExpressionContext)_localctx).e1 = expression();
+				setState(115);
+				((ExpressionContext)_localctx).e2 = expression();
+				setState(116);
+				match(RP);
+
+						((ExpressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.LEQ, ((ExpressionContext)_localctx).e1.jData, ((ExpressionContext)_localctx).e2.jData);
+					
+				}
+				break;
+			case 10:
+				enterOuterAlt(_localctx, 10);
+				{
+				setState(119);
+				match(LP);
+				setState(120);
+				match(EQUALS);
+				setState(121);
+				((ExpressionContext)_localctx).e1 = expression();
+				setState(122);
+				((ExpressionContext)_localctx).e2 = expression();
+				setState(123);
+				match(RP);
+
+						((ExpressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Equals, ((ExpressionContext)_localctx).e1.jData, ((ExpressionContext)_localctx).e2.jData);
+					
+				}
+				break;
+			case 11:
+				enterOuterAlt(_localctx, 11);
+				{
+				setState(126);
+				match(LP);
+				setState(127);
+				match(DISTINCT);
+				setState(128);
+				((ExpressionContext)_localctx).e1 = expression();
 				setState(129);
-				((Basic_expressionContext)_localctx).al = argument_list();
+				((ExpressionContext)_localctx).e2 = expression();
 				setState(130);
 				match(RP);
 
-						List<FOADAExpression> subExpressions = new ArrayList<FOADAExpression>();
-						for(String s : ((Basic_expressionContext)_localctx).al.jData) {
-							FOADAExpression argument = new FOADAExpression(s, ExpressionType.Integer);
-							subExpressions.add(argument);
-						}
-						((Basic_expressionContext)_localctx).jData =  new FOADAExpression((((Basic_expressionContext)_localctx).ID!=null?((Basic_expressionContext)_localctx).ID.getText():null), ExpressionType.Boolean, subExpressions);
+						((ExpressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Distinct, ((ExpressionContext)_localctx).e1.jData, ((ExpressionContext)_localctx).e2.jData);
 					
 				}
 				break;
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
+			case 12:
+				enterOuterAlt(_localctx, 12);
+				{
+				setState(133);
+				((ExpressionContext)_localctx).i = match(ID);
 
-	public static class Eq_expressionContext extends ParserRuleContext {
-		public FOADAExpression jData;
-		public Token i1;
-		public Token i2;
-		public Eq_expressionContext ee;
-		public TerminalNode EQUALS() { return getToken(ADAParserANTLR4.EQUALS, 0); }
-		public List<TerminalNode> ID() { return getTokens(ADAParserANTLR4.ID); }
-		public TerminalNode ID(int i) {
-			return getToken(ADAParserANTLR4.ID, i);
-		}
-		public TerminalNode DISTINCTS() { return getToken(ADAParserANTLR4.DISTINCTS, 0); }
-		public TerminalNode LP() { return getToken(ADAParserANTLR4.LP, 0); }
-		public TerminalNode RP() { return getToken(ADAParserANTLR4.RP, 0); }
-		public Eq_expressionContext eq_expression() {
-			return getRuleContext(Eq_expressionContext.class,0);
-		}
-		public Eq_expressionContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_eq_expression; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ADAParserANTLR4Listener ) ((ADAParserANTLR4Listener)listener).enterEq_expression(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ADAParserANTLR4Listener ) ((ADAParserANTLR4Listener)listener).exitEq_expression(this);
-		}
-	}
-
-	public final Eq_expressionContext eq_expression() throws RecognitionException {
-		Eq_expressionContext _localctx = new Eq_expressionContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_eq_expression);
-		try {
-			setState(148);
-			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
-			case 1:
-				enterOuterAlt(_localctx, 1);
+						((ExpressionContext)_localctx).jData =  new FOADAExpression((((ExpressionContext)_localctx).i!=null?((ExpressionContext)_localctx).i.getText():null));
+					
+				}
+				break;
+			case 13:
+				enterOuterAlt(_localctx, 13);
 				{
 				setState(135);
-				((Eq_expressionContext)_localctx).i1 = match(ID);
-				setState(136);
-				match(EQUALS);
+				((ExpressionContext)_localctx).INTEGER = match(INTEGER);
+
+						((ExpressionContext)_localctx).jData =  new FOADAExpression(Integer.parseInt((((ExpressionContext)_localctx).INTEGER!=null?((ExpressionContext)_localctx).INTEGER.getText():null)));
+					
+				}
+				break;
+			case 14:
+				enterOuterAlt(_localctx, 14);
+				{
 				setState(137);
-				((Eq_expressionContext)_localctx).i2 = match(ID);
-
-						FOADAExpression left = new FOADAExpression((((Eq_expressionContext)_localctx).i1!=null?((Eq_expressionContext)_localctx).i1.getText():null), ExpressionType.Integer);
-						FOADAExpression right = new FOADAExpression((((Eq_expressionContext)_localctx).i2!=null?((Eq_expressionContext)_localctx).i2.getText():null), ExpressionType.Integer);
-						((Eq_expressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Equals, left, right);
-					
-				}
-				break;
-			case 2:
-				enterOuterAlt(_localctx, 2);
-				{
-				setState(139);
-				((Eq_expressionContext)_localctx).i1 = match(ID);
-				setState(140);
-				match(DISTINCTS);
-				setState(141);
-				((Eq_expressionContext)_localctx).i2 = match(ID);
-
-						FOADAExpression left = new FOADAExpression((((Eq_expressionContext)_localctx).i1!=null?((Eq_expressionContext)_localctx).i1.getText():null), ExpressionType.Integer);
-						FOADAExpression right = new FOADAExpression((((Eq_expressionContext)_localctx).i2!=null?((Eq_expressionContext)_localctx).i2.getText():null), ExpressionType.Integer);
-						((Eq_expressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Distincts, left, right);
-					
-				}
-				break;
-			case 3:
-				enterOuterAlt(_localctx, 3);
-				{
-				setState(143);
 				match(LP);
-				setState(144);
-				((Eq_expressionContext)_localctx).ee = eq_expression();
-				setState(145);
-				match(RP);
+				setState(138);
+				match(PLUS);
+				setState(139);
+				((ExpressionContext)_localctx).e1 = expression();
 
-						((Eq_expressionContext)_localctx).jData =  ((Eq_expressionContext)_localctx).ee.jData;
+						((ExpressionContext)_localctx).jData =  ((ExpressionContext)_localctx).e1.jData; 
 					
-				}
-				break;
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class Argument_listContext extends ParserRuleContext {
-		public List<String> jData;
-		public Token i1;
-		public Token i2;
-		public List<TerminalNode> ID() { return getTokens(ADAParserANTLR4.ID); }
-		public TerminalNode ID(int i) {
-			return getToken(ADAParserANTLR4.ID, i);
-		}
-		public List<TerminalNode> COM() { return getTokens(ADAParserANTLR4.COM); }
-		public TerminalNode COM(int i) {
-			return getToken(ADAParserANTLR4.COM, i);
-		}
-		public Argument_listContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_argument_list; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof ADAParserANTLR4Listener ) ((ADAParserANTLR4Listener)listener).enterArgument_list(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof ADAParserANTLR4Listener ) ((ADAParserANTLR4Listener)listener).exitArgument_list(this);
-		}
-	}
-
-	public final Argument_listContext argument_list() throws RecognitionException {
-		Argument_listContext _localctx = new Argument_listContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_argument_list);
-		int _la;
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-
-					((Argument_listContext)_localctx).jData =  new ArrayList<String>();
-				
-			setState(161);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			if (_la==ID) {
-				{
-				setState(151);
-				((Argument_listContext)_localctx).i1 = match(ID);
-
-						_localctx.jData.add((((Argument_listContext)_localctx).i1!=null?((Argument_listContext)_localctx).i1.getText():null));
-					
-				setState(158);
+				setState(144); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				while (_la==COM) {
+				do {
 					{
 					{
-					setState(153);
-					match(COM);
-					setState(154);
-					((Argument_listContext)_localctx).i2 = match(ID);
+					setState(141);
+					((ExpressionContext)_localctx).e2 = expression();
 
-							_localctx.jData.add((((Argument_listContext)_localctx).i2!=null?((Argument_listContext)_localctx).i2.getText():null));
+							((ExpressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Plus, _localctx.jData, ((ExpressionContext)_localctx).e2.jData);
 						
 					}
 					}
-					setState(160);
+					setState(146); 
 					_errHandler.sync(this);
 					_la = _input.LA(1);
+				} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TRUE) | (1L << FALSE) | (1L << ID) | (1L << INTEGER) | (1L << LP))) != 0) );
+				setState(148);
+				match(RP);
 				}
-				}
-			}
+				break;
+			case 15:
+				enterOuterAlt(_localctx, 15);
+				{
+				setState(150);
+				match(LP);
+				setState(151);
+				match(TIMES);
+				setState(152);
+				((ExpressionContext)_localctx).e1 = expression();
 
+						((ExpressionContext)_localctx).jData =  ((ExpressionContext)_localctx).e1.jData; 
+					
+				setState(157); 
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				do {
+					{
+					{
+					setState(154);
+					((ExpressionContext)_localctx).e2 = expression();
+
+							((ExpressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Times, _localctx.jData, ((ExpressionContext)_localctx).e2.jData);
+						
+					}
+					}
+					setState(159); 
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << TRUE) | (1L << FALSE) | (1L << ID) | (1L << INTEGER) | (1L << LP))) != 0) );
+				setState(161);
+				match(RP);
+				}
+				break;
+			case 16:
+				enterOuterAlt(_localctx, 16);
+				{
+				setState(163);
+				match(LP);
+				setState(164);
+				match(MINUS);
+				setState(165);
+				((ExpressionContext)_localctx).e1 = expression();
+				setState(166);
+				((ExpressionContext)_localctx).e2 = expression();
+				setState(167);
+				match(RP);
+
+						((ExpressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Minus, ((ExpressionContext)_localctx).e1.jData, ((ExpressionContext)_localctx).e2.jData);
+					
+				}
+				break;
+			case 17:
+				enterOuterAlt(_localctx, 17);
+				{
+				setState(170);
+				match(LP);
+				setState(171);
+				match(SLASH);
+				setState(172);
+				((ExpressionContext)_localctx).e1 = expression();
+				setState(173);
+				((ExpressionContext)_localctx).e2 = expression();
+				setState(174);
+				match(RP);
+
+						((ExpressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Slash, ((ExpressionContext)_localctx).e1.jData, ((ExpressionContext)_localctx).e2.jData);
+					
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -966,52 +704,61 @@ public class ADAParserANTLR4 extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\30\u00a6\4\2\t\2"+
-		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\3\2\3\2\3\2\3"+
-		"\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2"+
-		"\3\2\3\2\3\2\7\2+\n\2\f\2\16\2.\13\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3"+
-		"\3\7\39\n\3\f\3\16\3<\13\3\5\3>\n\3\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3"+
-		"\5\7\5I\n\5\f\5\16\5L\13\5\3\5\3\5\3\5\3\5\3\5\5\5S\n\5\3\6\3\6\3\6\3"+
-		"\6\3\6\3\6\7\6[\n\6\f\6\16\6^\13\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\7\6"+
-		"h\n\6\f\6\16\6k\13\6\5\6m\n\6\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7"+
-		"\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\5\7\u0088"+
-		"\n\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\5\b\u0097\n\b"+
-		"\3\t\3\t\3\t\3\t\3\t\3\t\7\t\u009f\n\t\f\t\16\t\u00a2\13\t\5\t\u00a4\n"+
-		"\t\3\t\2\2\n\2\4\6\b\n\f\16\20\2\2\2\u00ae\2\22\3\2\2\2\4=\3\2\2\2\6?"+
-		"\3\2\2\2\bR\3\2\2\2\nl\3\2\2\2\f\u0087\3\2\2\2\16\u0096\3\2\2\2\20\u0098"+
-		"\3\2\2\2\22\23\b\2\1\2\23\24\7\3\2\2\24\25\7\25\2\2\25\26\5\6\4\2\26\27"+
-		"\b\2\1\2\27\30\7\24\2\2\30\31\7\4\2\2\31\32\7\25\2\2\32\33\5\4\3\2\33"+
-		"\34\b\2\1\2\34,\7\24\2\2\35\36\7\21\2\2\36\37\7\22\2\2\37 \5\20\t\2 !"+
-		"\7\23\2\2!\"\7\n\2\2\"#\7\21\2\2#$\7\25\2\2$%\7\21\2\2%&\7\13\2\2&\'\5"+
-		"\6\4\2\'(\7\24\2\2()\b\2\1\2)+\3\2\2\2*\35\3\2\2\2+.\3\2\2\2,*\3\2\2\2"+
-		",-\3\2\2\2-/\3\2\2\2.,\3\2\2\2/\60\7\2\2\3\60\3\3\2\2\2\61\62\7\5\2\2"+
-		"\62>\b\3\1\2\63\64\7\21\2\2\64:\b\3\1\2\65\66\7\26\2\2\66\67\7\21\2\2"+
-		"\679\b\3\1\28\65\3\2\2\29<\3\2\2\2:8\3\2\2\2:;\3\2\2\2;>\3\2\2\2<:\3\2"+
-		"\2\2=\61\3\2\2\2=\63\3\2\2\2>\5\3\2\2\2?@\5\b\5\2@A\b\4\1\2A\7\3\2\2\2"+
-		"BC\5\n\6\2CJ\b\5\1\2DE\7\r\2\2EF\5\n\6\2FG\b\5\1\2GI\3\2\2\2HD\3\2\2\2"+
-		"IL\3\2\2\2JH\3\2\2\2JK\3\2\2\2KS\3\2\2\2LJ\3\2\2\2MN\7\22\2\2NO\5\b\5"+
-		"\2OP\7\23\2\2PQ\b\5\1\2QS\3\2\2\2RB\3\2\2\2RM\3\2\2\2S\t\3\2\2\2TU\5\f"+
-		"\7\2U\\\b\6\1\2VW\7\f\2\2WX\5\b\5\2XY\b\6\1\2Y[\3\2\2\2ZV\3\2\2\2[^\3"+
-		"\2\2\2\\Z\3\2\2\2\\]\3\2\2\2]m\3\2\2\2^\\\3\2\2\2_`\7\22\2\2`a\5\b\5\2"+
-		"ab\7\23\2\2bi\b\6\1\2cd\7\f\2\2de\5\b\5\2ef\b\6\1\2fh\3\2\2\2gc\3\2\2"+
-		"\2hk\3\2\2\2ig\3\2\2\2ij\3\2\2\2jm\3\2\2\2ki\3\2\2\2lT\3\2\2\2l_\3\2\2"+
-		"\2m\13\3\2\2\2no\7\7\2\2o\u0088\b\7\1\2pq\7\6\2\2q\u0088\b\7\1\2rs\7\t"+
-		"\2\2st\5\20\t\2tu\7\24\2\2uv\5\6\4\2vw\b\7\1\2w\u0088\3\2\2\2xy\7\b\2"+
-		"\2yz\5\20\t\2z{\7\24\2\2{|\5\6\4\2|}\b\7\1\2}\u0088\3\2\2\2~\177\5\16"+
-		"\b\2\177\u0080\b\7\1\2\u0080\u0088\3\2\2\2\u0081\u0082\7\21\2\2\u0082"+
-		"\u0083\7\22\2\2\u0083\u0084\5\20\t\2\u0084\u0085\7\23\2\2\u0085\u0086"+
-		"\b\7\1\2\u0086\u0088\3\2\2\2\u0087n\3\2\2\2\u0087p\3\2\2\2\u0087r\3\2"+
-		"\2\2\u0087x\3\2\2\2\u0087~\3\2\2\2\u0087\u0081\3\2\2\2\u0088\r\3\2\2\2"+
-		"\u0089\u008a\7\21\2\2\u008a\u008b\7\16\2\2\u008b\u008c\7\21\2\2\u008c"+
-		"\u0097\b\b\1\2\u008d\u008e\7\21\2\2\u008e\u008f\7\17\2\2\u008f\u0090\7"+
-		"\21\2\2\u0090\u0097\b\b\1\2\u0091\u0092\7\22\2\2\u0092\u0093\5\16\b\2"+
-		"\u0093\u0094\7\23\2\2\u0094\u0095\b\b\1\2\u0095\u0097\3\2\2\2\u0096\u0089"+
-		"\3\2\2\2\u0096\u008d\3\2\2\2\u0096\u0091\3\2\2\2\u0097\17\3\2\2\2\u0098"+
-		"\u00a3\b\t\1\2\u0099\u009a\7\21\2\2\u009a\u00a0\b\t\1\2\u009b\u009c\7"+
-		"\26\2\2\u009c\u009d\7\21\2\2\u009d\u009f\b\t\1\2\u009e\u009b\3\2\2\2\u009f"+
-		"\u00a2\3\2\2\2\u00a0\u009e\3\2\2\2\u00a0\u00a1\3\2\2\2\u00a1\u00a4\3\2"+
-		"\2\2\u00a2\u00a0\3\2\2\2\u00a3\u0099\3\2\2\2\u00a3\u00a4\3\2\2\2\u00a4"+
-		"\21\3\2\2\2\16,:=JR\\il\u0087\u0096\u00a0\u00a3";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\36\u00b6\4\2\t\2"+
+		"\4\3\t\3\3\2\3\2\3\2\3\2\7\2\13\n\2\f\2\16\2\16\13\2\3\2\3\2\3\2\3\2\3"+
+		"\2\3\2\3\2\7\2\27\n\2\f\2\16\2\32\13\2\3\2\3\2\3\2\3\2\7\2 \n\2\f\2\16"+
+		"\2#\13\2\3\2\3\2\3\2\7\2(\n\2\f\2\16\2+\13\2\3\2\3\2\3\2\3\2\3\2\3\2\3"+
+		"\2\3\2\7\2\65\n\2\f\2\16\28\13\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
+		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\6\3K\n\3\r\3\16\3L\3\3\3\3\3\3\3\3\3\3"+
+		"\3\3\3\3\3\3\3\3\6\3X\n\3\r\3\16\3Y\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
+		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
+		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
+		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\6\3\u0093\n\3\r\3\16\3"+
+		"\u0094\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\6\3\u00a0\n\3\r\3\16\3\u00a1"+
+		"\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\5\3\u00b4"+
+		"\n\3\3\3\2\2\4\2\4\2\2\2\u00cc\2\6\3\2\2\2\4\u00b3\3\2\2\2\6\7\b\2\1\2"+
+		"\7\f\7\3\2\2\b\t\7\17\2\2\t\13\b\2\1\2\n\b\3\2\2\2\13\16\3\2\2\2\f\n\3"+
+		"\2\2\2\f\r\3\2\2\2\r\17\3\2\2\2\16\f\3\2\2\2\17\20\7\4\2\2\20\21\5\4\3"+
+		"\2\21\22\b\2\1\2\22\23\7\5\2\2\23\30\b\2\1\2\24\25\7\17\2\2\25\27\b\2"+
+		"\1\2\26\24\3\2\2\2\27\32\3\2\2\2\30\26\3\2\2\2\30\31\3\2\2\2\31\33\3\2"+
+		"\2\2\32\30\3\2\2\2\33\34\b\2\1\2\34!\7\6\2\2\35\36\7\17\2\2\36 \b\2\1"+
+		"\2\37\35\3\2\2\2 #\3\2\2\2!\37\3\2\2\2!\"\3\2\2\2\"$\3\2\2\2#!\3\2\2\2"+
+		"$)\7\7\2\2%&\7\17\2\2&(\b\2\1\2\'%\3\2\2\2(+\3\2\2\2)\'\3\2\2\2)*\3\2"+
+		"\2\2*,\3\2\2\2+)\3\2\2\2,-\b\2\1\2-\66\7\b\2\2./\7\17\2\2/\60\7\17\2\2"+
+		"\60\61\5\4\3\2\61\62\7\21\2\2\62\63\b\2\1\2\63\65\3\2\2\2\64.\3\2\2\2"+
+		"\658\3\2\2\2\66\64\3\2\2\2\66\67\3\2\2\2\67\3\3\2\2\28\66\3\2\2\29:\7"+
+		"\t\2\2:\u00b4\b\3\1\2;<\7\n\2\2<\u00b4\b\3\1\2=>\7\22\2\2>?\7\13\2\2?"+
+		"@\5\4\3\2@A\7\23\2\2AB\b\3\1\2B\u00b4\3\2\2\2CD\7\22\2\2DE\7\f\2\2EF\5"+
+		"\4\3\2FJ\b\3\1\2GH\5\4\3\2HI\b\3\1\2IK\3\2\2\2JG\3\2\2\2KL\3\2\2\2LJ\3"+
+		"\2\2\2LM\3\2\2\2MN\3\2\2\2NO\7\23\2\2O\u00b4\3\2\2\2PQ\7\22\2\2QR\7\r"+
+		"\2\2RS\5\4\3\2SW\b\3\1\2TU\5\4\3\2UV\b\3\1\2VX\3\2\2\2WT\3\2\2\2XY\3\2"+
+		"\2\2YW\3\2\2\2YZ\3\2\2\2Z[\3\2\2\2[\\\7\23\2\2\\\u00b4\3\2\2\2]^\7\22"+
+		"\2\2^_\7\30\2\2_`\5\4\3\2`a\5\4\3\2ab\7\23\2\2bc\b\3\1\2c\u00b4\3\2\2"+
+		"\2de\7\22\2\2ef\7\31\2\2fg\5\4\3\2gh\5\4\3\2hi\7\23\2\2ij\b\3\1\2j\u00b4"+
+		"\3\2\2\2kl\7\22\2\2lm\7\32\2\2mn\5\4\3\2no\5\4\3\2op\7\23\2\2pq\b\3\1"+
+		"\2q\u00b4\3\2\2\2rs\7\22\2\2st\7\33\2\2tu\5\4\3\2uv\5\4\3\2vw\7\23\2\2"+
+		"wx\b\3\1\2x\u00b4\3\2\2\2yz\7\22\2\2z{\7\34\2\2{|\5\4\3\2|}\5\4\3\2}~"+
+		"\7\23\2\2~\177\b\3\1\2\177\u00b4\3\2\2\2\u0080\u0081\7\22\2\2\u0081\u0082"+
+		"\7\16\2\2\u0082\u0083\5\4\3\2\u0083\u0084\5\4\3\2\u0084\u0085\7\23\2\2"+
+		"\u0085\u0086\b\3\1\2\u0086\u00b4\3\2\2\2\u0087\u0088\7\17\2\2\u0088\u00b4"+
+		"\b\3\1\2\u0089\u008a\7\20\2\2\u008a\u00b4\b\3\1\2\u008b\u008c\7\22\2\2"+
+		"\u008c\u008d\7\24\2\2\u008d\u008e\5\4\3\2\u008e\u0092\b\3\1\2\u008f\u0090"+
+		"\5\4\3\2\u0090\u0091\b\3\1\2\u0091\u0093\3\2\2\2\u0092\u008f\3\2\2\2\u0093"+
+		"\u0094\3\2\2\2\u0094\u0092\3\2\2\2\u0094\u0095\3\2\2\2\u0095\u0096\3\2"+
+		"\2\2\u0096\u0097\7\23\2\2\u0097\u00b4\3\2\2\2\u0098\u0099\7\22\2\2\u0099"+
+		"\u009a\7\26\2\2\u009a\u009b\5\4\3\2\u009b\u009f\b\3\1\2\u009c\u009d\5"+
+		"\4\3\2\u009d\u009e\b\3\1\2\u009e\u00a0\3\2\2\2\u009f\u009c\3\2\2\2\u00a0"+
+		"\u00a1\3\2\2\2\u00a1\u009f\3\2\2\2\u00a1\u00a2\3\2\2\2\u00a2\u00a3\3\2"+
+		"\2\2\u00a3\u00a4\7\23\2\2\u00a4\u00b4\3\2\2\2\u00a5\u00a6\7\22\2\2\u00a6"+
+		"\u00a7\7\25\2\2\u00a7\u00a8\5\4\3\2\u00a8\u00a9\5\4\3\2\u00a9\u00aa\7"+
+		"\23\2\2\u00aa\u00ab\b\3\1\2\u00ab\u00b4\3\2\2\2\u00ac\u00ad\7\22\2\2\u00ad"+
+		"\u00ae\7\27\2\2\u00ae\u00af\5\4\3\2\u00af\u00b0\5\4\3\2\u00b0\u00b1\7"+
+		"\23\2\2\u00b1\u00b2\b\3\1\2\u00b2\u00b4\3\2\2\2\u00b39\3\2\2\2\u00b3;"+
+		"\3\2\2\2\u00b3=\3\2\2\2\u00b3C\3\2\2\2\u00b3P\3\2\2\2\u00b3]\3\2\2\2\u00b3"+
+		"d\3\2\2\2\u00b3k\3\2\2\2\u00b3r\3\2\2\2\u00b3y\3\2\2\2\u00b3\u0080\3\2"+
+		"\2\2\u00b3\u0087\3\2\2\2\u00b3\u0089\3\2\2\2\u00b3\u008b\3\2\2\2\u00b3"+
+		"\u0098\3\2\2\2\u00b3\u00a5\3\2\2\2\u00b3\u00ac\3\2\2\2\u00b4\5\3\2\2\2"+
+		"\f\f\30!)\66LY\u0094\u00a1\u00b3";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

@@ -42,16 +42,6 @@ public interface ADAParserANTLR4Listener extends ParseTreeListener {
 	 */
 	void exitAutomaton(ADAParserANTLR4.AutomatonContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ADAParserANTLR4#final_list}.
-	 * @param ctx the parse tree
-	 */
-	void enterFinal_list(ADAParserANTLR4.Final_listContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ADAParserANTLR4#final_list}.
-	 * @param ctx the parse tree
-	 */
-	void exitFinal_list(ADAParserANTLR4.Final_listContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link ADAParserANTLR4#expression}.
 	 * @param ctx the parse tree
 	 */
@@ -61,54 +51,4 @@ public interface ADAParserANTLR4Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExpression(ADAParserANTLR4.ExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ADAParserANTLR4#or_expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterOr_expression(ADAParserANTLR4.Or_expressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ADAParserANTLR4#or_expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitOr_expression(ADAParserANTLR4.Or_expressionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ADAParserANTLR4#and_expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterAnd_expression(ADAParserANTLR4.And_expressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ADAParserANTLR4#and_expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitAnd_expression(ADAParserANTLR4.And_expressionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ADAParserANTLR4#basic_expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterBasic_expression(ADAParserANTLR4.Basic_expressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ADAParserANTLR4#basic_expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitBasic_expression(ADAParserANTLR4.Basic_expressionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ADAParserANTLR4#eq_expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterEq_expression(ADAParserANTLR4.Eq_expressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ADAParserANTLR4#eq_expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitEq_expression(ADAParserANTLR4.Eq_expressionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ADAParserANTLR4#argument_list}.
-	 * @param ctx the parse tree
-	 */
-	void enterArgument_list(ADAParserANTLR4.Argument_listContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ADAParserANTLR4#argument_list}.
-	 * @param ctx the parse tree
-	 */
-	void exitArgument_list(ADAParserANTLR4.Argument_listContext ctx);
 }

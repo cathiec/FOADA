@@ -258,7 +258,7 @@ public class PAParserANTLR4 extends Parser {
 						for(String s : ((AutomatonContext)_localctx).al.jData) {
 							argumentsTypes.add(ExpressionType.Integer);
 						}
-						_localctx.jData.addTransition((((AutomatonContext)_localctx).i1!=null?((AutomatonContext)_localctx).i1.getText():null).replaceAll("\\s*", ""), ((AutomatonContext)_localctx).al.jData, argumentsTypes, (((AutomatonContext)_localctx).i2!=null?((AutomatonContext)_localctx).i2.getText():null).replaceAll("\\s*", ""), variables, variablesTypes, ((AutomatonContext)_localctx).e.jData);
+						_localctx.jData.addPATransition((((AutomatonContext)_localctx).i1!=null?((AutomatonContext)_localctx).i1.getText():null).replaceAll("\\s*", ""), ((AutomatonContext)_localctx).al.jData, argumentsTypes, (((AutomatonContext)_localctx).i2!=null?((AutomatonContext)_localctx).i2.getText():null).replaceAll("\\s*", ""), variables, variablesTypes, ((AutomatonContext)_localctx).e.jData);
 					
 				}
 				}
@@ -853,7 +853,7 @@ public class PAParserANTLR4 extends Parser {
 
 						FOADAExpression left = new FOADAExpression((((Eq_expressionContext)_localctx).i1!=null?((Eq_expressionContext)_localctx).i1.getText():null).replaceAll("\\s*", ""), ExpressionType.Integer);
 						FOADAExpression right = new FOADAExpression((((Eq_expressionContext)_localctx).i2!=null?((Eq_expressionContext)_localctx).i2.getText():null).replaceAll("\\s*", ""), ExpressionType.Integer);
-						((Eq_expressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Distincts, left, right);
+						((Eq_expressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Distinct, left, right);
 					
 				}
 				break;

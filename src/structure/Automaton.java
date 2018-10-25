@@ -47,15 +47,12 @@ import org.sosy_lab.java_smt.api.UFManager;
 import exception.FOADAException;
 import exception.InterpolatingProverEnvironmentException;
 import exception.JavaSMTInvalidConfigurationException;
+import structure.FOADAExpression.ExpressionCategory;
 import structure.FOADAExpression.ExpressionType;
 import utility.Console;
 import utility.Console.ConsoleType;
 
 public class Automaton {
-	
-	/** name of the automaton
-	 */
-	//private String name;
 	
 	/** rename map used for replacing all the variable/function/symbol names by simpler standard names
 	 */
@@ -72,6 +69,10 @@ public class Automaton {
 	/** set of variables
 	 */
 	private List<String> variables;
+	
+	/** set of variables with original names
+	 */
+	private List<String> originalVariables;
 	
 	/** map of variables to their types
 	 */
@@ -102,7 +103,6 @@ public class Automaton {
 	private SolverContext solverContext;
 	private FormulaManager fmgr;
 	private BooleanFormulaManager bmgr;
-	//private IntegerFormulaManager imgr;
 	private QuantifiedFormulaManager qmgr;
 	private UFManager ufmgr;
 	
@@ -113,12 +113,12 @@ public class Automaton {
 	public Automaton(String name)
 			throws FOADAException
 	{
-		//this.name = name;
 		renameMap = new LinkedHashMap<String, String>();
 		renameMap2 = new LinkedHashMap<String, String>();
 		eventSymbols = new ArrayList<String>();
 		variables = new ArrayList<String>();
 		variableTypeMap = new LinkedHashMap<String, ExpressionType>();
+		originalVariables = new ArrayList<String>();
 		predicates = new ArrayList<String>();
 		predicateArgumentsTypesMap = new LinkedHashMap<String, List<ExpressionType>>();
 		initialState = null;
@@ -128,7 +128,6 @@ public class Automaton {
 			solverContext = SolverContextFactory.createSolverContext(Solvers.Z3);
 			fmgr = solverContext.getFormulaManager();
 			bmgr = fmgr.getBooleanFormulaManager();
-			//imgr = fmgr.getIntegerFormulaManager();
 			qmgr = fmgr.getQuantifiedFormulaManager();
 			ufmgr = fmgr.getUFManager();
 		}
@@ -184,9 +183,17 @@ public class Automaton {
 		case Equals:	predicates.addAll(getPredicatesBeforeRenaming(expression.subData.get(0)));
 						predicates.addAll(getPredicatesBeforeRenaming(expression.subData.get(1)));
 						break;
-		case Distincts:	predicates.addAll(getPredicatesBeforeRenaming(expression.subData.get(0)));
+		case Distinct:	predicates.addAll(getPredicatesBeforeRenaming(expression.subData.get(0)));
 						predicates.addAll(getPredicatesBeforeRenaming(expression.subData.get(1)));
 						break;
+		case Plus:		break;
+		case Minus:		break;
+		case Times:		break;
+		case Slash:		break;
+		case GT:		break;
+		case LT:		break;
+		case GEQ:		break;
+		case LEQ:		break;
 		}
 		return predicates;
 	}
@@ -221,28 +228,60 @@ public class Automaton {
 		case Equals:	predicates.addAll(getPredicatesAfterRenaming(expression.subData.get(0)));
 						predicates.addAll(getPredicatesAfterRenaming(expression.subData.get(1)));
 						break;
-		case Distincts:	predicates.addAll(getPredicatesAfterRenaming(expression.subData.get(0)));
+		case Distinct:	predicates.addAll(getPredicatesAfterRenaming(expression.subData.get(0)));
 						predicates.addAll(getPredicatesAfterRenaming(expression.subData.get(1)));
 						break;
+		case Plus:		break;
+		case Minus:		break;
+		case Times:		break;
+		case Slash:		break;
+		case GT:		break;
+		case LT:		break;
+		case GEQ:		break;
+		case LEQ:		break;
 		}
 		return predicates;
 	}
 	
-	/** add a transition
-	 * @param	predicate		predicate (left part) in the transition
-	 * @param	listOfArguments	list of arguments of left predicate in the transition
-	 * @param	symbol			event symbol in the transition
-	 * @param	variables		variables' names in the transition
-	 * @param	post			post expression (right part) in the transition
+	/** add an ADA transition
+	 * @param	predicate	predicate (left part) in the transition
+	 * @param	eventSymbol	event symbol in the transition
+	 * @param	post		post expression (right part) in the transition
 	 */
-	public void addTransition(String predicate, List<String> arguments, List<ExpressionType> argumentsTypes, String eventSymbol, List<String> variables, List<ExpressionType> variablesTypes, FOADAExpression post)
+	public void addADATransition(String predicate, String eventSymbol, FOADAExpression post)
+	{
+		for(String p : predicates) {
+			post.substitue(renameMap2.get(p), p);
+		}
+		for(int i = 0; i < originalVariables.size(); i++) {
+			post.substitue(originalVariables.get(i) + '0', "a" + i + 'c');
+			post.substitue(originalVariables.get(i) + '1', variables.get(i));
+		}
+		List<FOADAExpression> arguments = new ArrayList<FOADAExpression>();
+		for(int i = 0; i < variables.size(); i++) {
+			FOADAExpression argument = new FOADAExpression("v" + i + 'c', ExpressionType.Integer);
+			arguments.add(argument);
+		}
+		post.addArguments(arguments);
+		transitions.put(renameMap.get(predicate) + '+' + renameMap.get(eventSymbol), post);
+	}
+	
+	/** add a PA transition
+	 * @param predicate			predicate (left part) in the transition
+	 * @param arguments			list of arguments in the predicate (left part)
+	 * @param argumentsTypes	list of types of arguments in the predicate (left part)
+	 * @param eventSymbol		event symbol in the transition
+	 * @param variables			list of input variables together with the event symbol
+	 * @param variablesTypes	list of types of input variables together with the event symbol
+	 * @param post				post expression (right part) in the transition
+	 */
+	public void addPATransition(String predicate, List<String> arguments, List<ExpressionType> argumentsTypes, String eventSymbol, List<String> variables, List<ExpressionType> variablesTypes, FOADAExpression post)
 	{
 		// rename predicates
 		List<String> predicatesToBeRenamed = new ArrayList<String>();
 		predicatesToBeRenamed.add(predicate);
 		predicatesToBeRenamed.addAll(getPredicatesBeforeRenaming(post));
 		for(String s : predicatesToBeRenamed) {
-			
 			addPredicate(s);
 			post.substitue(s, renameMap.get(s));
 		}
@@ -270,6 +309,39 @@ public class Automaton {
 		//System.out.println(renameMap.get(predicate) + '+' + renameMap.get(eventSymbol) + "   --->   " + post);
 	}
 	
+	/**	rename a variable and then add it into the set of predicates (do nothing if already added)
+	 * @param	variable	name of the variable
+	 */
+	public void addVariable(String variable)
+	{
+		originalVariables.add(variable);
+		String renamedVariable = "v" + variables.size() + "c";
+		variables.add(renamedVariable);
+		variableTypeMap.put(renamedVariable, ExpressionType.Integer);
+	}
+	
+	/** determine recursively all the functions in an expression and finish their types
+	 * @param	expression	the expression from which all the functions are going to be determined
+	 */
+	public void defineFunctionType(FOADAExpression expression)
+	{
+		if(expression.category == ExpressionCategory.Function) {
+			if(renameMap.containsKey(expression.name)) {
+				expression.type = ExpressionType.Boolean;
+			}
+			else {
+				expression.type = ExpressionType.Integer;
+			}
+		}
+		else {
+			if(expression.subData != null) {
+				for(FOADAExpression subExpression : expression.subData) {
+					defineFunctionType(subExpression);
+				}
+			}
+		}
+	}
+	
 	/** rename a predicate and then add it into the set of predicates (do nothing if already added)
 	 * @param	predicate	name of the predicate
 	 */
@@ -286,6 +358,50 @@ public class Automaton {
 					finalStates.set(i, newName);
 				}
 			}
+		}
+	}
+	
+	/** before setting the initial states and final states, rename a predicate and then add it into the set of predicates (do nothing if already added)
+	 * @param	predicate	name of the predicate
+	 */
+	public void preDefinePredicate(String predicate)
+	{
+		String newName = "q" + predicates.size() + "c";
+		renameMap.put(predicate, newName);
+		renameMap2.put(newName, predicate);
+		predicates.add(newName);
+	}
+	
+	/** rename the predicates in the initial state and in the final states
+	 */
+	public void finaliseInitAndFinal()
+	{
+		for(String predicate : predicates) {
+			initialState.substitue(renameMap2.get(predicate), predicate);
+			for(int i = 0; i < finalStates.size(); i++) {
+				if(finalStates.get(i).equals(renameMap2.get(predicate))) {
+					finalStates.set(i, predicate);
+				}
+			}
+		}
+		List<FOADAExpression> arguments = new ArrayList<FOADAExpression>();
+		for(int i = 0; i < variables.size(); i++) {
+			FOADAExpression argument = new FOADAExpression("v" + i + 'c', ExpressionType.Integer);
+			arguments.add(argument);
+		}
+		initialState.addArguments(arguments);
+	}
+	
+	/** finalise predicates' arguments and their types
+	 */
+	public void finalisePredicatesArguments()
+	{
+		List<ExpressionType> argumentsTypes = new ArrayList<ExpressionType>();
+		for(int i = 0; i < variables.size(); i++) {
+			argumentsTypes.add(ExpressionType.Integer);
+		}
+		for(String predicate : predicates) {
+			predicateArgumentsTypesMap.put(predicate, argumentsTypes);
 		}
 	}
 	
@@ -528,6 +644,19 @@ public class Automaton {
 	public boolean isEmpty1(boolean print)
 			throws FOADAException
 	{
+		/*System.out.println("STATES: " + predicates);
+		System.out.println("INITIAL: " + initialState);
+		System.out.println("FINAL: " + finalStates);
+		System.out.println("SYMBOLS: " + eventSymbols);
+		System.out.println("VARIABLES: " + variables);
+		System.out.println("ORI VAR: " + originalVariables);
+		System.out.println("TRANSITIONS:");
+		for(Entry<String, FOADAExpression> xxx : transitions.entrySet()) {
+			System.out.println(xxx.getKey() + " === " + xxx.getValue());
+		}
+		System.out.println();
+		System.out.println(renameMap);
+		System.out.println();*/
 		long begintime = System.currentTimeMillis();
 		int nodeVisited = 0;
 	// start with the initial state
@@ -800,14 +929,16 @@ public class Automaton {
 							if(expressionString.charAt(0) == 'v') {
 								int lastIndexOfUnderscore = expressionString.lastIndexOf('_');
 								int variableStep = Integer.valueOf(expressionString.substring(lastIndexOfUnderscore + 1));
-								int variableIndex = Integer.valueOf(expressionString.substring(1, lastIndexOfUnderscore - 1));
-								variablesAssignments[variableStep - 1][variableIndex] = ((ValueAssignment)a).getValue();
+								if(variableStep > 0) {
+									int variableIndex = Integer.valueOf(expressionString.substring(1, lastIndexOfUnderscore - 1));
+									variablesAssignments[variableStep - 1][variableIndex] = ((ValueAssignment)a).getValue();
+								}
 							}
 						}
 						for(int i1 = 0; i1 < pathFromInitialToCurrent.size(); i1++) {
-							System.out.print(renameMap2.get((pathFromInitialToCurrent.get(i1))) + " \tDATA ::: { ");
+							System.out.print(renameMap2.get((pathFromInitialToCurrent.get(i1))) + " \t:: DATA :: { ");
 							for(int i2 = 0; i2 < variables.size(); i2++) {
-								System.out.print(variablesAssignments[i1][i2] == null ? "any " : variablesAssignments[i1][i2] + " ");
+								System.out.print(variables.get(i2) + "=" + (variablesAssignments[i1][i2] == null ? "any " : variablesAssignments[i1][i2] + " "));
 							}
 							System.out.println('}');
 						}
@@ -886,9 +1017,17 @@ public class Automaton {
 		case Equals:	predicatesOccurrences.addAll(takePredicatesOccurrences(expression.subData.get(0)));
 						predicatesOccurrences.addAll(takePredicatesOccurrences(expression.subData.get(1)));
 						break;
-		case Distincts:	predicatesOccurrences.addAll(takePredicatesOccurrences(expression.subData.get(0)));
+		case Distinct:	predicatesOccurrences.addAll(takePredicatesOccurrences(expression.subData.get(0)));
 						predicatesOccurrences.addAll(takePredicatesOccurrences(expression.subData.get(1)));
 						break;
+		case Plus:		break;
+		case Minus:		break;
+		case Times:		break;
+		case Slash:		break;
+		case GT:		break;
+		case LT:		break;
+		case GEQ:		break;
+		case LEQ:		break;
 		}
 		return predicatesOccurrences;
 	}
@@ -1125,14 +1264,16 @@ public class Automaton {
 							if(expressionString.charAt(0) == 'v') {
 								int lastIndexOfUnderscore = expressionString.lastIndexOf('_');
 								int variableStep = Integer.valueOf(expressionString.substring(lastIndexOfUnderscore + 1));
-								int variableIndex = Integer.valueOf(expressionString.substring(1, lastIndexOfUnderscore - 1));
-								variablesAssignments[variableStep - 1][variableIndex] = ((ValueAssignment)a).getValue();
+								if(variableStep > 0) {
+									int variableIndex = Integer.valueOf(expressionString.substring(1, lastIndexOfUnderscore - 1));
+									variablesAssignments[variableStep - 1][variableIndex] = ((ValueAssignment)a).getValue();
+								}
 							}
 						}
 						for(int i1 = 0; i1 < pathFromInitialToCurrent.size(); i1++) {
-							System.out.print(renameMap2.get((pathFromInitialToCurrent.get(i1))) + " \tDATA ::: { ");
+							System.out.print(renameMap2.get((pathFromInitialToCurrent.get(i1))) + " \t:: DATA :: { ");
 							for(int i2 = 0; i2 < variables.size(); i2++) {
-								System.out.print(variablesAssignments[i1][i2] == null ? "any " : variablesAssignments[i1][i2] + " ");
+								System.out.print(variables.get(i2) + "=" + (variablesAssignments[i1][i2] == null ? "any " : variablesAssignments[i1][i2] + " "));
 							}
 							System.out.println('}');
 						}
@@ -1412,14 +1553,16 @@ public class Automaton {
 							if(expressionString.charAt(0) == 'v') {
 								int lastIndexOfUnderscore = expressionString.lastIndexOf('_');
 								int variableStep = Integer.valueOf(expressionString.substring(lastIndexOfUnderscore + 1));
-								int variableIndex = Integer.valueOf(expressionString.substring(1, lastIndexOfUnderscore - 1));
-								variablesAssignments[variableStep - 1][variableIndex] = ((ValueAssignment)a).getValue();
+								if(variableStep > 0) {
+									int variableIndex = Integer.valueOf(expressionString.substring(1, lastIndexOfUnderscore - 1));
+									variablesAssignments[variableStep - 1][variableIndex] = ((ValueAssignment)a).getValue();
+								}
 							}
 						}
 						for(int i1 = 0; i1 < pathFromInitialToCurrent.size(); i1++) {
-							System.out.print(renameMap2.get((pathFromInitialToCurrent.get(i1))) + " \tDATA ::: { ");
+							System.out.print(renameMap2.get((pathFromInitialToCurrent.get(i1))) + " \t:: DATA :: { ");
 							for(int i2 = 0; i2 < variables.size(); i2++) {
-								System.out.print(variablesAssignments[i1][i2] == null ? "any " : variablesAssignments[i1][i2] + " ");
+								System.out.print(variables.get(i2) + "=" + (variablesAssignments[i1][i2] == null ? "any " : variablesAssignments[i1][i2] + " "));
 							}
 							System.out.println('}');
 						}

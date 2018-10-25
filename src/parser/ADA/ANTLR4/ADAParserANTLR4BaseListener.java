@@ -51,18 +51,6 @@ public class ADAParserANTLR4BaseListener implements ADAParserANTLR4Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFinal_list(ADAParserANTLR4.Final_listContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFinal_list(ADAParserANTLR4.Final_listContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterExpression(ADAParserANTLR4.ExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -70,66 +58,6 @@ public class ADAParserANTLR4BaseListener implements ADAParserANTLR4Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExpression(ADAParserANTLR4.ExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterOr_expression(ADAParserANTLR4.Or_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitOr_expression(ADAParserANTLR4.Or_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterAnd_expression(ADAParserANTLR4.And_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAnd_expression(ADAParserANTLR4.And_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBasic_expression(ADAParserANTLR4.Basic_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBasic_expression(ADAParserANTLR4.Basic_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterEq_expression(ADAParserANTLR4.Eq_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitEq_expression(ADAParserANTLR4.Eq_expressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterArgument_list(ADAParserANTLR4.Argument_listContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitArgument_list(ADAParserANTLR4.Argument_listContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

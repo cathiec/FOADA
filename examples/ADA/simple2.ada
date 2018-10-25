@@ -18,8 +18,7 @@ a q0
 (and q1 (= x1 (+ x0 1)) (= y1 y0))
 #
 a q0_new
-(let ((a!1 (or q2_new (not (>= (- x1 y1) (- x0 y0))))))
-  (and (or q1_new (not (< x0 x1)) (not (<= y1 y0))) a!1))
+ (and (or q1_new (not (< x0 x1)) (not (<= y1 y0))) (or q2_new (not (>= (- x1 y1) (- x0 y0)))))
 #
 a q1_new
 (not false)

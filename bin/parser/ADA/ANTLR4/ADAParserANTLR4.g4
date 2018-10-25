@@ -45,27 +45,130 @@ automaton returns [Automaton jData]
 	{
 		$jData = new Automaton("A");
 	}
-	STATES (i1=ID {
-		$jData.addPredicate($i1.text);
+	STATES (i=ID {
+		$jData.preDefinePredicate($i.text);
 	}
 	)*
-	INITIAL e1=expression {
-		$jData.setInitialState($e1.jData);
+	INITIAL e=expression {
+		$jData.defineFunctionType($e.jData);
+		$jData.setInitialState($e.jData);
 	}
 	FINAL {
 		List<String> finalStates = new ArrayList<String>();
 	}
-	(i2=ID {
-		finalStates.add($i2.text);
+	(i=ID {
+		finalStates.add($i.text);
 	}
 	)*
 	{
 		$jData.setFinalStates(finalStates);
 	}
-	SYMBOLS (i3=ID {
-		$jData.addEventSymbol($i3.text);
+	SYMBOLS (i=ID {
+		$jData.addEventSymbol($i.text);
 	}
 	)*
-	
+	VARIABLES (i=ID {
+		$jData.addVariable($i.text);
+	}
+	)*
+	{
+		$jData.finalisePredicatesArguments();
+		$jData.finaliseInitAndFinal();
+	}
+	TRANSITIONS (i1=ID i2=ID e=expression SHARP {
+		$jData.defineFunctionType($e.jData);
+		$jData.addADATransition($i2.text, $i1.text, $e.jData);
+	}
+	)*
 ;
+	
+expression returns [FOADAExpression jData]
+:
+	TRUE {
+		$jData = new FOADAExpression(true);
+	}
+	|
+	FALSE {
+		$jData = new FOADAExpression(false);
+	}
+	|
+	LP NOT e=expression RP {
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Not, $e.jData);
+	}
+	|
+	LP AND e1=expression {
+		$jData = $e1.jData; 
+	}
+	(e2=expression {
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.And, $jData, $e2.jData);
+	}
+	)+
+	RP
+	|
+	LP OR e1=expression {
+		$jData = $e1.jData; 
+	}
+	(e2=expression {
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Or, $jData, $e2.jData);
+	}
+	)+
+	RP
+	|
+	LP GT e1=expression e2=expression RP {
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.GT, $e1.jData, $e2.jData);
+	}
+	|
+	LP LT e1=expression e2=expression RP {
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.LT, $e1.jData, $e2.jData);
+	}
+	|
+	LP GEQ e1=expression e2=expression RP {
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.GEQ, $e1.jData, $e2.jData);
+	}
+	|
+	LP LEQ e1=expression e2=expression RP {
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.LEQ, $e1.jData, $e2.jData);
+	}
+	|
+	LP EQUALS e1=expression e2=expression RP {
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Equals, $e1.jData, $e2.jData);
+	}
+	|
+	LP DISTINCT e1=expression e2=expression RP {
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Distinct, $e1.jData, $e2.jData);
+	}
+	|
+	i=ID {
+		$jData = new FOADAExpression($i.text);
+	}
+	|
+	INTEGER {
+		$jData = new FOADAExpression(Integer.parseInt($INTEGER.text));
+	}
+	|
+	LP PLUS e1=expression {
+		$jData = $e1.jData; 
+	}
+	(e2=expression {
+		$jData = new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Plus, $jData, $e2.jData);
+	}
+	)+
+	RP
+	|
+	LP TIMES e1=expression {
+		$jData = $e1.jData; 
+	}
+	(e2=expression {
+		$jData = new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Times, $jData, $e2.jData);
+	}
+	)+
+	RP
+	|
+	LP MINUS e1=expression e2=expression RP {
+		$jData = new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Minus, $e1.jData, $e2.jData);
+	}
+	|
+	LP SLASH e1=expression e2=expression RP {
+		$jData = new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Slash, $e1.jData, $e2.jData);
+	}
 ;

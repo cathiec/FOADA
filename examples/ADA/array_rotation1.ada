@@ -69,31 +69,30 @@ tau q0_new
     (not (= x0 x1)))
 #
 tau q1_new
-(let ((a!1 (or q1_new
-               (not (= c0 a1))
-               (not (<= j0 (- i0 1)))
-               (not (= j1 (+ j0 1)))
-               (not (= i1 i0))
-               (not (= l0 l1))
-               (not (= x0 x1))))
-      (a!2 (or q2_new
-               (not (= c0 a1))
-               (not (= j0 (+ i0 0)))
-               (not (= j1 (+ j0 1)))
-               (not (= i1 i0))
-               (not (= l0 l1))
-               (not (= x0 x1)))))
-  (and a!1 a!2))
+(and (or q1_new
+         (not (= c0 a1))
+         (not (<= j0 (- i0 1)))
+         (not (= j1 (+ j0 1)))
+         (not (= i1 i0))
+         (not (= l0 l1))
+         (not (= x0 x1)))
+     (or q2_new
+         (not (= c0 a1))
+         (not (= j0 (+ i0 0)))
+         (not (= j1 (+ j0 1)))
+         (not (= i1 i0))
+         (not (= l0 l1))
+         (not (= x0 x1))))
 #
 tau q2_new
-(let ((a!1 (or q2_new
-               (not (= c0 a0))
-               (not (<= j0 (- l0 1)))
-               (not (= j1 (+ j0 1)))
-               (not (= i1 i0))
-               (not (= l0 l1))
-               (not (= x0 x1)))))
-  (and a!1 (or q3_new (not (= j0 l0)))))
+(and (or q2_new
+          (not (= c0 a0))
+          (not (<= j0 (- l0 1)))
+          (not (= j1 (+ j0 1)))
+          (not (= i1 i0))
+          (not (= l0 l1))
+          (not (= x0 x1)))
+     (or q3_new (not (= j0 l0))))
 #
 tau q3_new
 (not false)

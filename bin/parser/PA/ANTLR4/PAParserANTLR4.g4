@@ -60,7 +60,7 @@ automaton returns [Automaton jData]
 		for(String s : $al.jData) {
 			argumentsTypes.add(ExpressionType.Integer);
 		}
-		$jData.addTransition($i1.text.replaceAll("\\s*", ""), $al.jData, argumentsTypes, $i2.text.replaceAll("\\s*", ""), variables, variablesTypes, $e.jData);
+		$jData.addPATransition($i1.text.replaceAll("\\s*", ""), $al.jData, argumentsTypes, $i2.text.replaceAll("\\s*", ""), variables, variablesTypes, $e.jData);
 	}
 	)* EOF
 ;
@@ -174,10 +174,10 @@ eq_expression returns [FOADAExpression jData]
 		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Equals, left, right);
 	}
 	|
-	i1=ID DISTINCTS i2=ID {
+	i1=ID DISTINCT i2=ID {
 		FOADAExpression left = new FOADAExpression($i1.text.replaceAll("\\s*", ""), ExpressionType.Integer);
 		FOADAExpression right = new FOADAExpression($i2.text.replaceAll("\\s*", ""), ExpressionType.Integer);
-		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Distincts, left, right);
+		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Distinct, left, right);
 	}
 	|
 	LP ee=eq_expression RP {

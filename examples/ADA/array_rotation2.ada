@@ -633,4 +633,3 @@ x q5_new
                (not (= ip1 ip0)))))
   (and a!1 a!2 a!3))
 #
-

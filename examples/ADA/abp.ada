@@ -49,13 +49,11 @@ tau q1
      (= y1 y0))
 #
 tau q2
-(let ((a!1 (or (and (< N0 sdata0) (= sdata1 (+ sdata0 1)))
-               (and (<= sdata0 N0) (= sdata1 sdata0)))))
   (and q3
        (<= t0 t1)
        (= T0 T1)
        (= N0 N1)
-       a!1
+       (or (and (< N0 sdata0) (= sdata1 (+ sdata0 1))) (and (<= sdata0 N0) (= sdata1 sdata0))
        (= bdata0 bdata1)
        (= sbit0 sbit1)
        (= bbit0 bbit1)
