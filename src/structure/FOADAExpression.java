@@ -24,7 +24,7 @@ package structure;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Map;
 import org.sosy_lab.java_smt.api.BooleanFormula;
 import org.sosy_lab.java_smt.api.Formula;
 import org.sosy_lab.java_smt.api.FormulaManager;
@@ -216,16 +216,18 @@ public class FOADAExpression {
 	/** add recursively arguments to all the predicates in the expression
 	 * @param	arguments	list of arguments to be added
 	 */
-	public void addArguments(List<FOADAExpression> arguments)
+	public void addArguments(Map<String, List<ExpressionType>> predicateArgumentsTypesMap)
 	{
 		if(type == ExpressionType.Boolean && category == ExpressionCategory.Function) {
-			for(FOADAExpression argument : arguments) {
-				subData.add(argument.copy());
+			int numberOfArguments = predicateArgumentsTypesMap.get(name).size();
+			for(int i = 0; i < numberOfArguments; i++) {
+				FOADAExpression argument = new FOADAExpression("v" + i + 'c', ExpressionType.Integer);
+				subData.add(argument);
 			}
 		}
 		if(subData != null) {
 			for(FOADAExpression subexpression : subData) {
-				subexpression.addArguments(arguments);
+				subexpression.addArguments(predicateArgumentsTypesMap);
 			}
 		}
 	}
@@ -303,6 +305,71 @@ public class FOADAExpression {
 						}
 						for(FOADAExpression e : subData) {
 							e.substitue(from, to);
+						}
+						break;
+		case Exists:	subData.get(subData.size() - 1).substitue(from, to);
+						break;
+		case Forall:	subData.get(subData.size() - 1).substitue(from, to);
+						break;
+		case Not:		subData.get(subData.size() - 1).substitue(from, to);
+						break;
+		case And:		for(FOADAExpression e : subData) {
+							e.substitue(from, to);
+						}
+						break;
+		case Or:		for(FOADAExpression e : subData) {
+							e.substitue(from, to);
+						}
+						break;
+		case Equals:	subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case Distinct:	subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case Plus:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case Minus:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case Times:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case Slash:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case GT:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case LT:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case GEQ:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		case LEQ:		subData.get(0).substitue(from, to);
+						subData.get(1).substitue(from, to);
+						break;
+		}
+	}
+	
+	/** replace a part of the expression
+	 * @param	from	the part to be replaced
+	 * @param	to		used to replace the part
+	 */
+	public void substitue(String from, int to)
+	{
+		switch(category)
+		{
+		case Constant:	break;
+		case Function:	if(name.equals(from)) {
+							System.out.println("\t\t\t" + from + "   --->   " + to);
+							category = ExpressionCategory.Constant;
+							type = ExpressionType.Integer;
+							iValue = to;
+							subData = null;
+							name = null;
 						}
 						break;
 		case Exists:	subData.get(subData.size() - 1).substitue(from, to);

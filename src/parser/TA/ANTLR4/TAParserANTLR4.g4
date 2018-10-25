@@ -1,8 +1,8 @@
-parser grammar ADAParserANTLR4;
+parser grammar TAParserANTLR4;
 
 options {
     language = Java;
-    tokenVocab = ADALexerANTLR4;
+    tokenVocab = TALexerANTLR4;
 }
 
 @header {
@@ -28,7 +28,7 @@ options {
     If you have any questions, please contact Xiao XU <xiao.xu.cathiec@gmail.com>.
 */
 
-package parser.ADA.ANTLR4;
+package parser.TA.ANTLR4;
 
 import exception.FOADAException;
 import structure.Automaton;
@@ -45,8 +45,8 @@ automaton returns [Automaton jData]
 	{
 		$jData = new Automaton("A");
 	}
-	STATES (i=ID {
-		$jData.preDefinePredicate($i.text);
+	STATES (i=ID TWOPOINTS INTEGER {
+		$jData.preDefinePredicate($i.text, Integer.parseInt($INTEGER.text));
 	}
 	)*
 	INITIAL e=expression {
@@ -69,16 +69,18 @@ automaton returns [Automaton jData]
 	)*
 	VARIABLES (i=ID {
 		$jData.addVariable($i.text);
-		$jData.setVisibleVariable($i.text);
 	}
 	)*
 	{
-		$jData.finaliseADAPredicatesArguments();
-		$jData.finaliseADAInitAndFinal();
+		$jData.finaliseTAInitAndFinal();
 	}
+	VISIBLE (i=ID {
+		$jData.setVisibleVariable($i.text);
+	}
+	)*
 	TRANSITIONS (i1=ID i2=ID e=expression SHARP {
 		$jData.defineFunctionType($e.jData);
-		$jData.addADATransition($i2.text, $i1.text, $e.jData);
+		$jData.addTATransition($i2.text, $i1.text, $e.jData);
 	}
 	)*
 ;
@@ -172,4 +174,22 @@ expression returns [FOADAExpression jData]
 	LP SLASH e1=expression e2=expression RP {
 		$jData = new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Slash, $e1.jData, $e2.jData);
 	}
+	|
+	LP i1=ID {
+		List<FOADAExpression> arguments = new ArrayList<FOADAExpression>();
+	}
+	(i2=ID {
+		FOADAExpression argument = new FOADAExpression($i2.text, ExpressionType.Integer);
+		arguments.add(argument);
+	}
+	|
+	INTEGER {
+		FOADAExpression argument = new FOADAExpression(Integer.parseInt($INTEGER.text));
+		arguments.add(argument);
+	}
+	)+
+	{
+		$jData = new FOADAExpression($i1.text, ExpressionType.Boolean, arguments);
+	}
+	RP
 ;

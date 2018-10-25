@@ -69,11 +69,12 @@ automaton returns [Automaton jData]
 	)*
 	VARIABLES (i=ID {
 		$jData.addVariable($i.text);
+		$jData.setVisibleVariable($i.text);
 	}
 	)*
 	{
-		$jData.finalisePredicatesArguments();
-		$jData.finaliseInitAndFinal();
+		$jData.finaliseADAPredicatesArguments();
+		$jData.finaliseADAInitAndFinal();
 	}
 	TRANSITIONS (i1=ID i2=ID e=expression SHARP {
 		$jData.defineFunctionType($e.jData);
