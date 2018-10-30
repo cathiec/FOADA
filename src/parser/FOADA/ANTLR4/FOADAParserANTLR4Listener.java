@@ -1,4 +1,4 @@
-// Generated from TAParserANTLR4.g4 by ANTLR 4.7.1
+// Generated from FOADAParserANTLR4.g4 by ANTLR 4.7.1
 
 /*
 	FOADA
@@ -22,7 +22,7 @@
     If you have any questions, please contact Xiao XU <xiao.xu.cathiec@gmail.com>.
 */
 
-package parser.TA.ANTLR4;
+package parser.FOADA.ANTLR4;
 
 import exception.FOADAException;
 import structure.Automaton;
@@ -37,27 +37,37 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
  * This interface defines a complete listener for a parse tree produced by
- * {@link TAParserANTLR4}.
+ * {@link FOADAParserANTLR4}.
  */
-public interface TAParserANTLR4Listener extends ParseTreeListener {
+public interface FOADAParserANTLR4Listener extends ParseTreeListener {
 	/**
-	 * Enter a parse tree produced by {@link TAParserANTLR4#automaton}.
+	 * Enter a parse tree produced by {@link FOADAParserANTLR4#automaton}.
 	 * @param ctx the parse tree
 	 */
-	void enterAutomaton(TAParserANTLR4.AutomatonContext ctx);
+	void enterAutomaton(FOADAParserANTLR4.AutomatonContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link TAParserANTLR4#automaton}.
+	 * Exit a parse tree produced by {@link FOADAParserANTLR4#automaton}.
 	 * @param ctx the parse tree
 	 */
-	void exitAutomaton(TAParserANTLR4.AutomatonContext ctx);
+	void exitAutomaton(FOADAParserANTLR4.AutomatonContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link TAParserANTLR4#expression}.
+	 * Enter a parse tree produced by {@link FOADAParserANTLR4#type}.
 	 * @param ctx the parse tree
 	 */
-	void enterExpression(TAParserANTLR4.ExpressionContext ctx);
+	void enterType(FOADAParserANTLR4.TypeContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link TAParserANTLR4#expression}.
+	 * Exit a parse tree produced by {@link FOADAParserANTLR4#type}.
 	 * @param ctx the parse tree
 	 */
-	void exitExpression(TAParserANTLR4.ExpressionContext ctx);
+	void exitType(FOADAParserANTLR4.TypeContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link FOADAParserANTLR4#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression(FOADAParserANTLR4.ExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FOADAParserANTLR4#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression(FOADAParserANTLR4.ExpressionContext ctx);
 }

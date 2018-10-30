@@ -24,8 +24,11 @@ package structure;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import org.sosy_lab.java_smt.api.BooleanFormula;
 
 public class FOADAConfiguration {
@@ -54,6 +57,14 @@ public class FOADAConfiguration {
 	 */
 	public Map<String, Integer> successorSymbolIndexMap;
 	
+	/** set of nodes covering this
+	 */
+	public Set<FOADAConfiguration> coveringNodes;
+	
+	/** set of nodes that are covered by this
+	 */
+	public Set<FOADAConfiguration> coveredNodes;
+	
 	/** default constructor
 	 * @param	expression		given expression in the configuration
 	 * @param	father			given father node of the current configuration node
@@ -67,6 +78,8 @@ public class FOADAConfiguration {
 		this.fatherSymbol = fatherSymbol;
 		successors = new ArrayList<FOADAConfiguration>();
 		successorSymbolIndexMap = new HashMap<String, Integer>();
+		coveringNodes = new HashSet<FOADAConfiguration>();
+		coveredNodes = new HashSet<FOADAConfiguration>();
 	}
 	
 	/** copy constructor
@@ -83,6 +96,14 @@ public class FOADAConfiguration {
 		}
 		successorSymbolIndexMap = new HashMap<String, Integer>();
 		successorSymbolIndexMap.putAll(configuration.successorSymbolIndexMap);
+		coveringNodes = new HashSet<FOADAConfiguration>();
+		for(FOADAConfiguration c : configuration.coveringNodes) {
+			coveringNodes.add(c.copy());
+		}
+		coveredNodes = new HashSet<FOADAConfiguration>();
+		for(FOADAConfiguration c : configuration.coveredNodes) {
+			coveredNodes.add(c.copy());
+		}
 	}
 	
 	/** deep copy
@@ -118,8 +139,7 @@ public class FOADAConfiguration {
 		return isSuccessor;
 	}
 	
-	/** to string
-	 */
+	@Override
 	public String toString()
 	{
 		return "#" + number + ' ' + expression;

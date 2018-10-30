@@ -1,8 +1,8 @@
-parser grammar TAParserANTLR4;
+parser grammar FOADAParserANTLR4;
 
 options {
     language = Java;
-    tokenVocab = TALexerANTLR4;
+    tokenVocab = FOADALexerANTLR4;
 }
 
 @header {
@@ -28,7 +28,7 @@ options {
     If you have any questions, please contact Xiao XU <xiao.xu.cathiec@gmail.com>.
 */
 
-package parser.TA.ANTLR4;
+package parser.FOADA.ANTLR4;
 
 import exception.FOADAException;
 import structure.Automaton;
@@ -43,46 +43,62 @@ import java.util.ArrayList;
 automaton returns [Automaton jData]
 :
 	{
-		$jData = new Automaton("A");
+		$jData = new Automaton();
 	}
-	STATES (i=ID TWOPOINTS INTEGER {
-		$jData.preDefinePredicate($i.text, Integer.parseInt($INTEGER.text));
-	}
-	)*
-	INITIAL e=expression {
-		$jData.defineFunctionType($e.jData);
-		$jData.setInitialState($e.jData);
-	}
-	FINAL {
-		List<String> finalStates = new ArrayList<String>();
-	}
-	(i=ID {
-		finalStates.add($i.text);
+	LP PRED LP (nameOfPredicate=ID {
+		parser.FOADA.FOADAParserFunctions.addPredicate($jData, $nameOfPredicate.text);
 	}
 	)*
-	{
-		$jData.setFinalStates(finalStates);
-	}
-	SYMBOLS (i=ID {
-		$jData.addEventSymbol($i.text);
+	RP RP
+	LP EVENT LP (nameOfEvent=ID {
+		parser.FOADA.FOADAParserFunctions.addEvent($jData, $nameOfEvent.text);
 	}
 	)*
-	VARIABLES (i=ID {
-		$jData.addVariable($i.text);
+	RP RP
+	LP INITIAL init=expression RP {
+		parser.FOADA.FOADAParserFunctions.setInitial($jData, $init.jData);
+	}
+	LP FINAL LP (nameOfFinal=ID {
+		parser.FOADA.FOADAParserFunctions.setFinal($jData, $nameOfFinal.text);
 	}
 	)*
-	{
-		$jData.finaliseTAInitAndFinal();
-	}
-	VISIBLE (i=ID {
-		$jData.setVisibleVariable($i.text);
-	}
+	RP RP
+	(LP TRANS LP nameOfPredicate=ID LP {
+			List<String> argumentsNames = new ArrayList<String>();
+			List<FOADAExpression.ExpressionType> argumentsTypes = new ArrayList<FOADAExpression.ExpressionType>();
+		}
+		(LP argumentName=ID argumentType=type RP {
+			argumentsNames.add($argumentName.text);
+			argumentsTypes.add($argumentType.jData);
+		}
+		)*
+		RP RP
+		LP event=ID LP {
+			List<String> inputVarNames = new ArrayList<String>();
+			List<FOADAExpression.ExpressionType> inputVarTypes = new ArrayList<FOADAExpression.ExpressionType>();
+		}
+		(LP inputVarName=ID inputVarType=type RP {
+			inputVarNames.add($inputVarName.text);
+			inputVarTypes.add($inputVarType.jData);
+		}
+		)*
+		RP RP
+		post=expression {
+			parser.FOADA.FOADAParserFunctions.addTransition($jData, $nameOfPredicate.text, argumentsNames, argumentsTypes, $event.text, inputVarNames, inputVarTypes, $post.jData);
+		}
+		RP
 	)*
-	TRANSITIONS (i1=ID i2=ID e=expression SHARP {
-		$jData.defineFunctionType($e.jData);
-		$jData.addTATransition($i2.text, $i1.text, $e.jData);
+;
+
+type returns [FOADAExpression.ExpressionType jData]
+:
+	INT {
+		$jData = FOADAExpression.ExpressionType.Integer;
 	}
-	)*
+	|
+	BOOL {
+		$jData = FOADAExpression.ExpressionType.Boolean;
+	}
 ;
 	
 expression returns [FOADAExpression jData]

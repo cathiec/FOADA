@@ -23,8 +23,11 @@
 package structure;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import org.sosy_lab.java_smt.api.BooleanFormula;
 import org.sosy_lab.java_smt.api.Formula;
 import org.sosy_lab.java_smt.api.FormulaManager;
@@ -232,6 +235,66 @@ public class FOADAExpression {
 		}
 	}
 	
+	public Set<FOADAExpression> findPredicatesOccurrences(){
+		Set<FOADAExpression> result = new HashSet<FOADAExpression>();
+		switch(category)
+		{
+		case Constant:	break;
+		case Function:	if(name.charAt(0) == 'q') {
+							result.add(this);
+						}
+						for(FOADAExpression e : subData) {
+							result.addAll(e.findPredicatesOccurrences());
+						}
+						break;
+		case Exists:	result.addAll(subData.get(subData.size() - 1).findPredicatesOccurrences());
+						break;
+		case Forall:	result.addAll(subData.get(subData.size() - 1).findPredicatesOccurrences());
+						break;
+		case Not:		result.addAll(subData.get(subData.size() - 1).findPredicatesOccurrences());
+						break;
+		case And:		for(FOADAExpression e : subData) {
+							result.addAll(e.findPredicatesOccurrences());
+						}
+						break;
+		case Or:		for(FOADAExpression e : subData) {
+							result.addAll(e.findPredicatesOccurrences());
+						}
+						break;
+		case Equals:	result.addAll(subData.get(0).findPredicatesOccurrences());
+						result.addAll(subData.get(1).findPredicatesOccurrences());
+						break;
+		case Distinct:	result.addAll(subData.get(0).findPredicatesOccurrences());
+						result.addAll(subData.get(1).findPredicatesOccurrences());
+						break;
+		case Plus:		result.addAll(subData.get(0).findPredicatesOccurrences());
+						result.addAll(subData.get(1).findPredicatesOccurrences());
+						break;
+		case Minus:		result.addAll(subData.get(0).findPredicatesOccurrences());
+						result.addAll(subData.get(1).findPredicatesOccurrences());
+						break;
+		case Times:		result.addAll(subData.get(0).findPredicatesOccurrences());
+						result.addAll(subData.get(1).findPredicatesOccurrences());
+						break;
+		case Slash:		result.addAll(subData.get(0).findPredicatesOccurrences());
+						result.addAll(subData.get(1).findPredicatesOccurrences());
+						break;
+		case GT:		result.addAll(subData.get(0).findPredicatesOccurrences());
+						result.addAll(subData.get(1).findPredicatesOccurrences());
+						break;
+		case LT:		result.addAll(subData.get(0).findPredicatesOccurrences());
+						result.addAll(subData.get(1).findPredicatesOccurrences());
+						break;
+		case GEQ:		result.addAll(subData.get(0).findPredicatesOccurrences());
+						result.addAll(subData.get(1).findPredicatesOccurrences());
+						break;
+		case LEQ:		result.addAll(subData.get(0).findPredicatesOccurrences());
+						result.addAll(subData.get(1).findPredicatesOccurrences());
+						break;
+		}
+		return result;
+	}
+	
 	public void addTimeStamps(int timeStamp)
 	{
 		switch(category)
@@ -358,18 +421,31 @@ public class FOADAExpression {
 	 * @param	from	the part to be replaced
 	 * @param	to		used to replace the part
 	 */
-	public void substitue(String from, int to)
+	public void substitue(FOADAExpression from, FOADAExpression to)
 	{
 		switch(category)
 		{
 		case Constant:	break;
-		case Function:	if(name.equals(from)) {
-							System.out.println("\t\t\t" + from + "   --->   " + to);
-							category = ExpressionCategory.Constant;
-							type = ExpressionType.Integer;
-							iValue = to;
-							subData = null;
-							name = null;
+		case Function:	if(equals(from)) {
+							type = to.type;
+							category = to.category;
+							name = to.name;
+							bValue = to.bValue;
+							iValue = to.iValue;
+							if(to.subData == null) {
+								subData = null;
+							}
+							else {
+								subData = new ArrayList<FOADAExpression>();
+								for(FOADAExpression e : to.subData) {
+									subData.add(e.copy());
+								}
+							}
+						}
+						else {
+							for(FOADAExpression e : subData) {
+								e.substitue(from, to);
+							}
 						}
 						break;
 		case Exists:	subData.get(subData.size() - 1).substitue(from, to);
@@ -496,8 +572,7 @@ public class FOADAExpression {
 		}
 	}
 	
-	/** to string
-	 */
+	@Override
 	public String toString()
 	{
 		String resultString = "";
@@ -597,6 +672,12 @@ public class FOADAExpression {
 						return resultString;
 		/* never reach here */ default: return "";
 		}
+	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		return toString().equals(obj.toString());
 	}
 
 }

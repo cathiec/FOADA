@@ -31,6 +31,7 @@ import structure.Automaton;
 import utility.Console;
 import utility.Console.ConsoleType;
 import utility.Solver;
+import utility.TreeSearch.Mode;
 
 public class FOADA {
 	
@@ -56,19 +57,19 @@ public class FOADA {
 	{
 		Console.printInfo(ConsoleType.FOADA, "Showing all the options...");
 		// -h , --help
-		System.out.println("\t-h, --help \t\thelp menu");
+		System.out.println("-h, --help \t\t\thelp menu");
 		// -c , --check
-		System.out.println("\t-c, --check \t\tsolver checking");
+		System.out.println("-c, --check \t\t\tsolver checking");
 		// -e, --empty
-		System.out.println("\t-e, --empty <input> \temptiness checking / BFS");
-		// -e2, --empty2
-		System.out.println("\t-e2, --empty2 <input> \temptiness checking using path quantifier elimination / BFS");
-		// -e3, --empty3
-		System.out.println("\t-e3, --empty3 <input> \temptiness checking using path quantifier elimination / DFS");
-		// -p, --print
-		System.out.println("\t\t-p, --print\tadd this option after -e, --empty to print out important steps during emptiness checking");
+		System.out.println("-e, --empty <input> <options>\temptiness checking using BFS ");
+			// additional options for emptiness checking
+			System.out.println("\tadditional options:");
+			// -d, --dfs
+			System.out.println("\t-d, --dfs\t\tusing DFS instead of using BFS");
+			// -o, --occurrences
+			System.out.println("\t-o, --occurrences\tfinding occurrences of predicates instead of universally quantifying arguments");
 		// -v , --version
-		System.out.println("\t-v, --version \t\tinstalled version");
+		System.out.println("-v, --version \t\t\tinstalled version");
 		Console.printFOADAEndOfSession();
 	}
 	
@@ -85,65 +86,41 @@ public class FOADA {
 		Console.printFOADAEndOfSession();
 	}
 	
-	/** < FOADA emptiness checking / BFS > </br>
+	/** < FOADA emptiness checking > </br>
 	 * FOADA execution with argument <b> -e </b> or <b> --empty </b>
-	 * @param	filename	name of the input file
+	 * @param	filename		name of the input file
+	 * @param	searchMode		mode of tree search: <b> BFS </b> / <b> DFS </b>
+	 * @param	transitionMode	mode of transition rules: <b> universally quantifier arguments </b> / <b> find occurrences </b>
 	 */
-	private static void checkEmpty(String filename, boolean print)
+	private static void checkEmpty(String filename, utility.TreeSearch.Mode searchMode, utility.Impact.Mode transitionMode)
 			throws FOADAException
 	{
 		ParserType parserType = ParserTools.selectAccordingToInputFile(filename);
 		Automaton automaton = ParserTools.buildAutomatonFromFile(filename, parserType);
-		Console.printInfo(ConsoleType.FOADA, "Start checking emptiness...");
-		if(automaton.isEmpty1(print)) {
+		if(searchMode == utility.TreeSearch.Mode.BFS) {
+			if(transitionMode == utility.Impact.Mode.UniversallyQuantifyArguments) {
+				Console.printInfo(ConsoleType.FOADA, "Start checking emptiness (BFS / Universally Quantify Arguments) ... ");
+			}
+			else if(transitionMode == utility.Impact.Mode.FindOccurrences) {
+				Console.printInfo(ConsoleType.FOADA, "Start checking emptiness (BFS / Find Occurrences) ... ");
+				Console.printInfo(ConsoleType.FOADA, Console.RED_BRIGHT + "WARNING : " + Console.RESET + "This version does not work with transition quantifiers.");
+			}
+		}
+		else if(searchMode == utility.TreeSearch.Mode.DFS) {
+			if(transitionMode == utility.Impact.Mode.UniversallyQuantifyArguments) {
+				Console.printInfo(ConsoleType.FOADA, "Start checking emptiness (DFS / Universally Quantify Arguments) ... ");
+			}
+			else if(transitionMode == utility.Impact.Mode.FindOccurrences) {
+				Console.printInfo(ConsoleType.FOADA, "Start checking emptiness (DFS / Find Occurrences) ... ");
+				Console.printInfo(ConsoleType.FOADA, Console.RED_BRIGHT + "WARNING : " + Console.RESET + "This version does not work with transition quantifiers.");
+			}	
+		}
+		if(automaton.isEmpty(searchMode, transitionMode)) {
 			Console.printInfo(ConsoleType.FOADA, "The automaton is empty...");
 		}
 		else {
 			Console.printInfo(ConsoleType.FOADA, "The automaton is not empty...");
 		}
-		//a.test();
-		Console.printFOADAEndOfSession();
-	}
-	
-	/** < FOADA emptiness checking using path quantifier elimination / BFS > </br>
-	 * FOADA execution with argument <b> -e2 </b> or <b> --empty2 </b>
-	 * @param	filename	name of the input file
-	 */
-	private static void checkEmpty2(String filename, boolean print)
-			throws FOADAException
-	{
-		ParserType parserType = ParserTools.selectAccordingToInputFile(filename);
-		Automaton automaton = ParserTools.buildAutomatonFromFile(filename, parserType);
-		Console.printInfo(ConsoleType.FOADA, Console.RED_BRIGHT + "The current version DOES NOT work with transition quantifiers !!!" + Console.RESET);
-		Console.printInfo(ConsoleType.FOADA, "Start checking emptiness...");
-		if(automaton.isEmpty2(print)) {
-			Console.printInfo(ConsoleType.FOADA, "The automaton is empty...");
-		}
-		else {
-			Console.printInfo(ConsoleType.FOADA, "The automaton is not empty...");
-		}
-		//a.test();
-		Console.printFOADAEndOfSession();
-	}
-	
-	/** < FOADA emptiness checking using path quantifier elimination / DFS > </br>
-	 * FOADA execution with argument <b> -e3 </b> or <b> --empty3 </b>
-	 * @param	filename	name of the input file
-	 */
-	private static void checkEmpty3(String filename, boolean print)
-			throws FOADAException
-	{
-		ParserType parserType = ParserTools.selectAccordingToInputFile(filename);
-		Automaton automaton = ParserTools.buildAutomatonFromFile(filename, parserType);
-		Console.printInfo(ConsoleType.FOADA, Console.RED_BRIGHT + "The current version DOES NOT work with transition quantifiers !!!" + Console.RESET);
-		Console.printInfo(ConsoleType.FOADA, "Start checking emptiness...");
-		if(automaton.isEmpty3(print)) {
-			Console.printInfo(ConsoleType.FOADA, "The automaton is empty...");
-		}
-		else {
-			Console.printInfo(ConsoleType.FOADA, "The automaton is not empty...");
-		}
-		//a.test();
 		Console.printFOADAEndOfSession();
 	}
 	
@@ -174,40 +151,25 @@ public class FOADA {
 			else if(args[0].equals("-c") || args[0].equals("--check")) {
 				checkSolvers();
 			}
-			// emptiness checking / BFS
+			// emptiness checking
 			else if(args[0].equals("-e") || args[0].equals("--empty")) {
 				if(args.length < 2) {
 					throw new InputFileNotFoundException(null);
 				}
-				else if(args[1].equals("-p") || args[1].equals("--print")) {
-					checkEmpty(args[2], true);
+				else if(args.length == 2) {
+					checkEmpty(args[1], utility.TreeSearch.Mode.BFS, utility.Impact.Mode.UniversallyQuantifyArguments);
 				}
-				else {
-					checkEmpty(args[1], false);
+				else if(args.length == 3 && (args[2].equals("-d") || args[2].equals("--dfs"))) {
+					checkEmpty(args[1], utility.TreeSearch.Mode.DFS, utility.Impact.Mode.UniversallyQuantifyArguments);
 				}
-			}
-			// emptiness checking using path quantifier elimination / BFS
-			else if(args[0].equals("-e2") || args[0].equals("--empty2")) {
-				if(args.length < 2) {
-					throw new InputFileNotFoundException(null);
+				else if(args.length == 3 && (args[2].equals("-o") || args[2].equals("--occurrences"))){
+					checkEmpty(args[1], utility.TreeSearch.Mode.BFS, utility.Impact.Mode.FindOccurrences);
 				}
-				else if(args[1].equals("-p") || args[1].equals("--print")) {
-					checkEmpty2(args[2], true);
+				else if(args.length == 4 && (args[2].equals("-d") || args[2].equals("--dfs")) && (args[3].equals("-o") || args[3].equals("--occurrences"))) {
+					checkEmpty(args[1], utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
 				}
-				else {
-					checkEmpty2(args[1], false);
-				}
-			}
-			// emptiness checking using path quantifier elimination / DFS
-			else if(args[0].equals("-e3") || args[0].equals("--empty3")) {
-				if(args.length < 2) {
-					throw new InputFileNotFoundException(null);
-				}
-				else if(args[1].equals("-p") || args[1].equals("--print")) {
-					checkEmpty3(args[2], true);
-				}
-				else {
-					checkEmpty3(args[1], false);
+				else if(args.length == 4 && (args[2].equals("-o") || args[2].equals("--occurrences")) && (args[3].equals("-d") || args[3].equals("--dfs"))) {
+					checkEmpty(args[1], utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
 				}
 			}
 			// installed version

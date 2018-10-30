@@ -1,10 +1,3 @@
-lexer grammar TALexerANTLR4;
-
-options {
-    language = Java;
-}
-
-@header {
 /*
 	FOADA
     Copyright (C) 2018  Xiao XU & Radu IOSIF
@@ -27,46 +20,13 @@ options {
     If you have any questions, please contact Xiao XU <xiao.xu.cathiec@gmail.com>.
 */
 
-package parser.TA.ANTLR4;
+package utility;
+
+public abstract class Impact {
+	
+	public enum Mode {
+		UniversallyQuantifyArguments,
+		FindOccurrences
+	};
+
 }
-
-// key words
-STATES : 'STATES';
-INITIAL : 'INITIAL';
-FINAL : 'FINAL';
-SYMBOLS : 'SYMBOLS';
-VARIABLES : 'VARIABLES';
-VISIBLE : 'VISIBLE';
-TRANSITIONS : 'TRANSITIONS';
-TRUE : 'true';
-FALSE : 'false';
-NOT : 'not';
-AND : 'and';
-OR : 'or';
-DISTINCT : 'distinct';
-
-fragment LETTER : 'a' .. 'z' | 'A' .. 'Z';
-fragment DIGIT : '0' .. '9';
-
-ID : (LETTER | '$' | '_')(LETTER | DIGIT | '$' | '_')*;
-INTEGER : '0' | ('1' .. '9' DIGIT*);
-
-TWOPOINTS : ':';
-SHARP : '#';
-LP : '(';
-RP : ')';
-PLUS : '+';
-MINUS : '-';
-TIMES : '*';
-SLASH : '/';
-GT : '>';
-LT : '<';
-GEQ : '>=';
-LEQ : '<=';
-EQUALS : '=';
-
-WS : (' ' | '\t' | '\r' | '\n') {skip();};
-
-COMMENT
-: ';' ( ~('\n') )* {skip();}
-;

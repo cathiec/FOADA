@@ -1,4 +1,4 @@
-// Generated from TAParserANTLR4.g4 by ANTLR 4.7.1
+// Generated from FOADAParserANTLR4.g4 by ANTLR 4.7.1
 
 /*
 	FOADA
@@ -22,7 +22,7 @@
     If you have any questions, please contact Xiao XU <xiao.xu.cathiec@gmail.com>.
 */
 
-package parser.TA.ANTLR4;
+package parser.FOADA.ANTLR4;
 
 import exception.FOADAException;
 import structure.Automaton;
@@ -39,35 +39,47 @@ import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 /**
- * This class provides an empty implementation of {@link TAParserANTLR4Listener},
+ * This class provides an empty implementation of {@link FOADAParserANTLR4Listener},
  * which can be extended to create a listener which only needs to handle a subset
  * of the available methods.
  */
-public class TAParserANTLR4BaseListener implements TAParserANTLR4Listener {
+public class FOADAParserANTLR4BaseListener implements FOADAParserANTLR4Listener {
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAutomaton(TAParserANTLR4.AutomatonContext ctx) { }
+	@Override public void enterAutomaton(FOADAParserANTLR4.AutomatonContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAutomaton(TAParserANTLR4.AutomatonContext ctx) { }
+	@Override public void exitAutomaton(FOADAParserANTLR4.AutomatonContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpression(TAParserANTLR4.ExpressionContext ctx) { }
+	@Override public void enterType(FOADAParserANTLR4.TypeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitExpression(TAParserANTLR4.ExpressionContext ctx) { }
+	@Override public void exitType(FOADAParserANTLR4.TypeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpression(FOADAParserANTLR4.ExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpression(FOADAParserANTLR4.ExpressionContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
