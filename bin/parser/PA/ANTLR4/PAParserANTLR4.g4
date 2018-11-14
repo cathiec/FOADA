@@ -43,26 +43,21 @@ import java.util.ArrayList;
 automaton returns [Automaton jData]
 :
 	{
-		$jData = new Automaton("A");
+		$jData = new Automaton();
 	}
-	START TWOPOINTS e=expression {
-		$jData.setInitialState($e.jData);
+	START TWOPOINTS init=expression POINT {
+		parser.PA.PAParserFunctions.setInitial($jData, $init.jData);
 	}
-	POINT FINAL TWOPOINTS fl=final_list {
-		$jData.setFinalStates($fl.jData);
+	FINAL TWOPOINTS finalList=final_list POINT {
+		parser.PA.PAParserFunctions.setFinal($jData, $finalList.jData);
 	}
-	POINT (i1=ID LP al=argument_list RP TL i2=ID TWOPOINTS i3=ID TR e=expression POINT {
-		List<String> variables = new ArrayList<String>();
-		variables.add($i3.text.replaceAll("\\s*", ""));
-		List<ExpressionType> variablesTypes = new ArrayList<ExpressionType>();
-		variablesTypes.add(ExpressionType.Integer);
-		List<ExpressionType> argumentsTypes = new ArrayList<ExpressionType>();
-		for(String s : $al.jData) {
-			argumentsTypes.add(ExpressionType.Integer);
-		}
-		$jData.addPATransition($i1.text.replaceAll("\\s*", ""), $al.jData, argumentsTypes, $i2.text.replaceAll("\\s*", ""), variables, variablesTypes, $e.jData);
+	(left=ID LP argumentList=argument_list RP TL event=ID TWOPOINTS inputVarName=ID TR post=expression POINT {
+		parser.PA.PAParserFunctions.addTransition($jData, $left.text, $argumentList.jData, $event.text, $inputVarName.text, $post.jData);
 	}
 	)* EOF
+	{
+		parser.PA.PAParserFunctions.finalize($jData);
+	}
 ;
 
 final_list returns [List<String> jData]
@@ -174,7 +169,7 @@ eq_expression returns [FOADAExpression jData]
 		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Equals, left, right);
 	}
 	|
-	i1=ID DISTINCT i2=ID {
+	i1=ID DISTINCTS i2=ID {
 		FOADAExpression left = new FOADAExpression($i1.text.replaceAll("\\s*", ""), ExpressionType.Integer);
 		FOADAExpression right = new FOADAExpression($i2.text.replaceAll("\\s*", ""), ExpressionType.Integer);
 		$jData = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Distinct, left, right);

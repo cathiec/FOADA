@@ -30,8 +30,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.sosy_lab.java_smt.api.BooleanFormula;
+import org.sosy_lab.java_smt.api.Formula;
+import org.sosy_lab.java_smt.api.FormulaType;
+import org.sosy_lab.java_smt.api.InterpolatingProverEnvironment;
+import org.sosy_lab.java_smt.api.Model.ValueAssignment;
+import org.sosy_lab.java_smt.api.SolverException;
 import exception.FOADAException;
+import exception.InterpolatingProverEnvironmentException;
 import structure.FOADAExpression.ExpressionCategory;
+import structure.FOADAExpression.ExpressionType;
+import utility.Console;
+import utility.Impact;
+import utility.Console.ConsoleType;
 import utility.JavaSMTConfig;
 
 public class Automaton {
@@ -55,13 +65,13 @@ public class Automaton {
 	 */
 	public Map<String, String> renameMap;
 	
-	/** number of predicates
+	/** set of names of predicates
 	 */
-	public int nbOfPredicates;
+	public List<String> namesOfPredicates;
 	
-	/** number of events
+	/** set of events
 	 */
-	public int nbOfEvents;
+	public List<String> events;
 	
 	/** number of variables
 	 */
@@ -77,21 +87,15 @@ public class Automaton {
 		namesOfFinalStates = new ArrayList<String>();
 		transitions = new LinkedHashMap<String, FOADATransition>();
 		renameMap = new LinkedHashMap<String, String>();
-		nbOfPredicates = 0;
-		nbOfEvents = 0;
+		namesOfPredicates = new ArrayList<String>();
+		events = new ArrayList<String>();
 		nbOfVariables = 0;
 		utility.JavaSMTConfig.initJavaSMT();
 	}
 	
 	public boolean isEmpty(utility.TreeSearch.Mode searchMode, utility.Impact.Mode transitionMode)
+			throws FOADAException
 	{
-		/** TODO **/	System.out.println("INIT : " + initial);
-		/** TODO **/	System.out.println("FINAL : " + namesOfFinalStates);
-		/** TODO **/	System.out.println("TRANS :");
-		/** TODO **/	for(Entry<String, FOADATransition> t : transitions.entrySet()) {
-		/** TODO **/		System.out.println(t.getKey() + " ---> " + t.getValue());
-		/** TODO **/	}
-		/** TODO **/	System.out.println(renameMap);
 		long beginTime = System.currentTimeMillis();
 		int nbOfNodesVisited = 0;
 		int nbOfNodesCreated = 0;
@@ -116,7 +120,6 @@ public class Automaton {
 				currentNode = workList.get(workList.size() - 1); 
 				workList.remove(workList.size() - 1);
 			}
-			/** TODO **/	System.out.println(currentNode);
 			nbOfNodesVisited++;
 			allValidNodes.add(currentNode);
 		// calculate the path from the initial node to the current node
@@ -127,7 +130,6 @@ public class Automaton {
 				pathFromInitToCurrent.add(0, c.fatherSymbol);
 				c = c.father;
 			}
-			/** TODO **/	System.out.println("\tpath : " + pathFromInitToCurrent);
 		// determine whether the current node is accepting
 			// create a list of JavaSMT expressions (blocks) for interpolation
 			List<BooleanFormula> blocks = new ArrayList<BooleanFormula>();
@@ -155,13 +157,11 @@ public class Automaton {
 					}
 					predicatesInCurrentBlock.add(o);
 				}
-				/** TODO **/	System.out.println(predicatesInCurrentBlock);
 			}
 			else {
 				predicatesOccurrencesInCurrentBlock = timeStampedInitial.findPredicatesOccurrences();
-				/** TODO **/	System.out.println(predicatesOccurrencesInCurrentBlock);
 			}
-		// compute next blocks
+			// compute next blocks
 			int currentTimeStamp = 0;
 			for(String a : pathFromInitToCurrent) {
 				// create a new list of all the small parts (of conjunction) of the new block
@@ -172,9 +172,15 @@ public class Automaton {
 					// compute one small part of the new block
 					for(FOADAExpression predicate : predicatesInCurrentBlock) {
 						FOADATransition transition = transitions.get(predicate.name + "+" + a);
-						predicatesInNewBlock.addAll(transition.getPredicates());
-						BooleanFormula currentPartOfNewBlock = transition.getUniversallyQuantifiedImplication(currentTimeStamp);
-						smallPartsOfNewBlock.add(currentPartOfNewBlock);
+						if(transition != null) {
+							predicatesInNewBlock.addAll(transition.getPredicates());
+							BooleanFormula currentPartOfNewBlock = transition.getUniversallyQuantifiedImplication(currentTimeStamp);
+							smallPartsOfNewBlock.add(currentPartOfNewBlock);
+						}
+						else {
+							BooleanFormula currentPartOfNewBlock = JavaSMTConfig.bmgr.makeBoolean(false);
+							smallPartsOfNewBlock.add(currentPartOfNewBlock);
+						}
 					}
 					if(smallPartsOfNewBlock.isEmpty()) {
 						blocks.add(JavaSMTConfig.bmgr.makeBoolean(true));
@@ -193,13 +199,176 @@ public class Automaton {
 			List<BooleanFormula> finalConjunction = new ArrayList<BooleanFormula>();
 			if(transitionMode == utility.Impact.Mode.UniversallyQuantifyArguments) {
 				for(FOADAExpression predicate : predicatesInCurrentBlock) {
-					
+					List<Formula> arguments = new ArrayList<Formula>();
+					for(FOADAExpression a : predicate.subData) {
+						Formula argument;
+						if(a.type == ExpressionType.Integer) {
+							argument = JavaSMTConfig.ufmgr.declareAndCallUF(a.name, FormulaType.IntegerType);
+						}
+						else {
+							argument = JavaSMTConfig.ufmgr.declareAndCallUF(a.name, FormulaType.BooleanType);
+						}
+						arguments.add(argument);
+					}
+					FOADAExpression timeStampedLeft = predicate.copy();
+					timeStampedLeft.addTimeStamps(currentTimeStamp);
+					BooleanFormula leftPartOfImplication = (BooleanFormula)timeStampedLeft.toJavaSMTFormula(JavaSMTConfig.fmgr);
+					BooleanFormula rightPartOfImplication;
+					if(namesOfFinalStates.contains(predicate.name)) {
+						rightPartOfImplication = JavaSMTConfig.bmgr.makeBoolean(true);
+					}
+					else {
+						rightPartOfImplication = JavaSMTConfig.bmgr.makeBoolean(false);
+					}
+					BooleanFormula implication = JavaSMTConfig.bmgr.implication(leftPartOfImplication, rightPartOfImplication);
+					if(arguments.isEmpty()) {
+						finalConjunction.add(implication);
+					}
+					else {
+						BooleanFormula universallyQuantifiedImplication = JavaSMTConfig.qmgr.forall(arguments, implication);
+						finalConjunction.add(universallyQuantifiedImplication);
+					}
 				}
 			}
 			else {
 				//TODO
 			}
+			// add the last block into the list of blocks
+			if(finalConjunction.isEmpty()) {
+				blocks.add(JavaSMTConfig.bmgr.makeBoolean(true));
+			}
+			else {
+				blocks.add(JavaSMTConfig.bmgr.and(finalConjunction));
+			}
+		// check if the conjunction of all blocks is satisfiable or compute the interpolants
+			// create prover environment for interpolation
+			@SuppressWarnings("rawtypes")
+			InterpolatingProverEnvironment prover = JavaSMTConfig.solverContext.newProverEnvironmentWithInterpolation();
+			// create a new list for sets of objects received when pushing different partitions into the prover
+			List<Set<Object>> listPartitions = new ArrayList<Set<Object>>();
+			// each block is a partition
+			for(BooleanFormula f : blocks) {
+				// create a set for objects received when pushing different partitions into the prover
+				Set<Object> Partition = new HashSet<Object>();
+				// push the partition (block) into the prover and add the received object into the set
+				Partition.add(prover.push(f));
+				// add the set into the list
+				listPartitions.add(Partition);
+			}
+			// check whether the conjunction of all blocks is unsatisfiable
+			try {
+				// compute the interpolants if it is not satisfiable
+				if(prover.isUnsat()) {
+					@SuppressWarnings("unchecked")
+					// compute the interpolants (with time-stamps)
+					List<BooleanFormula> interpolantsWithTimeStamps = prover.getSeqInterpolants(listPartitions);
+					List<BooleanFormula> interpolants = new ArrayList<BooleanFormula>();
+					// remove the time-stamps from the interpolants
+					for(BooleanFormula f : interpolantsWithTimeStamps) {
+						interpolants.add(JavaSMTConfig.removeTimeStamp(f));
+					}
+				// refine the nodes along the path
+					// starting from the root node
+					FOADAConfiguration currentNodeAlongPath = initialNode;
+					int step = 0;
+					// loop check the path
+					boolean oneNodeIsClosed = false;
+					while(true) {
+						// get the corresponding interpolant according to the current step
+						BooleanFormula interpolant = interpolants.get(step);
+						// check the validity of the implication: current -> interpolant
+						boolean implicationIsValid = JavaSMTConfig.checkImplication(currentNodeAlongPath.expression, interpolant);
+						// if the implication if not valid
+						if(!implicationIsValid) {
+							// refine the node by making a conjunction
+							currentNodeAlongPath.expression = JavaSMTConfig.bmgr.and(currentNodeAlongPath.expression, interpolant);
+							// remove all the covered relations of the current node along path
+							currentNodeAlongPath.removeCoveredRelations(workList);
+							// close the current node along path
+							if(!oneNodeIsClosed) {
+								oneNodeIsClosed = Impact.close(currentNodeAlongPath, workList, allValidNodes);
+							}
+							if(JavaSMTConfig.checkImplication(currentNodeAlongPath.expression, JavaSMTConfig.bmgr.makeBoolean(false))) {
+								workList.remove(currentNodeAlongPath);
+							}
+						}
+						// if finish looping the path
+						if(step >= pathFromInitToCurrent.size()) {
+							break;
+						}
+						// if not finish looping the path
+						else {
+							// refresh the current node along path
+							int indexOfSuccessor = currentNodeAlongPath.successorSymbolIndexMap.get(pathFromInitToCurrent.get(step));
+							currentNodeAlongPath = currentNodeAlongPath.successors.get(indexOfSuccessor);
+							// refresh the current step
+							step++;
+						}
+					}
+				}
+				// print out the model and return false if it is satisfiable
+				else {
+					long endTime = System.currentTimeMillis();
+					if(pathFromInitToCurrent.size() == 0) {
+						System.out.println("empty trace");
+					}
+					else {
+						Object[][] variablesAssignments = new Object[pathFromInitToCurrent.size()][nbOfVariables];
+						for(Object a : prover.getModelAssignments()) {
+							String expressionString = ((ValueAssignment)a).getKey().toString();
+							if(expressionString.charAt(0) == 'v') {
+								int lastIndexOfUnderscore = expressionString.lastIndexOf('_');
+								int variableStep = Integer.valueOf(expressionString.substring(lastIndexOfUnderscore + 1));
+								if(variableStep > 0) {
+									int variableIndex = Integer.valueOf(expressionString.substring(1, lastIndexOfUnderscore - 1));
+									variablesAssignments[variableStep - 1][variableIndex] = ((ValueAssignment)a).getValue();
+								}
+							}
+						}
+						for(int i1 = 0; i1 < pathFromInitToCurrent.size(); i1++) {
+							String newNameEvent = pathFromInitToCurrent.get(i1);
+							String oldNameEvent = null;
+							for(Entry<String, String> e : renameMap.entrySet()) {
+								if(e.getValue().equals(newNameEvent)) {
+									oldNameEvent = e.getKey();
+									break;
+								}
+							}
+							System.out.print(oldNameEvent + " \t::::: DATA ::::: { ");
+							for(int i2 = 0; i2 < nbOfVariables; i2++) {
+								System.out.print(variablesAssignments[i1][i2] == null ? "any " : variablesAssignments[i1][i2] + " ");
+							}
+							System.out.println('}');
+						}
+						System.out.println("------------------------------");
+						Console.printInfo(ConsoleType.FOADA, "Nodes Created : " + nbOfNodesCreated);
+						Console.printInfo(ConsoleType.FOADA, "Nodes Visited : " + nbOfNodesVisited);
+						Console.printInfo(ConsoleType.FOADA, "Time Used : " + (endTime - beginTime) + " ms");
+						return false;
+					}	
+				}
+			}
+			catch (SolverException e) {
+				throw new InterpolatingProverEnvironmentException(e);
+			}
+			catch (InterruptedException e) {
+				throw new InterpolatingProverEnvironmentException(e);
+			}
+		// expand the current node if it is not covered
+			// check if the current node is covered, if not then expand it
+			if(currentNode.successors.isEmpty() && !currentNode.isCovered()) {
+				for(String e : events) {
+					FOADAConfiguration newNode = new FOADAConfiguration(nbOfNodesCreated++, JavaSMTConfig.bmgr.makeBoolean(true), currentNode, e);
+					currentNode.addSuccessor(e, newNode);
+					workList.add(newNode);
+				}
+			}
 		}
+		System.out.println("------------------------------");
+		long endTime = System.currentTimeMillis();
+		Console.printInfo(ConsoleType.FOADA, "Nodes Created : " + nbOfNodesCreated);
+		Console.printInfo(ConsoleType.FOADA, "Nodes Visited : " + nbOfNodesVisited);
+		Console.printInfo(ConsoleType.FOADA, "Time Used : " + (endTime - beginTime) + " ms");
 		return true;
 	}
 

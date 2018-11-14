@@ -31,14 +31,16 @@ public abstract class FOADAParserFunctions {
 	
 	public static void addPredicate(Automaton automaton, String nameOfPredicate)
 	{
-		automaton.renameMap.put(nameOfPredicate, "q" + automaton.nbOfPredicates + "c");
-		automaton.nbOfPredicates = automaton.nbOfPredicates + 1;
+		String newName = "q" + automaton.namesOfPredicates.size() + "c";
+		automaton.renameMap.put(nameOfPredicate, newName);
+		automaton.namesOfPredicates.add(newName);
 	}
 	
 	public static void addEvent(Automaton automaton, String nameOfEvent)
 	{
-		automaton.renameMap.put(nameOfEvent, "e" + automaton.nbOfEvents + "c");
-		automaton.nbOfEvents = automaton.nbOfEvents + 1;
+		String newName = "e" + automaton.events.size() + "c";
+		automaton.renameMap.put(nameOfEvent, newName);
+		automaton.events.add(newName);
 	}
 	
 	public static void setInitial(Automaton automaton, FOADAExpression initial)
@@ -49,7 +51,7 @@ public abstract class FOADAParserFunctions {
 		automaton.initial = initial;
 	}
 	
-	public static void setFinal(Automaton automaton, String nameOfPredicate)
+	public static void addFinal(Automaton automaton, String nameOfPredicate)
 	{
 		automaton.namesOfFinalStates.add(automaton.renameMap.get(nameOfPredicate));
 	}

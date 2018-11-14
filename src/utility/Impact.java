@@ -22,11 +22,50 @@
 
 package utility;
 
+import java.util.List;
+import java.util.Set;
+
+import exception.FOADAException;
+import structure.FOADAConfiguration;
+
 public abstract class Impact {
 	
 	public enum Mode {
 		UniversallyQuantifyArguments,
 		FindOccurrences
 	};
+	
+	/** add all the leaves successors of a given node into the work list if it is not covered
+	 * @param givenNode	the given node
+	 * @param workList	the work list of IMPACT
+	 */
+	public static void reEnable(FOADAConfiguration givenNode, List<FOADAConfiguration> workList)
+			throws FOADAException
+	{
+		if(!givenNode.isCovered() &&
+				!workList.contains(givenNode) &&
+				!JavaSMTConfig.checkImplication(givenNode.expression, JavaSMTConfig.bmgr.makeBoolean(false))) {
+			workList.add(0, givenNode);
+		}
+	}
+	
+	public static boolean close(FOADAConfiguration node, List<FOADAConfiguration> workList, Set<FOADAConfiguration> allValidNodes)
+			throws FOADAException
+	{
+		for(FOADAConfiguration targetNode : allValidNodes) {
+			// pick a target node (which is not covered) from all nodes according to a certain order
+			if(targetNode.number < node.number && !targetNode.isCovered()) {
+				// if the current node along path is covered by the target node
+				if(JavaSMTConfig.checkImplication(node.expression, targetNode.expression)) {
+					// remove all the coverage where the node or any of its successors covers another
+					node.removeRecursivelyCoveredRelations(workList);
+					node.coveringNodes.add(targetNode);
+					targetNode.coveredNodes.add(node);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 }

@@ -123,12 +123,13 @@ public class PAParserANTLR4 extends Parser {
 	}
 	public static class AutomatonContext extends ParserRuleContext {
 		public Automaton jData;
-		public ExpressionContext e;
-		public Final_listContext fl;
-		public Token i1;
-		public Argument_listContext al;
-		public Token i2;
-		public Token i3;
+		public ExpressionContext init;
+		public Final_listContext finalList;
+		public Token left;
+		public Argument_listContext argumentList;
+		public Token event;
+		public Token inputVarName;
+		public ExpressionContext post;
 		public TerminalNode START() { return getToken(PAParserANTLR4.START, 0); }
 		public List<TerminalNode> TWOPOINTS() { return getTokens(PAParserANTLR4.TWOPOINTS); }
 		public TerminalNode TWOPOINTS(int i) {
@@ -197,30 +198,30 @@ public class PAParserANTLR4 extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 
-					((AutomatonContext)_localctx).jData =  new Automaton("A");
+					((AutomatonContext)_localctx).jData =  new Automaton();
 				
 			setState(17);
 			match(START);
 			setState(18);
 			match(TWOPOINTS);
 			setState(19);
-			((AutomatonContext)_localctx).e = expression();
-
-					_localctx.jData.setInitialState(((AutomatonContext)_localctx).e.jData);
-				
-			setState(21);
+			((AutomatonContext)_localctx).init = expression();
+			setState(20);
 			match(POINT);
+
+					parser.PA.PAParserFunctions.setInitial(_localctx.jData, ((AutomatonContext)_localctx).init.jData);
+				
 			setState(22);
 			match(FINAL);
 			setState(23);
 			match(TWOPOINTS);
 			setState(24);
-			((AutomatonContext)_localctx).fl = final_list();
-
-					_localctx.jData.setFinalStates(((AutomatonContext)_localctx).fl.jData);
-				
-			setState(26);
+			((AutomatonContext)_localctx).finalList = final_list();
+			setState(25);
 			match(POINT);
+
+					parser.PA.PAParserFunctions.setFinal(_localctx.jData, ((AutomatonContext)_localctx).finalList.jData);
+				
 			setState(42);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -228,37 +229,29 @@ public class PAParserANTLR4 extends Parser {
 				{
 				{
 				setState(27);
-				((AutomatonContext)_localctx).i1 = match(ID);
+				((AutomatonContext)_localctx).left = match(ID);
 				setState(28);
 				match(LP);
 				setState(29);
-				((AutomatonContext)_localctx).al = argument_list();
+				((AutomatonContext)_localctx).argumentList = argument_list();
 				setState(30);
 				match(RP);
 				setState(31);
 				match(TL);
 				setState(32);
-				((AutomatonContext)_localctx).i2 = match(ID);
+				((AutomatonContext)_localctx).event = match(ID);
 				setState(33);
 				match(TWOPOINTS);
 				setState(34);
-				((AutomatonContext)_localctx).i3 = match(ID);
+				((AutomatonContext)_localctx).inputVarName = match(ID);
 				setState(35);
 				match(TR);
 				setState(36);
-				((AutomatonContext)_localctx).e = expression();
+				((AutomatonContext)_localctx).post = expression();
 				setState(37);
 				match(POINT);
 
-						List<String> variables = new ArrayList<String>();
-						variables.add((((AutomatonContext)_localctx).i3!=null?((AutomatonContext)_localctx).i3.getText():null).replaceAll("\\s*", ""));
-						List<ExpressionType> variablesTypes = new ArrayList<ExpressionType>();
-						variablesTypes.add(ExpressionType.Integer);
-						List<ExpressionType> argumentsTypes = new ArrayList<ExpressionType>();
-						for(String s : ((AutomatonContext)_localctx).al.jData) {
-							argumentsTypes.add(ExpressionType.Integer);
-						}
-						_localctx.jData.addPATransition((((AutomatonContext)_localctx).i1!=null?((AutomatonContext)_localctx).i1.getText():null).replaceAll("\\s*", ""), ((AutomatonContext)_localctx).al.jData, argumentsTypes, (((AutomatonContext)_localctx).i2!=null?((AutomatonContext)_localctx).i2.getText():null).replaceAll("\\s*", ""), variables, variablesTypes, ((AutomatonContext)_localctx).e.jData);
+						parser.PA.PAParserFunctions.addTransition(_localctx.jData, (((AutomatonContext)_localctx).left!=null?((AutomatonContext)_localctx).left.getText():null), ((AutomatonContext)_localctx).argumentList.jData, (((AutomatonContext)_localctx).event!=null?((AutomatonContext)_localctx).event.getText():null), (((AutomatonContext)_localctx).inputVarName!=null?((AutomatonContext)_localctx).inputVarName.getText():null), ((AutomatonContext)_localctx).post.jData);
 					
 				}
 				}
@@ -268,6 +261,9 @@ public class PAParserANTLR4 extends Parser {
 			}
 			setState(45);
 			match(EOF);
+
+					parser.PA.PAParserFunctions.finalize(_localctx.jData);
+				
 			}
 		}
 		catch (RecognitionException re) {
@@ -312,13 +308,13 @@ public class PAParserANTLR4 extends Parser {
 		enterRule(_localctx, 2, RULE_final_list);
 		int _la;
 		try {
-			setState(59);
+			setState(60);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case NONE:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(47);
+				setState(48);
 				match(NONE);
 
 						((Final_listContext)_localctx).jData =  new ArrayList<String>();
@@ -328,28 +324,28 @@ public class PAParserANTLR4 extends Parser {
 			case ID:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(49);
+				setState(50);
 				((Final_listContext)_localctx).ID = match(ID);
 
 						((Final_listContext)_localctx).jData =  new ArrayList<String>();
 						_localctx.jData.add((((Final_listContext)_localctx).ID!=null?((Final_listContext)_localctx).ID.getText():null).replaceAll("\\s*", ""));		
 					
-				setState(56);
+				setState(57);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==COM) {
 					{
 					{
-					setState(51);
-					match(COM);
 					setState(52);
+					match(COM);
+					setState(53);
 					((Final_listContext)_localctx).ID = match(ID);
 
 							_localctx.jData.add((((Final_listContext)_localctx).ID!=null?((Final_listContext)_localctx).ID.getText():null).replaceAll("\\s*", ""));
 						
 					}
 					}
-					setState(58);
+					setState(59);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
@@ -396,7 +392,7 @@ public class PAParserANTLR4 extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(61);
+			setState(62);
 			((ExpressionContext)_localctx).oe = or_expression();
 
 					((ExpressionContext)_localctx).jData =  ((ExpressionContext)_localctx).oe.jData;
@@ -453,27 +449,27 @@ public class PAParserANTLR4 extends Parser {
 		enterRule(_localctx, 6, RULE_or_expression);
 		try {
 			int _alt;
-			setState(80);
+			setState(81);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(64);
+				setState(65);
 				((Or_expressionContext)_localctx).ae1 = and_expression();
 
 						((Or_expressionContext)_localctx).jData =  ((Or_expressionContext)_localctx).ae1.jData;
 					
-				setState(72);
+				setState(73);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,3,_ctx);
 				while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 					if ( _alt==1 ) {
 						{
 						{
-						setState(66);
-						match(OR);
 						setState(67);
+						match(OR);
+						setState(68);
 						((Or_expressionContext)_localctx).ae2 = and_expression();
 
 								((Or_expressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Or, ((Or_expressionContext)_localctx).ae1.jData, ((Or_expressionContext)_localctx).ae2.jData);
@@ -481,7 +477,7 @@ public class PAParserANTLR4 extends Parser {
 						}
 						} 
 					}
-					setState(74);
+					setState(75);
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,3,_ctx);
 				}
@@ -490,11 +486,11 @@ public class PAParserANTLR4 extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(75);
-				match(LP);
 				setState(76);
-				((Or_expressionContext)_localctx).oe = or_expression();
+				match(LP);
 				setState(77);
+				((Or_expressionContext)_localctx).oe = or_expression();
+				setState(78);
 				match(RP);
 
 						((Or_expressionContext)_localctx).jData =  ((Or_expressionContext)_localctx).oe.jData;
@@ -554,27 +550,27 @@ public class PAParserANTLR4 extends Parser {
 		enterRule(_localctx, 8, RULE_and_expression);
 		try {
 			int _alt;
-			setState(106);
+			setState(107);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,7,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(82);
+				setState(83);
 				((And_expressionContext)_localctx).be = basic_expression();
 
 						((And_expressionContext)_localctx).jData =  ((And_expressionContext)_localctx).be.jData;
 					
-				setState(90);
+				setState(91);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
 				while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 					if ( _alt==1 ) {
 						{
 						{
-						setState(84);
-						match(AND);
 						setState(85);
+						match(AND);
+						setState(86);
 						((And_expressionContext)_localctx).oe = or_expression();
 
 								((And_expressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.And, ((And_expressionContext)_localctx).be.jData, ((And_expressionContext)_localctx).oe.jData);
@@ -582,7 +578,7 @@ public class PAParserANTLR4 extends Parser {
 						}
 						} 
 					}
-					setState(92);
+					setState(93);
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
 				}
@@ -591,25 +587,25 @@ public class PAParserANTLR4 extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(93);
-				match(LP);
 				setState(94);
-				((And_expressionContext)_localctx).oe1 = or_expression();
+				match(LP);
 				setState(95);
+				((And_expressionContext)_localctx).oe1 = or_expression();
+				setState(96);
 				match(RP);
 
 						((And_expressionContext)_localctx).jData =  ((And_expressionContext)_localctx).oe1.jData;
 					
-				setState(103);
+				setState(104);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,6,_ctx);
 				while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 					if ( _alt==1 ) {
 						{
 						{
-						setState(97);
-						match(AND);
 						setState(98);
+						match(AND);
+						setState(99);
 						((And_expressionContext)_localctx).oe2 = or_expression();
 
 								((And_expressionContext)_localctx).jData =  new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.And, ((And_expressionContext)_localctx).oe1.jData, ((And_expressionContext)_localctx).oe2.jData);
@@ -617,7 +613,7 @@ public class PAParserANTLR4 extends Parser {
 						}
 						} 
 					}
-					setState(105);
+					setState(106);
 					_errHandler.sync(this);
 					_alt = getInterpreter().adaptivePredict(_input,6,_ctx);
 				}
@@ -677,13 +673,13 @@ public class PAParserANTLR4 extends Parser {
 		Basic_expressionContext _localctx = new Basic_expressionContext(_ctx, getState());
 		enterRule(_localctx, 10, RULE_basic_expression);
 		try {
-			setState(133);
+			setState(134);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,8,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(108);
+				setState(109);
 				match(TRUE);
 
 						((Basic_expressionContext)_localctx).jData =  new FOADAExpression(true);
@@ -693,7 +689,7 @@ public class PAParserANTLR4 extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(110);
+				setState(111);
 				match(FALSE);
 
 						((Basic_expressionContext)_localctx).jData =  new FOADAExpression(false);
@@ -703,13 +699,13 @@ public class PAParserANTLR4 extends Parser {
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(112);
-				match(EXISTS);
 				setState(113);
-				((Basic_expressionContext)_localctx).al = argument_list();
+				match(EXISTS);
 				setState(114);
-				match(POINT);
+				((Basic_expressionContext)_localctx).al = argument_list();
 				setState(115);
+				match(POINT);
+				setState(116);
 				((Basic_expressionContext)_localctx).e = expression();
 
 						List<FOADAExpression> subExpressions = new ArrayList<FOADAExpression>();
@@ -725,13 +721,13 @@ public class PAParserANTLR4 extends Parser {
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(118);
-				match(FORALL);
 				setState(119);
-				((Basic_expressionContext)_localctx).al = argument_list();
+				match(FORALL);
 				setState(120);
-				match(POINT);
+				((Basic_expressionContext)_localctx).al = argument_list();
 				setState(121);
+				match(POINT);
+				setState(122);
 				((Basic_expressionContext)_localctx).e = expression();
 
 						List<FOADAExpression> subExpressions = new ArrayList<FOADAExpression>();
@@ -747,7 +743,7 @@ public class PAParserANTLR4 extends Parser {
 			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(124);
+				setState(125);
 				((Basic_expressionContext)_localctx).ee = eq_expression();
 
 						((Basic_expressionContext)_localctx).jData =  ((Basic_expressionContext)_localctx).ee.jData;
@@ -757,13 +753,13 @@ public class PAParserANTLR4 extends Parser {
 			case 6:
 				enterOuterAlt(_localctx, 6);
 				{
-				setState(127);
-				((Basic_expressionContext)_localctx).ID = match(ID);
 				setState(128);
-				match(LP);
+				((Basic_expressionContext)_localctx).ID = match(ID);
 				setState(129);
-				((Basic_expressionContext)_localctx).al = argument_list();
+				match(LP);
 				setState(130);
+				((Basic_expressionContext)_localctx).al = argument_list();
+				setState(131);
 				match(RP);
 
 						List<FOADAExpression> subExpressions = new ArrayList<FOADAExpression>();
@@ -822,17 +818,17 @@ public class PAParserANTLR4 extends Parser {
 		Eq_expressionContext _localctx = new Eq_expressionContext(_ctx, getState());
 		enterRule(_localctx, 12, RULE_eq_expression);
 		try {
-			setState(148);
+			setState(149);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(135);
-				((Eq_expressionContext)_localctx).i1 = match(ID);
 				setState(136);
-				match(EQUALS);
+				((Eq_expressionContext)_localctx).i1 = match(ID);
 				setState(137);
+				match(EQUALS);
+				setState(138);
 				((Eq_expressionContext)_localctx).i2 = match(ID);
 
 						FOADAExpression left = new FOADAExpression((((Eq_expressionContext)_localctx).i1!=null?((Eq_expressionContext)_localctx).i1.getText():null).replaceAll("\\s*", ""), ExpressionType.Integer);
@@ -844,11 +840,11 @@ public class PAParserANTLR4 extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(139);
-				((Eq_expressionContext)_localctx).i1 = match(ID);
 				setState(140);
-				match(DISTINCTS);
+				((Eq_expressionContext)_localctx).i1 = match(ID);
 				setState(141);
+				match(DISTINCTS);
+				setState(142);
 				((Eq_expressionContext)_localctx).i2 = match(ID);
 
 						FOADAExpression left = new FOADAExpression((((Eq_expressionContext)_localctx).i1!=null?((Eq_expressionContext)_localctx).i1.getText():null).replaceAll("\\s*", ""), ExpressionType.Integer);
@@ -860,11 +856,11 @@ public class PAParserANTLR4 extends Parser {
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(143);
-				match(LP);
 				setState(144);
-				((Eq_expressionContext)_localctx).ee = eq_expression();
+				match(LP);
 				setState(145);
+				((Eq_expressionContext)_localctx).ee = eq_expression();
+				setState(146);
 				match(RP);
 
 						((Eq_expressionContext)_localctx).jData =  ((Eq_expressionContext)_localctx).ee.jData;
@@ -920,32 +916,32 @@ public class PAParserANTLR4 extends Parser {
 
 					((Argument_listContext)_localctx).jData =  new ArrayList<String>();
 				
-			setState(161);
+			setState(162);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==ID) {
 				{
-				setState(151);
+				setState(152);
 				((Argument_listContext)_localctx).i1 = match(ID);
 
 						_localctx.jData.add((((Argument_listContext)_localctx).i1!=null?((Argument_listContext)_localctx).i1.getText():null).replaceAll("\\s*", ""));
 					
-				setState(158);
+				setState(159);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==COM) {
 					{
 					{
-					setState(153);
-					match(COM);
 					setState(154);
+					match(COM);
+					setState(155);
 					((Argument_listContext)_localctx).i2 = match(ID);
 
 							_localctx.jData.add((((Argument_listContext)_localctx).i2!=null?((Argument_listContext)_localctx).i2.getText():null).replaceAll("\\s*", ""));
 						
 					}
 					}
-					setState(160);
+					setState(161);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
@@ -966,52 +962,52 @@ public class PAParserANTLR4 extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\30\u00a6\4\2\t\2"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\30\u00a7\4\2\t\2"+
 		"\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\3\2\3\2\3\2\3"+
 		"\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2"+
-		"\3\2\3\2\3\2\7\2+\n\2\f\2\16\2.\13\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3"+
-		"\3\7\39\n\3\f\3\16\3<\13\3\5\3>\n\3\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3"+
-		"\5\7\5I\n\5\f\5\16\5L\13\5\3\5\3\5\3\5\3\5\3\5\5\5S\n\5\3\6\3\6\3\6\3"+
-		"\6\3\6\3\6\7\6[\n\6\f\6\16\6^\13\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\7\6"+
-		"h\n\6\f\6\16\6k\13\6\5\6m\n\6\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7"+
-		"\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\5\7\u0088"+
-		"\n\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\5\b\u0097\n\b"+
-		"\3\t\3\t\3\t\3\t\3\t\3\t\7\t\u009f\n\t\f\t\16\t\u00a2\13\t\5\t\u00a4\n"+
-		"\t\3\t\2\2\n\2\4\6\b\n\f\16\20\2\2\2\u00ae\2\22\3\2\2\2\4=\3\2\2\2\6?"+
-		"\3\2\2\2\bR\3\2\2\2\nl\3\2\2\2\f\u0087\3\2\2\2\16\u0096\3\2\2\2\20\u0098"+
+		"\3\2\3\2\3\2\7\2+\n\2\f\2\16\2.\13\2\3\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3"+
+		"\3\3\3\7\3:\n\3\f\3\16\3=\13\3\5\3?\n\3\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3"+
+		"\5\3\5\7\5J\n\5\f\5\16\5M\13\5\3\5\3\5\3\5\3\5\3\5\5\5T\n\5\3\6\3\6\3"+
+		"\6\3\6\3\6\3\6\7\6\\\n\6\f\6\16\6_\13\6\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3"+
+		"\6\7\6i\n\6\f\6\16\6l\13\6\5\6n\n\6\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3"+
+		"\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\3\7\5\7"+
+		"\u0089\n\7\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\3\b\5\b\u0098"+
+		"\n\b\3\t\3\t\3\t\3\t\3\t\3\t\7\t\u00a0\n\t\f\t\16\t\u00a3\13\t\5\t\u00a5"+
+		"\n\t\3\t\2\2\n\2\4\6\b\n\f\16\20\2\2\2\u00af\2\22\3\2\2\2\4>\3\2\2\2\6"+
+		"@\3\2\2\2\bS\3\2\2\2\nm\3\2\2\2\f\u0088\3\2\2\2\16\u0097\3\2\2\2\20\u0099"+
 		"\3\2\2\2\22\23\b\2\1\2\23\24\7\3\2\2\24\25\7\25\2\2\25\26\5\6\4\2\26\27"+
-		"\b\2\1\2\27\30\7\24\2\2\30\31\7\4\2\2\31\32\7\25\2\2\32\33\5\4\3\2\33"+
-		"\34\b\2\1\2\34,\7\24\2\2\35\36\7\21\2\2\36\37\7\22\2\2\37 \5\20\t\2 !"+
+		"\7\24\2\2\27\30\b\2\1\2\30\31\7\4\2\2\31\32\7\25\2\2\32\33\5\4\3\2\33"+
+		"\34\7\24\2\2\34,\b\2\1\2\35\36\7\21\2\2\36\37\7\22\2\2\37 \5\20\t\2 !"+
 		"\7\23\2\2!\"\7\n\2\2\"#\7\21\2\2#$\7\25\2\2$%\7\21\2\2%&\7\13\2\2&\'\5"+
 		"\6\4\2\'(\7\24\2\2()\b\2\1\2)+\3\2\2\2*\35\3\2\2\2+.\3\2\2\2,*\3\2\2\2"+
-		",-\3\2\2\2-/\3\2\2\2.,\3\2\2\2/\60\7\2\2\3\60\3\3\2\2\2\61\62\7\5\2\2"+
-		"\62>\b\3\1\2\63\64\7\21\2\2\64:\b\3\1\2\65\66\7\26\2\2\66\67\7\21\2\2"+
-		"\679\b\3\1\28\65\3\2\2\29<\3\2\2\2:8\3\2\2\2:;\3\2\2\2;>\3\2\2\2<:\3\2"+
-		"\2\2=\61\3\2\2\2=\63\3\2\2\2>\5\3\2\2\2?@\5\b\5\2@A\b\4\1\2A\7\3\2\2\2"+
-		"BC\5\n\6\2CJ\b\5\1\2DE\7\r\2\2EF\5\n\6\2FG\b\5\1\2GI\3\2\2\2HD\3\2\2\2"+
-		"IL\3\2\2\2JH\3\2\2\2JK\3\2\2\2KS\3\2\2\2LJ\3\2\2\2MN\7\22\2\2NO\5\b\5"+
-		"\2OP\7\23\2\2PQ\b\5\1\2QS\3\2\2\2RB\3\2\2\2RM\3\2\2\2S\t\3\2\2\2TU\5\f"+
-		"\7\2U\\\b\6\1\2VW\7\f\2\2WX\5\b\5\2XY\b\6\1\2Y[\3\2\2\2ZV\3\2\2\2[^\3"+
-		"\2\2\2\\Z\3\2\2\2\\]\3\2\2\2]m\3\2\2\2^\\\3\2\2\2_`\7\22\2\2`a\5\b\5\2"+
-		"ab\7\23\2\2bi\b\6\1\2cd\7\f\2\2de\5\b\5\2ef\b\6\1\2fh\3\2\2\2gc\3\2\2"+
-		"\2hk\3\2\2\2ig\3\2\2\2ij\3\2\2\2jm\3\2\2\2ki\3\2\2\2lT\3\2\2\2l_\3\2\2"+
-		"\2m\13\3\2\2\2no\7\7\2\2o\u0088\b\7\1\2pq\7\6\2\2q\u0088\b\7\1\2rs\7\t"+
-		"\2\2st\5\20\t\2tu\7\24\2\2uv\5\6\4\2vw\b\7\1\2w\u0088\3\2\2\2xy\7\b\2"+
-		"\2yz\5\20\t\2z{\7\24\2\2{|\5\6\4\2|}\b\7\1\2}\u0088\3\2\2\2~\177\5\16"+
-		"\b\2\177\u0080\b\7\1\2\u0080\u0088\3\2\2\2\u0081\u0082\7\21\2\2\u0082"+
-		"\u0083\7\22\2\2\u0083\u0084\5\20\t\2\u0084\u0085\7\23\2\2\u0085\u0086"+
-		"\b\7\1\2\u0086\u0088\3\2\2\2\u0087n\3\2\2\2\u0087p\3\2\2\2\u0087r\3\2"+
-		"\2\2\u0087x\3\2\2\2\u0087~\3\2\2\2\u0087\u0081\3\2\2\2\u0088\r\3\2\2\2"+
-		"\u0089\u008a\7\21\2\2\u008a\u008b\7\16\2\2\u008b\u008c\7\21\2\2\u008c"+
-		"\u0097\b\b\1\2\u008d\u008e\7\21\2\2\u008e\u008f\7\17\2\2\u008f\u0090\7"+
-		"\21\2\2\u0090\u0097\b\b\1\2\u0091\u0092\7\22\2\2\u0092\u0093\5\16\b\2"+
-		"\u0093\u0094\7\23\2\2\u0094\u0095\b\b\1\2\u0095\u0097\3\2\2\2\u0096\u0089"+
-		"\3\2\2\2\u0096\u008d\3\2\2\2\u0096\u0091\3\2\2\2\u0097\17\3\2\2\2\u0098"+
-		"\u00a3\b\t\1\2\u0099\u009a\7\21\2\2\u009a\u00a0\b\t\1\2\u009b\u009c\7"+
-		"\26\2\2\u009c\u009d\7\21\2\2\u009d\u009f\b\t\1\2\u009e\u009b\3\2\2\2\u009f"+
-		"\u00a2\3\2\2\2\u00a0\u009e\3\2\2\2\u00a0\u00a1\3\2\2\2\u00a1\u00a4\3\2"+
-		"\2\2\u00a2\u00a0\3\2\2\2\u00a3\u0099\3\2\2\2\u00a3\u00a4\3\2\2\2\u00a4"+
-		"\21\3\2\2\2\16,:=JR\\il\u0087\u0096\u00a0\u00a3";
+		",-\3\2\2\2-/\3\2\2\2.,\3\2\2\2/\60\7\2\2\3\60\61\b\2\1\2\61\3\3\2\2\2"+
+		"\62\63\7\5\2\2\63?\b\3\1\2\64\65\7\21\2\2\65;\b\3\1\2\66\67\7\26\2\2\67"+
+		"8\7\21\2\28:\b\3\1\29\66\3\2\2\2:=\3\2\2\2;9\3\2\2\2;<\3\2\2\2<?\3\2\2"+
+		"\2=;\3\2\2\2>\62\3\2\2\2>\64\3\2\2\2?\5\3\2\2\2@A\5\b\5\2AB\b\4\1\2B\7"+
+		"\3\2\2\2CD\5\n\6\2DK\b\5\1\2EF\7\r\2\2FG\5\n\6\2GH\b\5\1\2HJ\3\2\2\2I"+
+		"E\3\2\2\2JM\3\2\2\2KI\3\2\2\2KL\3\2\2\2LT\3\2\2\2MK\3\2\2\2NO\7\22\2\2"+
+		"OP\5\b\5\2PQ\7\23\2\2QR\b\5\1\2RT\3\2\2\2SC\3\2\2\2SN\3\2\2\2T\t\3\2\2"+
+		"\2UV\5\f\7\2V]\b\6\1\2WX\7\f\2\2XY\5\b\5\2YZ\b\6\1\2Z\\\3\2\2\2[W\3\2"+
+		"\2\2\\_\3\2\2\2][\3\2\2\2]^\3\2\2\2^n\3\2\2\2_]\3\2\2\2`a\7\22\2\2ab\5"+
+		"\b\5\2bc\7\23\2\2cj\b\6\1\2de\7\f\2\2ef\5\b\5\2fg\b\6\1\2gi\3\2\2\2hd"+
+		"\3\2\2\2il\3\2\2\2jh\3\2\2\2jk\3\2\2\2kn\3\2\2\2lj\3\2\2\2mU\3\2\2\2m"+
+		"`\3\2\2\2n\13\3\2\2\2op\7\7\2\2p\u0089\b\7\1\2qr\7\6\2\2r\u0089\b\7\1"+
+		"\2st\7\t\2\2tu\5\20\t\2uv\7\24\2\2vw\5\6\4\2wx\b\7\1\2x\u0089\3\2\2\2"+
+		"yz\7\b\2\2z{\5\20\t\2{|\7\24\2\2|}\5\6\4\2}~\b\7\1\2~\u0089\3\2\2\2\177"+
+		"\u0080\5\16\b\2\u0080\u0081\b\7\1\2\u0081\u0089\3\2\2\2\u0082\u0083\7"+
+		"\21\2\2\u0083\u0084\7\22\2\2\u0084\u0085\5\20\t\2\u0085\u0086\7\23\2\2"+
+		"\u0086\u0087\b\7\1\2\u0087\u0089\3\2\2\2\u0088o\3\2\2\2\u0088q\3\2\2\2"+
+		"\u0088s\3\2\2\2\u0088y\3\2\2\2\u0088\177\3\2\2\2\u0088\u0082\3\2\2\2\u0089"+
+		"\r\3\2\2\2\u008a\u008b\7\21\2\2\u008b\u008c\7\16\2\2\u008c\u008d\7\21"+
+		"\2\2\u008d\u0098\b\b\1\2\u008e\u008f\7\21\2\2\u008f\u0090\7\17\2\2\u0090"+
+		"\u0091\7\21\2\2\u0091\u0098\b\b\1\2\u0092\u0093\7\22\2\2\u0093\u0094\5"+
+		"\16\b\2\u0094\u0095\7\23\2\2\u0095\u0096\b\b\1\2\u0096\u0098\3\2\2\2\u0097"+
+		"\u008a\3\2\2\2\u0097\u008e\3\2\2\2\u0097\u0092\3\2\2\2\u0098\17\3\2\2"+
+		"\2\u0099\u00a4\b\t\1\2\u009a\u009b\7\21\2\2\u009b\u00a1\b\t\1\2\u009c"+
+		"\u009d\7\26\2\2\u009d\u009e\7\21\2\2\u009e\u00a0\b\t\1\2\u009f\u009c\3"+
+		"\2\2\2\u00a0\u00a3\3\2\2\2\u00a1\u009f\3\2\2\2\u00a1\u00a2\3\2\2\2\u00a2"+
+		"\u00a5\3\2\2\2\u00a3\u00a1\3\2\2\2\u00a4\u009a\3\2\2\2\u00a4\u00a5\3\2"+
+		"\2\2\u00a5\21\3\2\2\2\16,;>KS]jm\u0088\u0097\u00a1\u00a4";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

@@ -36,8 +36,6 @@ import exception.FOADAException;
 import exception.InputFileNotFoundException;
 import exception.InputFileUnsupportedException;
 import exception.JavaIOException;
-import parser.ADA.ANTLR4.ADALexerANTLR4;
-import parser.ADA.ANTLR4.ADAParserANTLR4;
 import parser.FOADA.ANTLR4.FOADALexerANTLR4;
 import parser.FOADA.ANTLR4.FOADAParserANTLR4;
 import parser.PA.ANTLR4.PALexerANTLR4;
@@ -100,15 +98,7 @@ public abstract class ParserTools {
 		        		        istream.close();
 		        				result = ((PAParserANTLR4)parser).automaton().jData;
 		        				break;
-		    case ADAParser:		lexer = new ADALexerANTLR4(new ANTLRInputStream(istream));
-						        lexer.removeErrorListeners();
-								lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);
-		        				tokens = new CommonTokenStream(lexer);
-		        				parser = new ADAParserANTLR4(tokens);
-		        		        parser.removeErrorListeners();
-		        		        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
-		        		        istream.close();
-		        				result = ((ADAParserANTLR4)parser).automaton().jData;
+		    case ADAParser:		
 		        				break;
 	        case FOADAParser:	lexer = new FOADALexerANTLR4(new ANTLRInputStream(istream));
 						        lexer.removeErrorListeners();

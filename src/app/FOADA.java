@@ -31,7 +31,6 @@ import structure.Automaton;
 import utility.Console;
 import utility.Console.ConsoleType;
 import utility.Solver;
-import utility.TreeSearch.Mode;
 
 public class FOADA {
 	

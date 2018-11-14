@@ -24,16 +24,6 @@
 
 package parser.FOADA.ANTLR4;
 
-import exception.FOADAException;
-import structure.Automaton;
-import structure.FOADAExpression;
-import structure.FOADAExpression.ExpressionCategory;
-import structure.FOADAExpression.ExpressionType;
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
-
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;

@@ -28,8 +28,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.sosy_lab.java_smt.api.BooleanFormula;
+import exception.FOADAException;
+import utility.Impact;
 
 public class FOADAConfiguration {
 	
@@ -137,6 +138,44 @@ public class FOADAConfiguration {
 			}
 		}
 		return isSuccessor;
+	}
+	
+	/** remove all the covered relations
+	 */
+	public void removeCoveredRelations(List<FOADAConfiguration> workList)
+			throws FOADAException
+	{
+		for(FOADAConfiguration covered : coveredNodes) {
+			covered.coveringNodes.remove(this);
+			Impact.reEnable(covered, workList);
+		}
+		coveredNodes.clear();
+	}
+	
+	/** remove all the covered relations of this and its successors
+	 */
+	public void removeRecursivelyCoveredRelations(List<FOADAConfiguration> workList)
+			throws FOADAException
+	{
+		removeCoveredRelations(workList);
+		for(FOADAConfiguration successor : successors) {
+			successor.removeRecursivelyCoveredRelations(workList);
+		}
+	}
+	
+	/** check if this is covered (or one of its ancestor is covered)
+	 */
+	public boolean isCovered()
+	{
+		if(!coveringNodes.isEmpty()) {
+			return true;
+		}
+		else if(father == null){
+			return false;
+		}
+		else {
+			return father.isCovered();
+		}
 	}
 	
 	@Override

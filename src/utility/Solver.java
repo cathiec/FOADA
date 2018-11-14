@@ -26,7 +26,7 @@ import org.sosy_lab.java_smt.SolverContextFactory;
 import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
 import utility.Console.ConsoleType;
 
-public class Solver {
+public abstract class Solver {
 	
 	public static void checkZ3()
 	{

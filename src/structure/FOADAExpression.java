@@ -176,6 +176,29 @@ public class FOADAExpression {
 		name = null;
 		bValue = true;
 		iValue = 0;
+		switch(category)
+		{
+		case Not:		subData.get(0).type = ExpressionType.Boolean;
+						break;
+		case And:		
+		case Or:		for(FOADAExpression e : subData) {
+							e.type = ExpressionType.Boolean;
+						}
+						break;
+		case Equals:	/** TODO **/ /* auto type detection */ break;
+		case Distinct:	/** TODO **/ /* auto type detection */ break;
+		case Plus:		
+		case Minus:		
+		case Times:		
+		case Slash:		
+		case GT:		
+		case LT:		
+		case GEQ:		
+		case LEQ:		subData.get(0).type = ExpressionType.Integer;
+						subData.get(1).type = ExpressionType.Integer;
+						break;
+		default:		break;
+		}
 	}
 	
 	/** constructor for "non-function composite structure"
@@ -241,7 +264,7 @@ public class FOADAExpression {
 		{
 		case Constant:	break;
 		case Function:	if(name.charAt(0) == 'q') {
-							result.add(this);
+							result.add(this.copy());
 						}
 						for(FOADAExpression e : subData) {
 							result.addAll(e.findPredicatesOccurrences());
@@ -502,7 +525,6 @@ public class FOADAExpression {
 		FOADAExpression copy = new FOADAExpression(this);
 		return copy;
 	}
-	
 	
 	/** to JavaSMT Formula
 	 * @param	fmgr	corresponding JavaSMT FormulaManager

@@ -25,13 +25,16 @@ package utility;
 import org.sosy_lab.common.configuration.InvalidConfigurationException;
 import org.sosy_lab.java_smt.SolverContextFactory;
 import org.sosy_lab.java_smt.SolverContextFactory.Solvers;
+import org.sosy_lab.java_smt.api.BooleanFormula;
 import org.sosy_lab.java_smt.api.BooleanFormulaManager;
 import org.sosy_lab.java_smt.api.FormulaManager;
+import org.sosy_lab.java_smt.api.ProverEnvironment;
 import org.sosy_lab.java_smt.api.QuantifiedFormulaManager;
 import org.sosy_lab.java_smt.api.SolverContext;
+import org.sosy_lab.java_smt.api.SolverException;
 import org.sosy_lab.java_smt.api.UFManager;
-
 import exception.FOADAException;
+import exception.ImplicationProverEnvironmentException;
 import exception.JavaSMTInvalidConfigurationException;
 
 public class JavaSMTConfig {
@@ -60,6 +63,47 @@ public class JavaSMTConfig {
 		{
 			throw new JavaSMTInvalidConfigurationException(e);
 		}
+	}
+	
+	public static BooleanFormula removeTimeStamp(BooleanFormula expression)
+	{
+		BooleanFormula result = expression;
+		String resultToString = fmgr.dumpFormula(result).toString();
+		for(String s : fmgr.extractVariablesAndUFs(result).keySet()) {
+			if(s.contains("_") && s.charAt(0) != 'v') {
+				resultToString = resultToString.replace(s, s.substring(0, s.indexOf("_")));
+			}
+		}
+		result = fmgr.parse(resultToString);
+		return result;
+	}
+	
+	public static boolean checkImplication(BooleanFormula f1, BooleanFormula f2)
+			throws FOADAException
+	{
+		BooleanFormula implication = bmgr.implication(f1, f2);
+		ProverEnvironment prover = solverContext.newProverEnvironment();
+		BooleanFormula notImplication = bmgr.not(implication);
+		prover.addConstraint(notImplication);
+		boolean isUnsat;
+		boolean implicationIsValid = false;
+		try {
+			isUnsat = prover.isUnsat();
+			if(isUnsat) {
+				implicationIsValid = true;
+			}
+			else {
+				implicationIsValid = false;
+			}
+		}
+		catch (SolverException e) {
+			throw new ImplicationProverEnvironmentException(e);
+		}
+		catch (InterruptedException e) {
+			throw new ImplicationProverEnvironmentException(e);
+		}
+		prover.close();
+		return implicationIsValid;
 	}
 
 }
