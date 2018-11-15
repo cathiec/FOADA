@@ -29,7 +29,6 @@ import java.util.Set;
 import org.sosy_lab.java_smt.api.BooleanFormula;
 import org.sosy_lab.java_smt.api.Formula;
 import org.sosy_lab.java_smt.api.FormulaType;
-
 import structure.FOADAExpression.ExpressionCategory;
 import structure.FOADAExpression.ExpressionType;
 import utility.JavaSMTConfig;
@@ -82,13 +81,27 @@ public class FOADATransition {
 		return result;
 	}
 	
-	public Set<FOADAExpression> getPredicatesOccurrences(FOADAExpression occurenceOfLeft)
+	public Set<FOADAExpression> getPredicatesOccurrences(int currentTimeStamp, FOADAExpression occurenceOfLeft)
 	{
 		FOADAExpression rightAccordingToOccurrenceOfLeft = right.copy();
+		rightAccordingToOccurrenceOfLeft.addTimeStamps(currentTimeStamp + 1);
 		for(int i = 0; i < occurenceOfLeft.subData.size(); i++) {
 			rightAccordingToOccurrenceOfLeft.substitue(left.subData.get(i), occurenceOfLeft.subData.get(i));
 		}
 		return rightAccordingToOccurrenceOfLeft.findPredicatesOccurrences();
+	}
+	
+	public BooleanFormula getImplicationWithOccurrences(int currentTimeStamp, FOADAExpression occurenceOfLeft)
+	{
+		FOADAExpression rightAccordingToOccurrenceOfLeft = right.copy();
+		rightAccordingToOccurrenceOfLeft.addTimeStamps(currentTimeStamp + 1);
+		for(int i = 0; i < occurenceOfLeft.subData.size(); i++) {
+			rightAccordingToOccurrenceOfLeft.substitue(left.subData.get(i), occurenceOfLeft.subData.get(i));
+		}
+		BooleanFormula leftPartOfImplication = (BooleanFormula)occurenceOfLeft.toJavaSMTFormula(JavaSMTConfig.fmgr);
+		BooleanFormula rightPartOfImplication = (BooleanFormula)rightAccordingToOccurrenceOfLeft.toJavaSMTFormula(JavaSMTConfig.fmgr);
+		BooleanFormula implication = JavaSMTConfig.bmgr.implication(leftPartOfImplication, rightPartOfImplication);
+		return implication;
 	}
 	
 	public BooleanFormula getUniversallyQuantifiedImplication(int currentTimeStamp)

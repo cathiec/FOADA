@@ -122,6 +122,7 @@ public class Automaton {
 			}
 			nbOfNodesVisited++;
 			allValidNodes.add(currentNode);
+			/** TODO **/ //System.out.println(currentNode);
 		// calculate the path from the initial node to the current node
 			List<String> pathFromInitToCurrent = new ArrayList<String>();
 			// loop to find the path
@@ -130,6 +131,7 @@ public class Automaton {
 				pathFromInitToCurrent.add(0, c.fatherSymbol);
 				c = c.father;
 			}
+			/** TODO **/ //System.out.println(pathFromInitToCurrent);
 		// determine whether the current node is accepting
 			// create a list of JavaSMT expressions (blocks) for interpolation
 			List<BooleanFormula> blocks = new ArrayList<BooleanFormula>();
@@ -145,7 +147,7 @@ public class Automaton {
 			Set<FOADAExpression> predicatesOccurrencesInCurrentBlock = null;
 			// get the names of all the predicates in the initial state
 			// or
-			// get all the occurrences of predicates in the current block
+			// get all the occurrences of predicates in the initial state
 			if(transitionMode == utility.Impact.Mode.UniversallyQuantifyArguments) {
 				predicatesInCurrentBlock = new HashSet<FOADAExpression>();
 				Set<FOADAExpression> predicatesOccurrencesInUnTimeStampedCurrentBlock = initial.copy().findPredicatesOccurrences();
@@ -178,8 +180,29 @@ public class Automaton {
 							smallPartsOfNewBlock.add(currentPartOfNewBlock);
 						}
 						else {
-							BooleanFormula currentPartOfNewBlock = JavaSMTConfig.bmgr.makeBoolean(false);
-							smallPartsOfNewBlock.add(currentPartOfNewBlock);
+							List<Formula> arguments = new ArrayList<Formula>();
+							for(FOADAExpression x : predicate.subData) {
+								Formula argument;
+								if(x.type == ExpressionType.Integer) {
+									argument = JavaSMTConfig.ufmgr.declareAndCallUF(x.name, FormulaType.IntegerType);
+								}
+								else {
+									argument = JavaSMTConfig.ufmgr.declareAndCallUF(x.name, FormulaType.BooleanType);
+								}
+								arguments.add(argument);
+							}
+							FOADAExpression timeStampedLeft = predicate.copy();
+							timeStampedLeft.addTimeStamps(currentTimeStamp);
+							BooleanFormula leftPartOfImplication = (BooleanFormula)timeStampedLeft.toJavaSMTFormula(JavaSMTConfig.fmgr);
+							BooleanFormula rightPartOfImplication = JavaSMTConfig.bmgr.makeBoolean(false);
+							BooleanFormula implication = JavaSMTConfig.bmgr.implication(leftPartOfImplication, rightPartOfImplication);
+							if(arguments.isEmpty()) {
+								smallPartsOfNewBlock.add(implication);
+							}
+							else {
+								BooleanFormula universallyQuantifiedImplication = JavaSMTConfig.qmgr.forall(arguments, implication);
+								smallPartsOfNewBlock.add(universallyQuantifiedImplication);
+							}
 						}
 					}
 					if(smallPartsOfNewBlock.isEmpty()) {
@@ -191,7 +214,28 @@ public class Automaton {
 					predicatesInCurrentBlock = predicatesInNewBlock;
 				}
 				else {
-					//TODO
+					Set<FOADAExpression> predicatesOccurrencesInNewBlock = new HashSet<FOADAExpression>();
+					// compute one small part of the new block
+					for(FOADAExpression occurrence : predicatesOccurrencesInCurrentBlock) {
+						FOADAExpression left = occurrence;
+						FOADATransition transition = transitions.get(left.name.substring(0, left.name.indexOf("_")) + "+" + a);
+						if(transition != null) {
+							predicatesOccurrencesInNewBlock.addAll(transition.getPredicatesOccurrences(currentTimeStamp, left));
+							BooleanFormula currentPartOfNewBlock = transition.getImplicationWithOccurrences(currentTimeStamp, left);
+							smallPartsOfNewBlock.add(currentPartOfNewBlock);
+						}
+						else {
+							BooleanFormula currentPartOfNewBlock = JavaSMTConfig.bmgr.implication((BooleanFormula)left.toJavaSMTFormula(JavaSMTConfig.fmgr), JavaSMTConfig.bmgr.makeBoolean(false));
+							smallPartsOfNewBlock.add(currentPartOfNewBlock);
+						}
+					}
+					if(smallPartsOfNewBlock.isEmpty()) {
+						blocks.add(JavaSMTConfig.bmgr.makeBoolean(true));
+					}
+					else {
+						blocks.add(JavaSMTConfig.bmgr.and(smallPartsOfNewBlock));
+					}
+					predicatesOccurrencesInCurrentBlock = predicatesOccurrencesInNewBlock;
 				}
 				currentTimeStamp++;
 			}
@@ -231,7 +275,21 @@ public class Automaton {
 				}
 			}
 			else {
-				//TODO
+				for(FOADAExpression occurrence : predicatesOccurrencesInCurrentBlock) {
+					FOADAExpression left = occurrence;
+					// implies true if is final state
+					if(namesOfFinalStates.contains(left.name.substring(0, left.name.indexOf("_")))) {
+						BooleanFormula right = JavaSMTConfig.bmgr.makeBoolean(true);
+						BooleanFormula implication = JavaSMTConfig.bmgr.implication((BooleanFormula)left.toJavaSMTFormula(JavaSMTConfig.fmgr), right);
+						finalConjunction.add(implication);
+					}
+					// implies false if is not final state
+					else {
+						BooleanFormula right = JavaSMTConfig.bmgr.makeBoolean(false);
+						BooleanFormula implication = JavaSMTConfig.bmgr.implication((BooleanFormula)left.toJavaSMTFormula(JavaSMTConfig.fmgr), right);
+						finalConjunction.add(implication);
+					}
+				}
 			}
 			// add the last block into the list of blocks
 			if(finalConjunction.isEmpty()) {
@@ -240,6 +298,11 @@ public class Automaton {
 			else {
 				blocks.add(JavaSMTConfig.bmgr.and(finalConjunction));
 			}
+			/** TODO **/
+			/*System.out.println("Blocks:");
+			for(BooleanFormula b : blocks) {
+				System.out.println(b);
+			}*/
 		// check if the conjunction of all blocks is satisfiable or compute the interpolants
 			// create prover environment for interpolation
 			@SuppressWarnings("rawtypes")
@@ -288,8 +351,9 @@ public class Automaton {
 							if(!oneNodeIsClosed) {
 								oneNodeIsClosed = Impact.close(currentNodeAlongPath, workList, allValidNodes);
 							}
-							if(JavaSMTConfig.checkImplication(currentNodeAlongPath.expression, JavaSMTConfig.bmgr.makeBoolean(false))) {
+							if(currentNodeAlongPath.expression.toString().equals("false")) {
 								workList.remove(currentNodeAlongPath);
+								allValidNodes.remove(currentNodeAlongPath);
 							}
 						}
 						// if finish looping the path
@@ -308,6 +372,7 @@ public class Automaton {
 				}
 				// print out the model and return false if it is satisfiable
 				else {
+					System.out.println("------------------------------");
 					long endTime = System.currentTimeMillis();
 					if(pathFromInitToCurrent.size() == 0) {
 						System.out.println("empty trace");
@@ -340,12 +405,12 @@ public class Automaton {
 							}
 							System.out.println('}');
 						}
-						System.out.println("------------------------------");
-						Console.printInfo(ConsoleType.FOADA, "Nodes Created : " + nbOfNodesCreated);
-						Console.printInfo(ConsoleType.FOADA, "Nodes Visited : " + nbOfNodesVisited);
-						Console.printInfo(ConsoleType.FOADA, "Time Used : " + (endTime - beginTime) + " ms");
-						return false;
-					}	
+					}
+					System.out.println("------------------------------");
+					Console.printInfo(ConsoleType.FOADA, "Nodes Created : " + nbOfNodesCreated);
+					Console.printInfo(ConsoleType.FOADA, "Nodes Visited : " + nbOfNodesVisited);
+					Console.printInfo(ConsoleType.FOADA, "Time Used : " + (endTime - beginTime) + " ms");
+					return false;
 				}
 			}
 			catch (SolverException e) {

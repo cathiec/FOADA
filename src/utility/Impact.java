@@ -42,10 +42,17 @@ public abstract class Impact {
 	public static void reEnable(FOADAConfiguration givenNode, List<FOADAConfiguration> workList)
 			throws FOADAException
 	{
-		if(!givenNode.isCovered() &&
-				!workList.contains(givenNode) &&
-				!JavaSMTConfig.checkImplication(givenNode.expression, JavaSMTConfig.bmgr.makeBoolean(false))) {
+		boolean givenNodeIsCovered = givenNode.isCovered();
+		if(givenNode.successors.isEmpty() &&
+			!givenNodeIsCovered &&
+			!workList.contains(givenNode) &&
+			!givenNode.expression.toString().equals("false")) {
 			workList.add(0, givenNode);
+		}
+		if(!givenNodeIsCovered) {
+			for(FOADAConfiguration successor : givenNode.successors) {
+				reEnable(successor, workList);
+			}
 		}
 	}
 	

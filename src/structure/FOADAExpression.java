@@ -701,5 +701,11 @@ public class FOADAExpression {
 	{
 		return toString().equals(obj.toString());
 	}
+	
+	@Override
+	public int hashCode()
+	{
+		return toString().hashCode();
+	}
 
 }
