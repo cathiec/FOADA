@@ -103,6 +103,14 @@ type returns [FOADAExpression.ExpressionType jData]
 	
 expression returns [FOADAExpression jData]
 :
+	MINUS INTEGER {
+		$jData = new FOADAExpression(Integer.parseInt("-" + $INTEGER.text));
+	}
+	|
+	INTEGER {
+		$jData = new FOADAExpression(Integer.parseInt($INTEGER.text));
+	}
+	|
 	TRUE {
 		$jData = new FOADAExpression(true);
 	}
@@ -159,10 +167,6 @@ expression returns [FOADAExpression jData]
 	|
 	i=ID {
 		$jData = new FOADAExpression($i.text);
-	}
-	|
-	INTEGER {
-		$jData = new FOADAExpression(Integer.parseInt($INTEGER.text));
 	}
 	|
 	LP PLUS e1=expression e2=expression RP {

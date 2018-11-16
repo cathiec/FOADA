@@ -97,9 +97,9 @@ public class Automaton {
 			throws FOADAException
 	{
 		/** TODO **/
-		for(FOADATransition transition : transitions.values()) {
+		/*for(FOADATransition transition : transitions.values()) {
 			System.out.println(transition);
-		}
+		}*/
 		long beginTime = System.currentTimeMillis();
 		int nbOfNodesVisited = 0;
 		int nbOfNodesCreated = 0;
@@ -126,7 +126,7 @@ public class Automaton {
 			}
 			nbOfNodesVisited++;
 			allValidNodes.add(currentNode);
-			/** TODO **/ System.out.println(currentNode);
+			/** TODO **/ //System.out.println(currentNode);
 		// calculate the path from the initial node to the current node
 			List<String> pathFromInitToCurrent = new ArrayList<String>();
 			// loop to find the path
@@ -135,7 +135,7 @@ public class Automaton {
 				pathFromInitToCurrent.add(0, c.fatherSymbol);
 				c = c.father;
 			}
-			/** TODO **/ System.out.println(pathFromInitToCurrent);
+			/** TODO **/ //System.out.println(pathFromInitToCurrent);
 		// determine whether the current node is accepting
 			// create a list of JavaSMT expressions (blocks) for interpolation
 			List<BooleanFormula> blocks = new ArrayList<BooleanFormula>();
@@ -303,10 +303,10 @@ public class Automaton {
 				blocks.add(JavaSMTConfig.bmgr.and(finalConjunction));
 			}
 			/** TODO **/
-			System.out.println("Blocks:");
+			/*System.out.println("Blocks:");
 			for(BooleanFormula b : blocks) {
 				System.out.println(b);
-			}
+			}*/
 		// check if the conjunction of all blocks is satisfiable or compute the interpolants
 			// create prover environment for interpolation
 			@SuppressWarnings("rawtypes")
@@ -349,7 +349,7 @@ public class Automaton {
 						if(!implicationIsValid) {
 							// refine the node by making a conjunction
 							currentNodeAlongPath.expression = JavaSMTConfig.bmgr.and(currentNodeAlongPath.expression, interpolant);
-							/** TODO **/ System.out.println("\t#" + currentNodeAlongPath.number + " refined : " + currentNodeAlongPath.expression);
+							/** TODO **/ //System.out.println("\t#" + currentNodeAlongPath.number + " refined : " + currentNodeAlongPath.expression);
 							// remove all the covered relations of the current node along path
 							currentNodeAlongPath.removeCoveredRelations(workList);
 							// close the current node along path
