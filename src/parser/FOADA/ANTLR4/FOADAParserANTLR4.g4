@@ -181,21 +181,16 @@ expression returns [FOADAExpression jData]
 		$jData = new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Slash, $e1.jData, $e2.jData);
 	}
 	|
-	LP i1=ID {
+	LP i=ID {
 		List<FOADAExpression> arguments = new ArrayList<FOADAExpression>();
 	}
-	(i2=ID {
-		FOADAExpression argument = new FOADAExpression($i2.text, ExpressionType.Integer);
-		arguments.add(argument);
-	}
-	|
-	INTEGER {
-		FOADAExpression argument = new FOADAExpression(Integer.parseInt($INTEGER.text));
-		arguments.add(argument);
+	(e=expression {
+		$e.jData.type = ExpressionType.Integer;
+		arguments.add($e.jData);
 	}
 	)+
 	{
-		$jData = new FOADAExpression($i1.text, ExpressionType.Boolean, arguments);
+		$jData = new FOADAExpression($i.text, ExpressionType.Boolean, arguments);
 	}
 	RP
 ;

@@ -162,11 +162,46 @@ public class FOADAExpression {
 		iValue = 0;
 	}
 	
+	public void setType(ExpressionType type)
+	{
+		this.type = type;
+		switch(category)
+		{
+		case Not:		subData.get(0).setType(ExpressionType.Boolean);
+						break;
+		case And:		
+		case Or:		for(FOADAExpression e : subData) {
+							e.setType(ExpressionType.Boolean);;
+						}
+						break;
+		case Equals:	
+		case Distinct:	if(subData.get(0).type != null) {
+							subData.get(0).setType(subData.get(0).type);
+							subData.get(1).setType(subData.get(0).type);
+						}
+						else {
+							subData.get(0).setType(subData.get(1).type);
+							subData.get(1).setType(subData.get(1).type);
+						}
+						break;
+		case Plus:		
+		case Minus:		
+		case Times:		
+		case Slash:		
+		case GT:		
+		case LT:		
+		case GEQ:		
+		case LEQ:		subData.get(0).setType(ExpressionType.Integer);
+						subData.get(1).setType(ExpressionType.Integer);
+						break;
+		default:		break;
+		}
+	}
+	
 	/** constructor for "non-function composite structure"
 	 */
 	public FOADAExpression(ExpressionType type, ExpressionCategory category, FOADAExpression... subExpressions)
 	{
-		this.type = type;
 		this.category = category;
 		subData = new ArrayList<FOADAExpression>();
 		for(FOADAExpression e : subExpressions) {
@@ -176,29 +211,7 @@ public class FOADAExpression {
 		name = null;
 		bValue = true;
 		iValue = 0;
-		switch(category)
-		{
-		case Not:		subData.get(0).type = ExpressionType.Boolean;
-						break;
-		case And:		
-		case Or:		for(FOADAExpression e : subData) {
-							e.type = ExpressionType.Boolean;
-						}
-						break;
-		case Equals:	/** TODO **/ /* auto type detection */ break;
-		case Distinct:	/** TODO **/ /* auto type detection */ break;
-		case Plus:		
-		case Minus:		
-		case Times:		
-		case Slash:		
-		case GT:		
-		case LT:		
-		case GEQ:		
-		case LEQ:		subData.get(0).type = ExpressionType.Integer;
-						subData.get(1).type = ExpressionType.Integer;
-						break;
-		default:		break;
-		}
+		setType(type);
 	}
 	
 	/** constructor for "non-function composite structure"
