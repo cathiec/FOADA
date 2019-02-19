@@ -43,48 +43,47 @@ import java.util.ArrayList;
 automaton returns [Automaton jData]
 :
 	{
-		$jData = new Automaton("A");
+		$jData = new Automaton();
 	}
-	STATES (i=ID {
-		$jData.preDefinePredicate($i.text);
-	}
-	)*
-	INITIAL e=expression {
-		$jData.defineFunctionType($e.jData);
-		$jData.setInitialState($e.jData);
-	}
-	FINAL {
-		List<String> finalStates = new ArrayList<String>();
-	}
-	(i=ID {
-		finalStates.add($i.text);
+	STATES (nameOfPredicate=ID {
+		parser.ADA.ADAParserFunctions.addPredicate($jData, $nameOfPredicate.text);
 	}
 	)*
-	{
-		$jData.setFinalStates(finalStates);
+	INITIAL init=expression {
+		parser.ADA.ADAParserFunctions.setInitial($jData, $init.jData);
 	}
-	SYMBOLS (i=ID {
-		$jData.addEventSymbol($i.text);
+	FINAL 
+	(nameOfFinal=ID {
+		parser.ADA.ADAParserFunctions.addFinal($jData, $nameOfFinal.text);
 	}
 	)*
-	VARIABLES (i=ID {
-		$jData.addVariable($i.text);
-		$jData.setVisibleVariable($i.text);
+	SYMBOLS (nameOfEvent=ID {
+		parser.ADA.ADAParserFunctions.addEvent($jData, $nameOfEvent.text);
+	}
+	)*
+	VARIABLES (nameOfVariable=ID {
+		parser.ADA.ADAParserFunctions.addVariable($jData, $nameOfVariable.text);
 	}
 	)*
 	{
-		$jData.finaliseADAPredicatesArguments();
-		$jData.finaliseADAInitAndFinal();
+		parser.ADA.ADAParserFunctions.setInitArguments($jData);
 	}
-	TRANSITIONS (i1=ID i2=ID e=expression SHARP {
-		$jData.defineFunctionType($e.jData);
-		$jData.addADATransition($i2.text, $i1.text, $e.jData);
+	TRANSITIONS (nameOfEvent=ID nameOfPredicate=ID post=expression SHARP {
+		parser.ADA.ADAParserFunctions.addTransition($jData, $nameOfPredicate.text, $nameOfEvent.text, $post.jData);
 	}
 	)*
 ;
 	
 expression returns [FOADAExpression jData]
 :
+	MINUS INTEGER {
+		$jData = new FOADAExpression(Integer.parseInt("-" + $INTEGER.text));
+	}
+	|
+	INTEGER {
+		$jData = new FOADAExpression(Integer.parseInt($INTEGER.text));
+	}
+	|
 	TRUE {
 		$jData = new FOADAExpression(true);
 	}
@@ -143,10 +142,6 @@ expression returns [FOADAExpression jData]
 		$jData = new FOADAExpression($i.text);
 	}
 	|
-	INTEGER {
-		$jData = new FOADAExpression(Integer.parseInt($INTEGER.text));
-	}
-	|
 	LP PLUS e1=expression e2=expression RP {
 		$jData = new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Plus, $e1.jData, $e2.jData);
 	}
@@ -162,4 +157,17 @@ expression returns [FOADAExpression jData]
 	LP SLASH e1=expression e2=expression RP {
 		$jData = new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Slash, $e1.jData, $e2.jData);
 	}
+	|
+	LP i=ID {
+		List<FOADAExpression> arguments = new ArrayList<FOADAExpression>();
+	}
+	(e=expression {
+		$e.jData.type = ExpressionType.Integer;
+		arguments.add($e.jData);
+	}
+	)+
+	{
+		$jData = new FOADAExpression($i.text, ExpressionType.Boolean, arguments);
+	}
+	RP
 ;

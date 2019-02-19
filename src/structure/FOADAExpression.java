@@ -25,7 +25,6 @@ package structure;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.sosy_lab.java_smt.api.BooleanFormula;
@@ -252,22 +251,118 @@ public class FOADAExpression {
 	
 	// utilities
 	
-	/** add recursively arguments to all the predicates in the expression
-	 * @param	arguments	list of arguments to be added
+	/** (only for ADA) add recursively arguments to all the predicates in the expression
+	 * @param	nbOfVariables	number of arguments to be added
 	 */
-	public void addArguments(Map<String, List<ExpressionType>> predicateArgumentsTypesMap)
+	public void addArguments(int nbOfVariables)
 	{
 		if(type == ExpressionType.Boolean && category == ExpressionCategory.Function) {
-			int numberOfArguments = predicateArgumentsTypesMap.get(name).size();
-			for(int i = 0; i < numberOfArguments; i++) {
+			for(int i = 0; i < nbOfVariables; i++) {
 				FOADAExpression argument = new FOADAExpression("v" + i + 'c', ExpressionType.Integer);
 				subData.add(argument);
 			}
 		}
 		if(subData != null) {
 			for(FOADAExpression subexpression : subData) {
-				subexpression.addArguments(predicateArgumentsTypesMap);
+				subexpression.addArguments(nbOfVariables);
 			}
+		}
+	}
+	
+	/** (only for ADA) add recursively 0 as arguments to all the predicates in the initial state
+	 * @param	nbOfVariables	number of arguments to be added
+	 */
+	public void addInitArguments(int nbOfVariables)
+	{
+		if(type == ExpressionType.Boolean && category == ExpressionCategory.Function) {
+			for(int i = 0; i < nbOfVariables; i++) {
+				FOADAExpression argument = new FOADAExpression(0);
+				subData.add(argument);
+			}
+		}
+		if(subData != null) {
+			for(FOADAExpression subexpression : subData) {
+				subexpression.addInitArguments(nbOfVariables);
+			}
+		}
+	}
+	
+	/** (only for ADA) finish recursively the types
+	 */
+	public void finishTypes()
+	{
+		if(type == null && category == ExpressionCategory.Function) {
+			if(name.charAt(0) == 'q') {
+				type = ExpressionType.Boolean;
+			}
+			else {
+				type = ExpressionType.Integer;
+			}
+		}
+		if(subData != null) {
+			for(FOADAExpression subexpression : subData) {
+				subexpression.finishTypes();
+			}
+		}
+	}
+	
+	public void negate()
+	{
+		switch(category)
+		{
+		case Constant:	break;
+		case Function:	for(FOADAExpression e : subData) {
+							e.negate();
+						}
+						break;
+		case Exists:	category = ExpressionCategory.Forall;
+						subData.get(subData.size() - 1).negate();
+						break;
+		case Forall:	category = ExpressionCategory.Exists;
+						subData.get(subData.size() - 1).negate();
+						break;
+		case Not:		FOADAExpression expression = new FOADAExpression(subData.get(0));
+						type = expression.type;
+						category = expression.category;
+						name = expression.name;
+						bValue = expression.bValue;
+						iValue = expression.iValue;
+						if(expression.subData == null) {
+							subData = null;
+						}
+						else {
+							subData = new ArrayList<FOADAExpression>();
+							for(FOADAExpression e : expression.subData) {
+								subData.add(e.copy());
+							}
+						}
+						break;
+		case And:		category = ExpressionCategory.Or;
+						for(FOADAExpression e : subData) {
+							e.negate();
+						}
+						break;
+		case Or:		category = ExpressionCategory.And;
+						for(FOADAExpression e : subData) {
+							e.negate();
+						}
+						break;
+		case Equals:	category = ExpressionCategory.Distinct;
+						break;
+		case Distinct:	category = ExpressionCategory.Equals;
+						break;
+		case Plus:		break;
+		case Minus:		break;
+		case Times:		break;
+		case Slash:		break;
+		case GT:		category = ExpressionCategory.LEQ;
+						break;
+		case LT:		category = ExpressionCategory.GEQ;
+						break;
+		case GEQ:		category = ExpressionCategory.LT;
+						break;
+		case LEQ:		category = ExpressionCategory.GT;
+						break;
 		}
 	}
 	
@@ -287,7 +382,7 @@ public class FOADAExpression {
 						break;
 		case Forall:	result.addAll(subData.get(subData.size() - 1).findPredicatesOccurrences());
 						break;
-		case Not:		result.addAll(subData.get(subData.size() - 1).findPredicatesOccurrences());
+		case Not:		result.addAll(subData.get(0).findPredicatesOccurrences());
 						break;
 		case And:		for(FOADAExpression e : subData) {
 							result.addAll(e.findPredicatesOccurrences());
@@ -347,7 +442,7 @@ public class FOADAExpression {
 						break;
 		case Forall:	subData.get(subData.size() - 1).addTimeStamps(timeStamp);
 						break;
-		case Not:		subData.get(subData.size() - 1).addTimeStamps(timeStamp);
+		case Not:		subData.get(0).addTimeStamps(timeStamp);
 						break;
 		case And:		for(FOADAExpression e : subData) {
 							e.addTimeStamps(timeStamp);
@@ -410,7 +505,7 @@ public class FOADAExpression {
 						break;
 		case Forall:	subData.get(subData.size() - 1).substitue(from, to);
 						break;
-		case Not:		subData.get(subData.size() - 1).substitue(from, to);
+		case Not:		subData.get(0).substitue(from, to);
 						break;
 		case And:		for(FOADAExpression e : subData) {
 							e.substitue(from, to);

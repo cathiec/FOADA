@@ -93,13 +93,70 @@ public class Automaton {
 		utility.JavaSMTConfig.initJavaSMT();
 	}
 	
+	public Automaton intersects(Automaton automaton)
+			throws FOADAException
+	{
+		Automaton newOne = new Automaton();
+		newOne.initial = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.And, initial, automaton.initial);
+		/* TODO */
+		return newOne;
+	}
+	
+	public Automaton complements()
+			throws FOADAException
+	{
+		Automaton newOne = new Automaton();
+		newOne.initial = initial;
+		newOne.namesOfFinalStates = new ArrayList<String>();
+		newOne.namesOfFinalStates.addAll(namesOfPredicates);
+		newOne.namesOfFinalStates.removeAll(namesOfFinalStates);
+		newOne.transitions = new LinkedHashMap<String, FOADATransition>();
+		newOne.transitions.putAll(transitions);
+		for(FOADATransition t : newOne.transitions.values()) {
+			t.right.negate();
+		}
+		/* TODO */
+		/* still need to add true into transitions for those who don't appear in the original transitions */
+		newOne.renameMap = new LinkedHashMap<String, String>();
+		newOne.renameMap.putAll(renameMap);
+		newOne.namesOfPredicates = new ArrayList<String>();
+		newOne.namesOfPredicates.addAll(namesOfPredicates);
+		newOne.events = new ArrayList<String>();
+		newOne.events.addAll(events);
+		newOne.nbOfVariables = nbOfVariables;
+		return newOne;
+	}
+	
+	public boolean isIncluded(Automaton B, utility.TreeSearch.Mode searchMode, utility.Impact.Mode transitionMode)
+			throws FOADAException
+	{
+		Automaton complementOfB = B.complements();
+		Automaton AIntersectsComplementOfB = intersects(complementOfB);
+		return AIntersectsComplementOfB.isEmpty(searchMode, transitionMode);
+	}
+	
 	public boolean isEmpty(utility.TreeSearch.Mode searchMode, utility.Impact.Mode transitionMode)
 			throws FOADAException
 	{
-		/** TODO **/
-		/*for(FOADATransition transition : transitions.values()) {
-			System.out.println(transition);
-		}*/
+		System.out.println("Predicates: " + namesOfPredicates);
+		System.out.println("Initial: " + initial);
+		System.out.println("Final: " + namesOfFinalStates);
+		System.out.println("Events: " + events);
+		System.out.println("Nb of Variables: " + nbOfVariables);
+		System.out.println(renameMap);
+		for(Map.Entry xx : transitions.entrySet()) {
+			System.out.println(xx.getValue());
+		}
+		Automaton mmmm = complements();
+		System.out.println("Predicates: " + mmmm.namesOfPredicates);
+		System.out.println("Initial: " + mmmm.initial);
+		System.out.println("Final: " + mmmm.namesOfFinalStates);
+		System.out.println("Events: " + mmmm.events);
+		System.out.println("Nb of Variables: " + mmmm.nbOfVariables);
+		System.out.println(mmmm.renameMap);
+		for(Map.Entry xx : mmmm.transitions.entrySet()) {
+			System.out.println(xx.getValue());
+		}
 		long beginTime = System.currentTimeMillis();
 		int nbOfNodesVisited = 0;
 		int nbOfNodesCreated = 0;
