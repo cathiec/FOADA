@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.antlr.v4.runtime.atn.Transition;
 import org.sosy_lab.java_smt.api.BooleanFormula;
 import org.sosy_lab.java_smt.api.Formula;
 import org.sosy_lab.java_smt.api.FormulaType;
@@ -106,17 +108,39 @@ public class Automaton {
 			throws FOADAException
 	{
 		Automaton newOne = new Automaton();
-		newOne.initial = initial;
+		newOne.initial = initial.copy();
 		newOne.namesOfFinalStates = new ArrayList<String>();
 		newOne.namesOfFinalStates.addAll(namesOfPredicates);
 		newOne.namesOfFinalStates.removeAll(namesOfFinalStates);
 		newOne.transitions = new LinkedHashMap<String, FOADATransition>();
-		newOne.transitions.putAll(transitions);
+		for(Entry<String, FOADATransition> transitionEntry : transitions.entrySet()) {
+			newOne.transitions.put(transitionEntry.getKey(), transitionEntry.getValue().copy());
+		}
 		for(FOADATransition t : newOne.transitions.values()) {
 			t.right.negate();
 		}
-		/* TODO */
-		/* still need to add true into transitions for those who don't appear in the original transitions */
+		Map<String, FOADAExpression> predicatesNameArguments = new LinkedHashMap<String, FOADAExpression>();
+		for(FOADATransition transition : transitions.values()) {
+			FOADAExpression predicateWithArguments = transition.left;
+			String nameOfPredicate = transition.left.name;
+			if(!predicatesNameArguments.containsKey(nameOfPredicate)) {
+				predicatesNameArguments.put(nameOfPredicate, predicateWithArguments);
+			}
+		}
+		List<FOADAExpression> inputVariables = transitions.values().iterator().next().inputVariables;
+		for(String predicate : namesOfPredicates) {
+			FOADAExpression left = predicatesNameArguments.get(predicate);
+			for(String event : events) {
+				if(!transitions.containsKey(predicate + "+" + event)) {
+					FOADATransition transition = new FOADATransition();
+					transition.left = left.copy();
+					transition.event = event;
+					transition.inputVariables = inputVariables;
+					transition.right = new FOADAExpression(true);
+					newOne.transitions.put(predicate + "+" + event, transition);
+				}
+			}
+		}
 		newOne.renameMap = new LinkedHashMap<String, String>();
 		newOne.renameMap.putAll(renameMap);
 		newOne.namesOfPredicates = new ArrayList<String>();
@@ -138,7 +162,7 @@ public class Automaton {
 	public boolean isEmpty(utility.TreeSearch.Mode searchMode, utility.Impact.Mode transitionMode)
 			throws FOADAException
 	{
-		System.out.println("Predicates: " + namesOfPredicates);
+		/*System.out.println("Predicates: " + namesOfPredicates);
 		System.out.println("Initial: " + initial);
 		System.out.println("Final: " + namesOfFinalStates);
 		System.out.println("Events: " + events);
@@ -156,7 +180,7 @@ public class Automaton {
 		System.out.println(mmmm.renameMap);
 		for(Map.Entry xx : mmmm.transitions.entrySet()) {
 			System.out.println(xx.getValue());
-		}
+		}*/
 		long beginTime = System.currentTimeMillis();
 		int nbOfNodesVisited = 0;
 		int nbOfNodesCreated = 0;

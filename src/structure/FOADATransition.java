@@ -66,6 +66,14 @@ public class FOADATransition {
 		right = post.copy();
 	}
 	
+	public FOADATransition()
+	{
+		left = null;
+		event = null;
+		inputVariables = null;
+		right = null;
+	}
+
 	public Set<FOADAExpression> getPredicates()
 	{
 		Set<FOADAExpression> result = new HashSet<FOADAExpression>();
@@ -131,6 +139,19 @@ public class FOADATransition {
 			BooleanFormula universallyQuantifiedImplication = JavaSMTConfig.qmgr.forall(arguments, implication);
 			return universallyQuantifiedImplication;
 		}
+	}
+	
+	public FOADATransition copy()
+	{
+		FOADATransition copy = new FOADATransition();
+		copy.left = left.copy();
+		copy.event = event;
+		copy.inputVariables = new ArrayList<FOADAExpression>();
+		for(FOADAExpression inputVariable : inputVariables) {
+			copy.inputVariables.add(inputVariable.copy());
+		}
+		copy.right = right.copy();
+		return copy;
 	}
 	
 	@Override
