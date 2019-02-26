@@ -46,7 +46,7 @@ public abstract class FOADAParserFunctions {
 	public static void setInitial(Automaton automaton, FOADAExpression initial)
 	{
 		for(String original : automaton.renameMap.keySet()) {
-			initial.substitue(original, automaton.renameMap.get(original));
+			initial.substitute(original, automaton.renameMap.get(original));
 		}
 		automaton.initial = initial;
 	}
@@ -78,13 +78,13 @@ public abstract class FOADAParserFunctions {
 			}
 		}
 		for(String original : automaton.renameMap.keySet()) {
-			post.substitue(original, automaton.renameMap.get(original));
+			post.substitute(original, automaton.renameMap.get(original));
 		}
 		int nbRenamedArguments = 0;
 		for(int i = 0; i < argumentsNames.size(); i++) {
 			String original = argumentsNames.get(i);
 			String newName = "a" + nbRenamedArguments + "c";
-			post.substitue(original, newName);
+			post.substitute(original, newName);
 			nbRenamedArguments++;
 			argumentsNames.set(i, newName);
 		}

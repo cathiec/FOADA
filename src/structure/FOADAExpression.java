@@ -310,7 +310,15 @@ public class FOADAExpression {
 	{
 		switch(category)
 		{
-		case Constant:	break;
+		case Constant:	if(type == ExpressionType.Boolean) {
+							if(bValue == false) {
+								bValue = true;
+							}
+							else {
+								bValue = false;
+							}
+						}
+						break;
 		case Function:	for(FOADAExpression e : subData) {
 							e.negate();
 						}
@@ -489,7 +497,7 @@ public class FOADAExpression {
 	 * @param	from	the part to be replaced
 	 * @param	to		used to replace the part
 	 */
-	public void substitue(String from, String to)
+	public void substitute(String from, String to)
 	{
 		switch(category)
 		{
@@ -498,52 +506,52 @@ public class FOADAExpression {
 							name = to;
 						}
 						for(FOADAExpression e : subData) {
-							e.substitue(from, to);
+							e.substitute(from, to);
 						}
 						break;
-		case Exists:	subData.get(subData.size() - 1).substitue(from, to);
+		case Exists:	subData.get(subData.size() - 1).substitute(from, to);
 						break;
-		case Forall:	subData.get(subData.size() - 1).substitue(from, to);
+		case Forall:	subData.get(subData.size() - 1).substitute(from, to);
 						break;
-		case Not:		subData.get(0).substitue(from, to);
+		case Not:		subData.get(0).substitute(from, to);
 						break;
 		case And:		for(FOADAExpression e : subData) {
-							e.substitue(from, to);
+							e.substitute(from, to);
 						}
 						break;
 		case Or:		for(FOADAExpression e : subData) {
-							e.substitue(from, to);
+							e.substitute(from, to);
 						}
 						break;
-		case Equals:	subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case Equals:	subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case Distinct:	subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case Distinct:	subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case Plus:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case Plus:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case Minus:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case Minus:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case Times:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case Times:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case Slash:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case Slash:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case GT:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case GT:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case LT:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case LT:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case GEQ:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case GEQ:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case LEQ:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case LEQ:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
 		}
 	}

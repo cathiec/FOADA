@@ -42,7 +42,7 @@ public abstract class ADAParserFunctions {
 	public static void setInitial(Automaton automaton, FOADAExpression initial)
 	{
 		for(String original : automaton.renameMap.keySet()) {
-			initial.substitue(original, automaton.renameMap.get(original));
+			initial.substitute(original, automaton.renameMap.get(original));
 		}
 		automaton.initial = initial;
 	}
@@ -82,7 +82,7 @@ public abstract class ADAParserFunctions {
 		List<String> inputVarNames = new ArrayList<String>();
 		List<ExpressionType> inputVarTypes = new ArrayList<ExpressionType>();
 		for(String original : automaton.renameMap.keySet()) {
-			post.substitue(original, automaton.renameMap.get(original));
+			post.substitute(original, automaton.renameMap.get(original));
 		}
 		for(int i = 0; i < automaton.nbOfVariables; i++) {
 			argumentsNames.add("a" + i + "c");

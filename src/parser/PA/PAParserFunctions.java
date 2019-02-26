@@ -58,7 +58,7 @@ public abstract class PAParserFunctions {
 		for(int i = 0; i < argumentList.size(); i++) {
 			String original = argumentList.get(i);
 			String newNameArgument = "a" + nbRenamedArguments + "c";
-			post.substitue(original, newNameArgument);
+			post.substitute(original, newNameArgument);
 			nbRenamedArguments++;
 			argumentList.set(i, newNameArgument);
 		}
@@ -77,7 +77,7 @@ public abstract class PAParserFunctions {
 		}
 		List<String> inputVarNames = new ArrayList<String>();
 		String newNameInputVar = "v0c";
-		post.substitue(inputVarName, newNameInputVar);
+		post.substitute(inputVarName, newNameInputVar);
 		inputVarNames.add(newNameInputVar);
 		List<ExpressionType> inputVarTypes = new ArrayList<ExpressionType>();
 		inputVarTypes.add(ExpressionType.Integer);
@@ -88,7 +88,7 @@ public abstract class PAParserFunctions {
 	public static void finalize(Automaton automaton)
 	{
 		for(Entry<String, String> e : automaton.renameMap.entrySet()) {
-			automaton.initial.substitue(e.getKey(), e.getValue());
+			automaton.initial.substitute(e.getKey(), e.getValue());
 			for(int i = 0; i < automaton.namesOfFinalStates.size(); i++) {
 				if(automaton.namesOfFinalStates.get(i).equals(e.getKey())) {
 					automaton.namesOfFinalStates.set(i, e.getValue());
@@ -98,7 +98,7 @@ public abstract class PAParserFunctions {
 				if(transition.event.equals(e.getKey())) {
 					transition.event = e.getValue();
 				}
-				transition.right.substitue(e.getKey(), e.getValue());
+				transition.right.substitute(e.getKey(), e.getValue());
 			}
 		}
 		automaton.nbOfVariables = 1;

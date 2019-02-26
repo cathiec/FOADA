@@ -1,5 +1,5 @@
 STATES
-q0 q1 q2 q0_new q1_new q2_new 
+q0 q1 q0_new q1_new q2_new 
 
 INITIAL
 (and q0 q0_new)
