@@ -1,0 +1,7 @@
+(pred (p q))
+(event (a))
+(initial (p 0))
+(final (q))
+
+(trans (p ((x Int))) (a ((d Int))) (and (q d) (<= d 0)))
+(trans (q ((x Int))) (a ((d Int))) (and (q d) (<= d 0)))

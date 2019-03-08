@@ -134,16 +134,18 @@ public class Automaton {
 				}
 			}
 		}
+		newOne.renameMap = new LinkedHashMap<String, String>();
+		newOne.renameMap.putAll(renameMap);
+		newOne.renameMap.putAll(newRenameMapForB);
 		Map<String, FOADATransition> newTransitionsForB = new LinkedHashMap<String, FOADATransition>();
 		for(FOADATransition transition : automaton.transitions.values()) {
 			// rename predicates in transitions
 			FOADAExpression left = transition.left.copy();
 			FOADAExpression right = transition.right.copy();
 			String event = transition.event;
-			String eventBeforeRenaming = null;
 			for(Map.Entry<String, String> entry : automaton.renameMap.entrySet()) {
 				if(entry.getValue().equals(event)) {
-					eventBeforeRenaming = entry.getKey();
+					event = entry.getKey();
 				}
 			}
 			List<FOADAExpression> inputVariables = transition.inputVariables;
@@ -154,7 +156,7 @@ public class Automaton {
 			}
 			FOADATransition newTransition = new FOADATransition();
 			newTransition.left = left;
-			newTransition.event = eventRenameMapForB.get(eventBeforeRenaming);
+			newTransition.event = newOne.renameMap.get(event);
 			newTransition.inputVariables = inputVariables;
 			newTransition.right = right;
 			newTransitionsForB.put(left.name + "+" + newTransition.event, newTransition);
@@ -166,9 +168,6 @@ public class Automaton {
 		newOne.namesOfFinalStates = new ArrayList<String>();
 		newOne.namesOfFinalStates.addAll(namesOfFinalStates);
 		newOne.namesOfFinalStates.addAll(newNamesOfFinalStatesForB);
-		newOne.renameMap = new LinkedHashMap<String, String>();
-		newOne.renameMap.putAll(renameMap);
-		newOne.renameMap.putAll(newRenameMapForB);
 		newOne.events = new ArrayList<String>();
 		newOne.events.addAll(events);
 		newOne.events.addAll(eventsForB);
