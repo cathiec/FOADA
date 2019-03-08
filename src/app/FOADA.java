@@ -22,15 +22,12 @@
 
 package app;
 
-import java.util.Map;
-
 import exception.FOADAException;
 import exception.InputFileNotFoundException;
 import exception.UnknownConsoleOptionException;
 import parser.ParserTools;
 import parser.ParserTools.ParserType;
 import structure.Automaton;
-import structure.FOADATransition;
 import utility.Console;
 import utility.Console.ConsoleType;
 import utility.Solver;
@@ -147,7 +144,7 @@ public class FOADA {
 		Console.printInfo(ConsoleType.FOADA, "Building automaton 1 ... ");
 		ParserType parser1Type = ParserTools.selectAccordingToInputFile(filename1);
 		Automaton automaton1 = ParserTools.buildAutomatonFromFile(filename1, parser1Type);
-		System.out.println("Predicates: " + automaton1.namesOfPredicates);
+		/*System.out.println("Predicates: " + automaton1.namesOfPredicates);
 		System.out.println("Initial: " + automaton1.initial);
 		System.out.println("Final: " + automaton1.namesOfFinalStates);
 		System.out.println("Events: " + automaton1.events);
@@ -156,11 +153,11 @@ public class FOADA {
 		for(Map.Entry<String, FOADATransition> xx : automaton1.transitions.entrySet()) {
 			System.out.println(xx.getValue());
 		}
-		System.out.println();
+		System.out.println();*/
 		Console.printInfo(ConsoleType.FOADA, "Building automaton 2 ... ");
 		ParserType parser2Type = ParserTools.selectAccordingToInputFile(filename2);
 		Automaton automaton2 = ParserTools.buildAutomatonFromFile(filename2, parser2Type);
-		System.out.println("Predicates: " + automaton2.namesOfPredicates);
+		/*System.out.println("Predicates: " + automaton2.namesOfPredicates);
 		System.out.println("Initial: " + automaton2.initial);
 		System.out.println("Final: " + automaton2.namesOfFinalStates);
 		System.out.println("Events: " + automaton2.events);
@@ -169,10 +166,10 @@ public class FOADA {
 		for(Map.Entry<String, FOADATransition> xx : automaton2.transitions.entrySet()) {
 			System.out.println(xx.getValue());
 		}
-		System.out.println();
+		System.out.println();*/
 		Console.printInfo(ConsoleType.FOADA, "Complementing automaton 2 ... ");
 		Automaton complementOfAutomaton2 = automaton2.complements();
-		System.out.println("Predicates: " + complementOfAutomaton2.namesOfPredicates);
+		/*System.out.println("Predicates: " + complementOfAutomaton2.namesOfPredicates);
 		System.out.println("Initial: " + complementOfAutomaton2.initial);
 		System.out.println("Final: " + complementOfAutomaton2.namesOfFinalStates);
 		System.out.println("Events: " + complementOfAutomaton2.events);
@@ -181,10 +178,10 @@ public class FOADA {
 		for(Map.Entry<String, FOADATransition> xx : complementOfAutomaton2.transitions.entrySet()) {
 			System.out.println(xx.getValue());
 		}
-		System.out.println();
+		System.out.println();*/
 		Console.printInfo(ConsoleType.FOADA, "Intersecting automaton 1 with complement of automaton 2 ... ");
 		Automaton automaton = automaton1.intersects(complementOfAutomaton2);
-		System.out.println("Predicates: " + automaton.namesOfPredicates);
+		/*System.out.println("Predicates: " + automaton.namesOfPredicates);
 		System.out.println("Initial: " + automaton.initial);
 		System.out.println("Final: " + automaton.namesOfFinalStates);
 		System.out.println("Events: " + automaton.events);
@@ -193,7 +190,7 @@ public class FOADA {
 		for(Map.Entry<String, FOADATransition> xx : automaton.transitions.entrySet()) {
 			System.out.println(xx.getValue());
 		}
-		System.out.println();
+		System.out.println();*/
 		if(searchMode == utility.TreeSearch.Mode.BFS) {
 			if(transitionMode == utility.Impact.Mode.UniversallyQuantifyArguments) {
 				Console.printInfo(ConsoleType.FOADA, "Start checking emptiness (BFS / Universally Quantify Arguments) ... ");

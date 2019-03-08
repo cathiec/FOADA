@@ -123,12 +123,14 @@ public class Automaton {
 			}
 		}
 		Map<String, String> eventRenameMapForB = new LinkedHashMap<String, String>();
+		List<String> eventsForB = new ArrayList<String>();
 		for(Map.Entry<String, String> entry : automaton.renameMap.entrySet()) {
 			if(entry.getValue().charAt(0) == 'e') {
 				if(!renameMap.containsKey(entry.getKey())) {
 					int newNumber = events.size() + eventRenameMapForB.size();
 					eventRenameMapForB.put(entry.getKey(), "e" + newNumber + "c");
 					newRenameMapForB.put(entry.getKey(), "e" + newNumber + "c");
+					eventsForB.add("e" + newNumber + "c");
 				}
 			}
 		}
@@ -138,9 +140,11 @@ public class Automaton {
 			FOADAExpression left = transition.left.copy();
 			FOADAExpression right = transition.right.copy();
 			String event = transition.event;
-			if(eventRenameMapForB.containsKey(event)) {
-				event = eventRenameMapForB.get(event);
-				right.substitute(event, eventRenameMapForB.get(event));
+			String eventBeforeRenaming = null;
+			for(Map.Entry<String, String> entry : automaton.renameMap.entrySet()) {
+				if(entry.getValue().equals(event)) {
+					eventBeforeRenaming = entry.getKey();
+				}
 			}
 			List<FOADAExpression> inputVariables = transition.inputVariables;
 			for(int i = automaton.namesOfPredicates.size() - 1; i >= 0; i--) {
@@ -150,10 +154,10 @@ public class Automaton {
 			}
 			FOADATransition newTransition = new FOADATransition();
 			newTransition.left = left;
-			newTransition.event = event;
+			newTransition.event = eventRenameMapForB.get(eventBeforeRenaming);
 			newTransition.inputVariables = inputVariables;
 			newTransition.right = right;
-			newTransitionsForB.put(left.name + "+" + event, newTransition);
+			newTransitionsForB.put(left.name + "+" + newTransition.event, newTransition);
 		}	
 		newOne.initial = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.And, initial, newInitialForB);
 		newOne.namesOfPredicates = new ArrayList<String>();
@@ -167,7 +171,7 @@ public class Automaton {
 		newOne.renameMap.putAll(newRenameMapForB);
 		newOne.events = new ArrayList<String>();
 		newOne.events.addAll(events);
-		
+		newOne.events.addAll(eventsForB);
 		newOne.nbOfVariables = nbOfVariables;
 		newOne.transitions = new LinkedHashMap<String, FOADATransition>();
 		newOne.transitions.putAll(transitions);
@@ -233,6 +237,14 @@ public class Automaton {
 	public boolean isEmpty(utility.TreeSearch.Mode searchMode, utility.Impact.Mode transitionMode)
 			throws FOADAException
 	{
+		/*System.out.println(renameMap);
+		System.out.println("Predicates : " + namesOfPredicates);
+		System.out.println("Initial : " + initial);
+		System.out.println("Final : " + namesOfFinalStates);
+		System.out.println("Events : " + events);
+		for(Entry<String, FOADATransition> entry : transitions.entrySet()) {
+			System.out.println(entry.getKey() + "   ###   " + entry.getValue());
+		}*/
 		long beginTime = System.currentTimeMillis();
 		int nbOfNodesVisited = 0;
 		int nbOfNodesCreated = 0;
