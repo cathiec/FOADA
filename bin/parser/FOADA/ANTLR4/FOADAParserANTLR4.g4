@@ -173,9 +173,14 @@ expression returns [FOADAExpression jData]
 		$jData = new FOADAExpression($i.text);
 	}
 	|
-	LP PLUS e1=expression e2=expression RP {
-		$jData = new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Plus, $e1.jData, $e2.jData);
+	LP PLUS e1=expression {
+		$jData = $e1.jData; 
 	}
+	(e2=expression {
+		$jData = new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Plus, $jData, $e2.jData);
+	}
+	)+
+	RP
 	|
 	LP TIMES e1=expression e2=expression RP {
 		$jData = new FOADAExpression(ExpressionType.Integer, ExpressionCategory.Times, $e1.jData, $e2.jData);

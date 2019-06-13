@@ -167,21 +167,31 @@ public class FOADAExpression {
 	
 	/** finish recursively the types according to the information from arguments and input variables
 	 */
-	public void finishTypes(List<String> argumentsNames, List<FOADAExpression.ExpressionType> argumentsTypes, List<String> inputVarNames, List<FOADAExpression.ExpressionType> inputVarTypes)
+	public void finishTypes(Automaton automaton, List<String> argumentsNames, List<FOADAExpression.ExpressionType> argumentsTypes, List<String> inputVarNames, List<FOADAExpression.ExpressionType> inputVarTypes)
 			throws FOADAException
 	{
 		if(subData != null) {
 			for(FOADAExpression e : subData) {
-				e.finishTypes(argumentsNames, argumentsTypes, inputVarNames, inputVarTypes);
+				e.finishTypes(automaton, argumentsNames, argumentsTypes, inputVarNames, inputVarTypes);
 			}
 		}
-		if(category == ExpressionCategory.Function) {
+		if(type == null && category == ExpressionCategory.Function) {
 			Boolean alreadySet = false;
-			for(int i = 0; i < argumentsNames.size(); i++ ) {
-				if(name.equals(argumentsNames.get(i))) {
-					type = argumentsTypes.get(i);
+			for(String nameOfPredicate : automaton.namesOfPredicates) {
+				String newName = automaton.renameMap.get(name);
+				if(newName != null && newName.equals(nameOfPredicate)) {
+					type = ExpressionType.Boolean;
 					alreadySet = true;
 					break;
+				}
+			}
+			if(!alreadySet) {
+				for(int i = 0; i < argumentsNames.size(); i++ ) {
+					if(name.equals(argumentsNames.get(i))) {
+						type = argumentsTypes.get(i);
+						alreadySet = true;
+						break;
+					}
 				}
 			}
 			if(!alreadySet) {

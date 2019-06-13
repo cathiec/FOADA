@@ -249,8 +249,14 @@ public class FOADA {
 				//automaton1.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
 				//automaton2.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
 				//automaton3.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
-				Automaton a = automaton1.intersects(automaton2, "B").intersects(automaton3, "C");
-				a.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
+				Automaton coe = automaton1.intersects(automaton2, "B").intersects(automaton3, "C");
+				//coe.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
+				Automaton acc = ParserTools.buildAutomatonFromFile("examples/PhiloAcc.foada", ParserType.FOADAParser);
+				//acc.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
+				Automaton accCompl = acc.complements();
+				//accCompl.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
+				Automaton temp = coe.intersects(accCompl, "D");
+				temp.isEmpty(utility.TreeSearch.Mode.BFS, utility.Impact.Mode.FindOccurrences);
 				/* *********************** */
 				
 			}

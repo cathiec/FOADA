@@ -68,7 +68,7 @@ public abstract class FOADAParserFunctions {
 										FOADAExpression post)
 			throws FOADAException
 	{
-		post.finishTypes(argumentsNames, argumentsTypes, inputVarNames, inputVarTypes);
+		post.finishTypes(automaton, argumentsNames, argumentsTypes, inputVarNames, inputVarTypes);
 		for(int i = 0; i < inputVarNames.size(); i++) {
 			String original = inputVarNames.get(i);
 			if(automaton.renameMap.containsKey(original)) {

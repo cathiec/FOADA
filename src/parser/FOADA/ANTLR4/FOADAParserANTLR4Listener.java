@@ -1,5 +1,3 @@
-// Generated from FOADAParserANTLR4.g4 by ANTLR 4.7.1
-
 /*
 	FOADA
     Copyright (C) 2018  Xiao XU & Radu IOSIF

@@ -213,7 +213,12 @@ public class Automaton {
 			for(String event : events) {
 				if(!transitions.containsKey(predicate + "+" + event)) {
 					FOADATransition transition = new FOADATransition();
-					transition.left = left.copy();
+					if(left != null) {
+						transition.left = left.copy();
+					}
+					else {
+						transition.left = new FOADAExpression(predicate, ExpressionType.Boolean);
+					}
 					transition.event = event;
 					transition.inputVariables = inputVariables;
 					transition.right = new FOADAExpression(true);
