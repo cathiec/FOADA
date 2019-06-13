@@ -94,7 +94,7 @@ public class FOADATransition {
 		FOADAExpression rightAccordingToOccurrenceOfLeft = right.copy();
 		rightAccordingToOccurrenceOfLeft.addTimeStamps(currentTimeStamp + 1);
 		for(int i = 0; i < occurenceOfLeft.subData.size(); i++) {
-			rightAccordingToOccurrenceOfLeft.substitue(left.subData.get(i), occurenceOfLeft.subData.get(i));
+			rightAccordingToOccurrenceOfLeft.substitute(left.subData.get(i), occurenceOfLeft.subData.get(i));
 		}
 		return rightAccordingToOccurrenceOfLeft.findPredicatesOccurrences();
 	}
@@ -104,7 +104,7 @@ public class FOADATransition {
 		FOADAExpression rightAccordingToOccurrenceOfLeft = right.copy();
 		rightAccordingToOccurrenceOfLeft.addTimeStamps(currentTimeStamp + 1);
 		for(int i = 0; i < occurenceOfLeft.subData.size(); i++) {
-			rightAccordingToOccurrenceOfLeft.substitue(left.subData.get(i), occurenceOfLeft.subData.get(i));
+			rightAccordingToOccurrenceOfLeft.substitute(left.subData.get(i), occurenceOfLeft.subData.get(i));
 		}
 		BooleanFormula leftPartOfImplication = (BooleanFormula)occurenceOfLeft.toJavaSMTFormula(JavaSMTConfig.fmgr);
 		BooleanFormula rightPartOfImplication = (BooleanFormula)rightAccordingToOccurrenceOfLeft.toJavaSMTFormula(JavaSMTConfig.fmgr);

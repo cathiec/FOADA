@@ -103,6 +103,10 @@ type returns [FOADAExpression.ExpressionType jData]
 	
 expression returns [FOADAExpression jData]
 :
+	LP ITE c=expression e1=expression e2=expression RP {
+		$jData = new FOADAExpression(null, ExpressionCategory.ITE, $c.jData, $e1.jData, $e2.jData);
+	}
+	|
 	MINUS INTEGER {
 		$jData = new FOADAExpression(Integer.parseInt("-" + $INTEGER.text));
 	}
@@ -189,7 +193,6 @@ expression returns [FOADAExpression jData]
 		List<FOADAExpression> arguments = new ArrayList<FOADAExpression>();
 	}
 	(e=expression {
-		$e.jData.type = ExpressionType.Integer;
 		arguments.add($e.jData);
 	}
 	)+

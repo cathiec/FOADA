@@ -1,7 +1,0 @@
-(pred (q0 q1 q2 qf))
-(event (a))
-(initial (q0 0))
-(final (qf))
-(trans (q0 ((y0 Int))) (a ((x1 Int))) (and (q1 (+ y0 x1)) (q2 (- y0 x1))))
-(trans (q1 ((y0 Int))) (a ((x1 Int))) (or (q1 (+ y0 x1)) (and (> y0 0) qf)))
-(trans (q2 ((y0 Int))) (a ((x1 Int))) (or (q2 (- y0 x1)) (and (> y0 0) qf)))

@@ -36,12 +36,8 @@ import exception.FOADAException;
 import exception.InputFileNotFoundException;
 import exception.InputFileUnsupportedException;
 import exception.JavaIOException;
-import parser.ADA.ANTLR4.ADALexerANTLR4;
-import parser.ADA.ANTLR4.ADAParserANTLR4;
 import parser.FOADA.ANTLR4.FOADALexerANTLR4;
 import parser.FOADA.ANTLR4.FOADAParserANTLR4;
-import parser.PA.ANTLR4.PALexerANTLR4;
-import parser.PA.ANTLR4.PAParserANTLR4;
 import structure.Automaton;
 import utility.Console;
 import utility.Console.ConsoleType;
@@ -51,8 +47,6 @@ import utility.Console.ConsoleType;
 public abstract class ParserTools {
 	
 	public enum ParserType {
-		PAParser,
-		ADAParser,
 		FOADAParser
 	};
 	
@@ -60,15 +54,7 @@ public abstract class ParserTools {
 			throws FOADAException
 	{
 		int strLength = filename.length();
-		if(strLength >= 3 && filename.substring(strLength - 3, strLength).equals(".pa")) {
-			Console.printInfo(ConsoleType.FOADA, "Type of the input file is < " + Console.YELLOW_BRIGHT + "*.pa" + Console.RESET + " >.");
-			return ParserType.PAParser;
-		}
-		else if(strLength >= 4 && filename.substring(strLength - 4, strLength).equals(".ada")) {
-			Console.printInfo(ConsoleType.FOADA, "Type of the input file is < " + Console.YELLOW_BRIGHT + "*.ada" + Console.RESET + " >.");
-			return ParserType.ADAParser;
-		}
-		else if(strLength >= 6 && filename.substring(strLength - 6, strLength).equals(".foada")) {
+		if(strLength >= 6 && filename.substring(strLength - 6, strLength).equals(".foada")) {
 			Console.printInfo(ConsoleType.FOADA, "Type of the input file is < " + Console.YELLOW_BRIGHT + "*.foada" + Console.RESET + " >.");
 			return ParserType.FOADAParser;
 		}
@@ -90,26 +76,6 @@ public abstract class ParserTools {
 	        Automaton result = null;
 	        switch(parserType)
 	        {
-		    case PAParser:		lexer = new PALexerANTLR4(new ANTLRInputStream(istream));
-						        lexer.removeErrorListeners();
-								lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);
-		        				tokens = new CommonTokenStream(lexer);
-		        				parser = new PAParserANTLR4(tokens);
-		        		        parser.removeErrorListeners();
-		        		        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
-		        		        istream.close();
-		        				result = ((PAParserANTLR4)parser).automaton().jData;
-		        				break;
-		    case ADAParser:		lexer = new ADALexerANTLR4(new ANTLRInputStream(istream));
-						        lexer.removeErrorListeners();
-								lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);
-								tokens = new CommonTokenStream(lexer);
-								parser = new ADAParserANTLR4(tokens);
-						        parser.removeErrorListeners();
-						        parser.addErrorListener(utility.ErrorListenerWithExceptions.listener);
-						        istream.close();
-								result = ((ADAParserANTLR4)parser).automaton().jData;
-		        				break;
 	        case FOADAParser:	lexer = new FOADALexerANTLR4(new ANTLRInputStream(istream));
 						        lexer.removeErrorListeners();
 								lexer.addErrorListener(utility.ErrorListenerWithExceptions.listener);

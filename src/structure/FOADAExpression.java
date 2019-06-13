@@ -33,6 +33,9 @@ import org.sosy_lab.java_smt.api.FormulaManager;
 import org.sosy_lab.java_smt.api.FormulaType;
 import org.sosy_lab.java_smt.api.NumeralFormula.IntegerFormula;
 
+import exception.FOADAException;
+import exception.UndefinedVariableException;
+
 public class FOADAExpression {
 	
 	public enum ExpressionType {
@@ -41,6 +44,7 @@ public class FOADAExpression {
 	};
 	
 	public enum ExpressionCategory {
+		ITE,
 		Constant,
 		Function,
 		Exists,
@@ -161,39 +165,40 @@ public class FOADAExpression {
 		iValue = 0;
 	}
 	
-	public void setType(ExpressionType type)
+	/** finish recursively the types according to the information from arguments and input variables
+	 */
+	public void finishTypes(List<String> argumentsNames, List<FOADAExpression.ExpressionType> argumentsTypes, List<String> inputVarNames, List<FOADAExpression.ExpressionType> inputVarTypes)
+			throws FOADAException
 	{
-		this.type = type;
-		switch(category)
-		{
-		case Not:		subData.get(0).setType(ExpressionType.Boolean);
+		if(subData != null) {
+			for(FOADAExpression e : subData) {
+				e.finishTypes(argumentsNames, argumentsTypes, inputVarNames, inputVarTypes);
+			}
+		}
+		if(category == ExpressionCategory.Function) {
+			Boolean alreadySet = false;
+			for(int i = 0; i < argumentsNames.size(); i++ ) {
+				if(name.equals(argumentsNames.get(i))) {
+					type = argumentsTypes.get(i);
+					alreadySet = true;
+					break;
+				}
+			}
+			if(!alreadySet) {
+				for(int i = 0; i < inputVarNames.size(); i++) {
+					if(name.equals(inputVarNames.get(i))) {
+						type = inputVarTypes.get(i);
+						alreadySet = true;
 						break;
-		case And:		
-		case Or:		for(FOADAExpression e : subData) {
-							e.setType(ExpressionType.Boolean);;
-						}
-						break;
-		case Equals:	
-		case Distinct:	if(subData.get(0).type != null) {
-							subData.get(0).setType(subData.get(0).type);
-							subData.get(1).setType(subData.get(0).type);
-						}
-						else {
-							subData.get(0).setType(subData.get(1).type);
-							subData.get(1).setType(subData.get(1).type);
-						}
-						break;
-		case Plus:		
-		case Minus:		
-		case Times:		
-		case Slash:		
-		case GT:		
-		case LT:		
-		case GEQ:		
-		case LEQ:		subData.get(0).setType(ExpressionType.Integer);
-						subData.get(1).setType(ExpressionType.Integer);
-						break;
-		default:		break;
+					}
+				}
+			}
+		}
+		else if(category == ExpressionCategory.ITE) {
+			type = subData.get(1).type;
+		}
+		if(type == null) {
+			throw new UndefinedVariableException(name);
 		}
 	}
 	
@@ -201,6 +206,7 @@ public class FOADAExpression {
 	 */
 	public FOADAExpression(ExpressionType type, ExpressionCategory category, FOADAExpression... subExpressions)
 	{
+		this.type = type;
 		this.category = category;
 		subData = new ArrayList<FOADAExpression>();
 		for(FOADAExpression e : subExpressions) {
@@ -210,7 +216,6 @@ public class FOADAExpression {
 		name = null;
 		bValue = true;
 		iValue = 0;
-		setType(type);
 	}
 	
 	/** constructor for "non-function composite structure"
@@ -251,65 +256,11 @@ public class FOADAExpression {
 	
 	// utilities
 	
-	/** (only for ADA) add recursively arguments to all the predicates in the expression
-	 * @param	nbOfVariables	number of arguments to be added
-	 */
-	public void addArguments(int nbOfVariables)
-	{
-		if(type == ExpressionType.Boolean && category == ExpressionCategory.Function) {
-			for(int i = 0; i < nbOfVariables; i++) {
-				FOADAExpression argument = new FOADAExpression("v" + i + 'c', ExpressionType.Integer);
-				subData.add(argument);
-			}
-		}
-		if(subData != null) {
-			for(FOADAExpression subexpression : subData) {
-				subexpression.addArguments(nbOfVariables);
-			}
-		}
-	}
-	
-	/** (only for ADA) add recursively 0 as arguments to all the predicates in the initial state
-	 * @param	nbOfVariables	number of arguments to be added
-	 */
-	public void addInitArguments(int nbOfVariables)
-	{
-		if(type == ExpressionType.Boolean && category == ExpressionCategory.Function) {
-			for(int i = 0; i < nbOfVariables; i++) {
-				FOADAExpression argument = new FOADAExpression(0);
-				subData.add(argument);
-			}
-		}
-		if(subData != null) {
-			for(FOADAExpression subexpression : subData) {
-				subexpression.addInitArguments(nbOfVariables);
-			}
-		}
-	}
-	
-	/** (only for ADA) finish recursively the types
-	 */
-	public void finishTypes()
-	{
-		if(type == null && category == ExpressionCategory.Function) {
-			if(name.charAt(0) == 'q') {
-				type = ExpressionType.Boolean;
-			}
-			else {
-				type = ExpressionType.Integer;
-			}
-		}
-		if(subData != null) {
-			for(FOADAExpression subexpression : subData) {
-				subexpression.finishTypes();
-			}
-		}
-	}
-	
 	public void negate()
 	{
 		switch(category)
 		{
+		case ITE:		break;
 		case Constant:	if(type == ExpressionType.Boolean) {
 							if(bValue == false) {
 								bValue = true;
@@ -378,6 +329,9 @@ public class FOADAExpression {
 		Set<FOADAExpression> result = new HashSet<FOADAExpression>();
 		switch(category)
 		{
+		case ITE:		result.addAll(subData.get(1).findPredicatesOccurrences());
+						result.addAll(subData.get(2).findPredicatesOccurrences());
+						break;
 		case Constant:	break;
 		case Function:	if(name.charAt(0) == 'q') {
 							result.add(this.copy());
@@ -438,6 +392,10 @@ public class FOADAExpression {
 	{
 		switch(category)
 		{
+		case ITE:		subData.get(0).addTimeStamps(timeStamp);
+						subData.get(1).addTimeStamps(timeStamp);
+						subData.get(2).addTimeStamps(timeStamp);
+						break;
 		case Constant:	break;
 		case Function:	if(name.charAt(0) == 'v' || name.charAt(0) == 'q') {
 							name = name + '_' + timeStamp;
@@ -501,6 +459,10 @@ public class FOADAExpression {
 	{
 		switch(category)
 		{
+		case ITE:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
+						subData.get(2).substitute(from, to);
+						break;
 		case Constant:	break;
 		case Function:	if(name.equals(from)) {
 							name = to;
@@ -560,10 +522,14 @@ public class FOADAExpression {
 	 * @param	from	the part to be replaced
 	 * @param	to		used to replace the part
 	 */
-	public void substitue(FOADAExpression from, FOADAExpression to)
+	public void substitute(FOADAExpression from, FOADAExpression to)
 	{
 		switch(category)
 		{
+		case ITE:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
+						subData.get(2).substitute(from, to);
+						break;
 		case Constant:	break;
 		case Function:	if(equals(from)) {
 							type = to.type;
@@ -583,53 +549,53 @@ public class FOADAExpression {
 						}
 						else {
 							for(FOADAExpression e : subData) {
-								e.substitue(from, to);
+								e.substitute(from, to);
 							}
 						}
 						break;
-		case Exists:	subData.get(subData.size() - 1).substitue(from, to);
+		case Exists:	subData.get(subData.size() - 1).substitute(from, to);
 						break;
-		case Forall:	subData.get(subData.size() - 1).substitue(from, to);
+		case Forall:	subData.get(subData.size() - 1).substitute(from, to);
 						break;
-		case Not:		subData.get(subData.size() - 1).substitue(from, to);
+		case Not:		subData.get(subData.size() - 1).substitute(from, to);
 						break;
 		case And:		for(FOADAExpression e : subData) {
-							e.substitue(from, to);
+							e.substitute(from, to);
 						}
 						break;
 		case Or:		for(FOADAExpression e : subData) {
-							e.substitue(from, to);
+							e.substitute(from, to);
 						}
 						break;
-		case Equals:	subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case Equals:	subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case Distinct:	subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case Distinct:	subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case Plus:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case Plus:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case Minus:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case Minus:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case Times:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case Times:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case Slash:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case Slash:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case GT:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case GT:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case LT:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case LT:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case GEQ:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case GEQ:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
-		case LEQ:		subData.get(0).substitue(from, to);
-						subData.get(1).substitue(from, to);
+		case LEQ:		subData.get(0).substitute(from, to);
+						subData.get(1).substitute(from, to);
 						break;
 		}
 	}
@@ -649,6 +615,7 @@ public class FOADAExpression {
 	{
 		switch(category)
 		{
+		case ITE:		return fmgr.getBooleanFormulaManager().ifThenElse((BooleanFormula)subData.get(0).toJavaSMTFormula(fmgr), subData.get(1).toJavaSMTFormula(fmgr), subData.get(2).toJavaSMTFormula(fmgr));
 		case Constant:	if(type == ExpressionType.Integer) {
 							return fmgr.getIntegerFormulaManager().makeNumber(iValue);
 						}
@@ -716,6 +683,7 @@ public class FOADAExpression {
 		String resultString = "";
 		switch(category)
 		{
+		case ITE:		return "(" + subData.get(0).toString() + " ? " + subData.get(1).toString() + " : " + subData.get(2).toString() + ")";
 		case Constant:	if(type == ExpressionType.Integer) {
 							return Integer.toString(iValue);
 						}

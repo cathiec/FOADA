@@ -23,6 +23,8 @@
 package parser.FOADA;
 
 import java.util.List;
+
+import exception.FOADAException;
 import structure.Automaton;
 import structure.FOADAExpression;
 import structure.FOADATransition;
@@ -64,7 +66,9 @@ public abstract class FOADAParserFunctions {
 										List<String> inputVarNames,
 										List<FOADAExpression.ExpressionType> inputVarTypes,
 										FOADAExpression post)
+			throws FOADAException
 	{
+		post.finishTypes(argumentsNames, argumentsTypes, inputVarNames, inputVarTypes);
 		for(int i = 0; i < inputVarNames.size(); i++) {
 			String original = inputVarNames.get(i);
 			if(automaton.renameMap.containsKey(original)) {

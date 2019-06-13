@@ -144,6 +144,7 @@ public class FOADA {
 		Console.printInfo(ConsoleType.FOADA, "Building automaton 1 ... ");
 		ParserType parser1Type = ParserTools.selectAccordingToInputFile(filename1);
 		Automaton automaton1 = ParserTools.buildAutomatonFromFile(filename1, parser1Type);
+		/* TODO */
 		/*System.out.println("Predicates: " + automaton1.namesOfPredicates);
 		System.out.println("Initial: " + automaton1.initial);
 		System.out.println("Final: " + automaton1.namesOfFinalStates);
@@ -157,6 +158,7 @@ public class FOADA {
 		Console.printInfo(ConsoleType.FOADA, "Building automaton 2 ... ");
 		ParserType parser2Type = ParserTools.selectAccordingToInputFile(filename2);
 		Automaton automaton2 = ParserTools.buildAutomatonFromFile(filename2, parser2Type);
+		/* TODO */
 		/*System.out.println("Predicates: " + automaton2.namesOfPredicates);
 		System.out.println("Initial: " + automaton2.initial);
 		System.out.println("Final: " + automaton2.namesOfFinalStates);
@@ -169,6 +171,7 @@ public class FOADA {
 		System.out.println();*/
 		Console.printInfo(ConsoleType.FOADA, "Complementing automaton 2 ... ");
 		Automaton complementOfAutomaton2 = automaton2.complements();
+		/* TODO */
 		/*System.out.println("Predicates: " + complementOfAutomaton2.namesOfPredicates);
 		System.out.println("Initial: " + complementOfAutomaton2.initial);
 		System.out.println("Final: " + complementOfAutomaton2.namesOfFinalStates);
@@ -181,6 +184,7 @@ public class FOADA {
 		System.out.println();*/
 		Console.printInfo(ConsoleType.FOADA, "Intersecting automaton 1 with complement of automaton 2 ... ");
 		Automaton automaton = automaton1.intersects(complementOfAutomaton2);
+		/* TODO */
 		/*System.out.println("Predicates: " + automaton.namesOfPredicates);
 		System.out.println("Initial: " + automaton.initial);
 		System.out.println("Final: " + automaton.namesOfFinalStates);
@@ -233,9 +237,22 @@ public class FOADA {
 	public static void main(String[] args)
 	{
 		try {
+			
 			// welcome
 			if(args.length == 0) {
-				welcome();
+				//welcome();
+				
+				/* *********************** */
+				Automaton automaton1 = ParserTools.buildAutomatonFromFile("examples/Philo1.foada", ParserType.FOADAParser);
+				Automaton automaton2 = ParserTools.buildAutomatonFromFile("examples/Philo2.foada", ParserType.FOADAParser);
+				Automaton automaton3 = ParserTools.buildAutomatonFromFile("examples/Philo3.foada", ParserType.FOADAParser);
+				//automaton1.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
+				//automaton2.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
+				//automaton3.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
+				Automaton a = automaton1.intersects(automaton2, "B").intersects(automaton3, "C");
+				a.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
+				/* *********************** */
+				
 			}
 			// help menu
 			else if(args[0].equals("-h") || args[0].equals("--help")) {

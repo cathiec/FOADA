@@ -1,0 +1,7 @@
+(pred (qi q0))
+(event (a))
+(initial qi)
+(final (q0))
+
+(trans (qi ()) (a ((Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (and (q0 Nf Nb Nw Nh Ne Nf Nb Nw Nh Ne) (= (+ Nw Nf) (+ Nh Nb))))
+(trans (q0 ((If Int) (Ib Int) (Iw Int) (Ih Int) (Ie Int) (Cf Int) (Cb Int) (Cw Int) (Ch Int) (Ce Int))) (a ((Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (and (q0 If Ib Iw Ih Ie Nf Nb Nw Nh Ne) (= (+ Ch Cf) (+ Ce Cb))))

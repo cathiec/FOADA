@@ -94,7 +94,7 @@ public class Automaton {
 		utility.JavaSMTConfig.initJavaSMT();
 	}
 	
-	public Automaton intersects(Automaton automaton)
+	public Automaton intersects(Automaton automaton, String renameChar)
 			throws FOADAException
 	{
 		Automaton newOne = new Automaton();
@@ -116,7 +116,7 @@ public class Automaton {
 			String original = entry.getKey();
 			String newName = entry.getValue();
 			if(newName.charAt(0) == 'q') {
-				original = original + "_B";
+				original = original + "_" + renameChar;
 				int newNumber = Integer.parseInt(newName.substring(1).substring(0, newName.length() - 2)) + namesOfPredicates.size();
 				newName = "q" + newNumber + "c";
 				newRenameMapForB.put(original, newName);
@@ -178,6 +178,12 @@ public class Automaton {
 		return newOne;
 	}
 	
+	public Automaton intersects(Automaton automaton)
+			throws FOADAException
+	{
+		return intersects(automaton, "B");
+	}
+	
 	public Automaton complements()
 			throws FOADAException
 	{
@@ -236,14 +242,14 @@ public class Automaton {
 	public boolean isEmpty(utility.TreeSearch.Mode searchMode, utility.Impact.Mode transitionMode)
 			throws FOADAException
 	{
-		/*System.out.println(renameMap);
+		System.out.println(renameMap);
 		System.out.println("Predicates : " + namesOfPredicates);
 		System.out.println("Initial : " + initial);
 		System.out.println("Final : " + namesOfFinalStates);
 		System.out.println("Events : " + events);
 		for(Entry<String, FOADATransition> entry : transitions.entrySet()) {
 			System.out.println(entry.getKey() + "   ###   " + entry.getValue());
-		}*/
+		}
 		long beginTime = System.currentTimeMillis();
 		int nbOfNodesVisited = 0;
 		int nbOfNodesCreated = 0;
