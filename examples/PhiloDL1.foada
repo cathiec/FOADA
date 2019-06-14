@@ -1,6 +1,7 @@
-(pred (qi q0 q1))
+(pred (qi q0))
 (event (a))
 (initial qi)
-(final (q1))
+(final (q0))
 
-(trans )
+(trans (qi ()) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool))) (and (q0 NF NB NW NH NE NF NB NW NH NE) (or (not NW) (not NF))))
+(trans (q0 ((IF Bool) (IB Bool) (IW Bool) (IH Bool) (IE Bool) (CF Bool) (CB Bool) (CW Bool) (CH Bool) (CE Bool))) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool))) (and (q0 IF IB IW IH IE NF NB NW NH NE) (or (not NH) (not NF))))

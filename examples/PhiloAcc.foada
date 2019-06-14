@@ -3,5 +3,5 @@
 (initial qi)
 (final (q1))
 
-(trans (qi ()) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool) (Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (q0 (+ (ite NF Nf 0) (ite NB Nb 0) (ite NW Nw 0) (ite NH Nh 0) (ite NE Ne 0)) (+ (ite NF Nf 0) (ite NB Nb 0) (ite NW Nw 0) (ite NH Nh 0) (ite NE Ne 0))))
-(trans (q0 ((IS Int) (CS Int))) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool) (Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (or (q0 IS (+ CS (ite NF Nf 0) (ite NB Nb 0) (ite NW Nw 0) (ite NH Nh 0) (ite NE Ne 0))) (and q1 (= CS IS))))
+(trans (qi ()) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool) (Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (q0 (+ Nf Nw) (+ (ite NF Nf 0) (ite NB Nb 0) (ite NW Nw 0) (ite NH Nh 0) (ite NE Ne 0))))
+(trans (q0 ((CT Int) (CS Int))) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool) (Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (or (q0 (+ CT Nf Nw) (+ CS (ite NF Nf 0) (ite NB Nb 0) (ite NW Nw 0) (ite NH Nh 0) (ite NE Ne 0))) (and q1 (= (+ CT Nf Nw) (+ CS (ite NF Nf 0) (ite NB Nb 0) (ite NW Nw 0) (ite NH Nh 0) (ite NE Ne 0))))))

@@ -4,4 +4,4 @@
 (final (q1))
 
 (trans (qi ()) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool) (Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (q0 Nf Nb Nw Nh Ne Nf Nb Nw Nh Ne))
-(trans (q0 ((If Int) (Ib Int) (Iw Int) (Ih Int) (Ie Int) (Cf Int) (Cb Int) (Cw Int) (Ch Int) (Ce Int))) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool) (Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (or (and (q0 If Ib Iw Ih Ie Nf Nb Nw Nh Ne) (= (+ (+ Ce Cb) Nb) (+ (+ Cw Cf) Nf))) (and q1 (= (+ (+ Ce Cb) Ib) (+ (+ Cw Cf) If)))))
+(trans (q0 ((If Int) (Ib Int) (Iw Int) (Ih Int) (Ie Int) (Cf Int) (Cb Int) (Cw Int) (Ch Int) (Ce Int))) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool) (Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (or (and (q0 If Ib Iw Ih Ie Nf Nb Nw Nh Ne) (= (+ (+ Ce Cb) Nb) (+ (+ Cw Cf) Nf))) (and q1 (and (= (+ (+ Ce Cb) Nb) (+ (+ Cw Cf) Nf)) (= (+ (+ Ne Nb) Ib) (+ (+ Nw Nf) If))))))

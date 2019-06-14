@@ -105,6 +105,9 @@ public class Automaton {
 		// rename map
 		newOne.renameMap = new LinkedHashMap<String, String>();
 		newOne.renameMap.putAll(renameMap);
+		for(String nameOfQuantifiedInputVariable : variablesNames) {
+			newOne.renameMap.remove(nameOfQuantifiedInputVariable);
+		}
 		// predicates (states)
 		newOne.namesOfPredicates = new ArrayList<String>();
 		newOne.namesOfPredicates.addAll(namesOfPredicates);
@@ -112,17 +115,27 @@ public class Automaton {
 		newOne.events = new ArrayList<String>();
 		newOne.events.addAll(events);
 		// transitions
+		List<String> originalNamesAfterRenamingOfQuantifiedVariables = new ArrayList<String>();
+		List<String> newNamesOfQuantifiedVariables = new ArrayList<String>();
 		List<FOADAExpression> quantifiedVariables = new ArrayList<FOADAExpression>();
 		for(int i = 0; i < variablesNames.size(); i++) {
-			FOADAExpression quantifiedVariable = new FOADAExpression(renameMap.get(variablesNames.get(i)), variablesTypes.get(i));
+			String nameAfterRenamingOfQuantifiedVariable = renameMap.get(variablesNames.get(i));
+			originalNamesAfterRenamingOfQuantifiedVariables.add(nameAfterRenamingOfQuantifiedVariable);
+			String newNameOfQuantifiedVariable = "i" + i;
+			newNamesOfQuantifiedVariables.add(newNameOfQuantifiedVariable);
+			FOADAExpression quantifiedVariable = new FOADAExpression(newNameOfQuantifiedVariable, variablesTypes.get(i));
 			quantifiedVariables.add(quantifiedVariable);
 		}
+		Boolean renameMapIsUpdated = false;
 		newOne.transitions = new LinkedHashMap<String, FOADATransition>();
 		for(Entry<String, FOADATransition> entry : this.transitions.entrySet()) {
 			FOADATransition transition = new FOADATransition();
 			transition.left = entry.getValue().left.copy();
 			transition.event = entry.getValue().event;
 			transition.inputVariables = new ArrayList<FOADAExpression>();
+			List<String> originalNamesAfterRenamingOfInputVariables = new ArrayList<String>();
+			List<String> newNamesOfInputVariables = new ArrayList<String>();
+			int orderOfInputVariable = 0;
 			for(FOADAExpression expression : entry.getValue().inputVariables) {
 				Boolean needToBeQuantified = false;
 				for(String nameOfVariable : variablesNames) {
@@ -132,15 +145,34 @@ public class Automaton {
 					}
 				}
 				if(!needToBeQuantified) {
-					transition.inputVariables.add(expression.copy());
+					originalNamesAfterRenamingOfInputVariables.add(expression.name);
+					String newNameOfInputVariable = "v" + orderOfInputVariable + "c";
+					orderOfInputVariable++;
+					newNamesOfInputVariables.add(newNameOfInputVariable);
+					transition.inputVariables.add(new FOADAExpression(newNameOfInputVariable, expression.type));
 				}
 			}
 			transition.right = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Exists, quantifiedVariables);
 			transition.right.subData.add(entry.getValue().right.copy());
+			for(int i = 0; i < newNamesOfQuantifiedVariables.size(); i++) {
+				transition.right.substitute(originalNamesAfterRenamingOfQuantifiedVariables.get(i), newNamesOfQuantifiedVariables.get(i));
+			}
+			for(int i = 0; i < newNamesOfInputVariables.size(); i++) {
+				transition.right.substitute(originalNamesAfterRenamingOfInputVariables.get(i), newNamesOfInputVariables.get(i));
+				if(!renameMapIsUpdated) {
+					for(Entry<String, String> entry2 : newOne.renameMap.entrySet()) {
+						if(entry2.getValue().equals(originalNamesAfterRenamingOfInputVariables.get(i))) {
+							entry2.setValue(newNamesOfInputVariables.get(i));
+						}
+					}
+				}
+			}
+			renameMapIsUpdated = true;
 			newOne.transitions.put(entry.getKey(), transition);
 		}
 		// number of input variables
-		newOne.nbOfVariables = nbOfVariables;
+		//newOne.nbOfVariables = nbOfVariables;
+		newOne.nbOfVariables = nbOfVariables - variablesNames.size();
 		//System.out.println(newOne.nbOfVariables);
 		return newOne;
 	}
@@ -592,6 +624,7 @@ public class Automaton {
 					else {
 						Object[][] variablesAssignments = new Object[pathFromInitToCurrent.size()][nbOfVariables];
 						for(Object a : prover.getModelAssignments()) {
+							/* TODO */ //System.out.println((ValueAssignment)a);
 							String expressionString = ((ValueAssignment)a).getKey().toString();
 							if(expressionString.charAt(0) == 'v') {
 								int lastIndexOfUnderscore = expressionString.lastIndexOf('_');

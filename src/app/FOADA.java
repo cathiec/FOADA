@@ -247,20 +247,26 @@ public class FOADA {
 				//welcome();
 				
 				/* *********************** */
-				Automaton automaton1 = ParserTools.buildAutomatonFromFile("examples/Philo1.foada", ParserType.FOADAParser);
-				Automaton automaton2 = ParserTools.buildAutomatonFromFile("examples/Philo2.foada", ParserType.FOADAParser);
-				Automaton automaton3 = ParserTools.buildAutomatonFromFile("examples/Philo3.foada", ParserType.FOADAParser);
-				//automaton1.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
-				//automaton2.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
-				//automaton3.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
-				Automaton coe = automaton1.intersects(automaton2, "B").intersects(automaton3, "C");
+				Automaton Philo1 = ParserTools.buildAutomatonFromFile("examples/Philo1.foada", ParserType.FOADAParser);
+				Automaton Philo2 = ParserTools.buildAutomatonFromFile("examples/Philo2.foada", ParserType.FOADAParser);
+				Automaton Philo3 = ParserTools.buildAutomatonFromFile("examples/Philo3.foada", ParserType.FOADAParser);
+				//Philo1.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
+				//Philo2.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
+				//Philo3.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
+				Automaton coe = Philo1.intersects(Philo2, "B").intersects(Philo3, "C");
 				//coe.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
 				Automaton acc = ParserTools.buildAutomatonFromFile("examples/PhiloAcc.foada", ParserType.FOADAParser);
 				//acc.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
-				Automaton accCompl = acc.complements();
-				//accCompl.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
-				Automaton temp = coe.intersects(accCompl, "D");
-				//temp.isEmpty(utility.TreeSearch.Mode.BFS, utility.Impact.Mode.UniversallyQuantifyArguments);
+				
+				// OK !
+				
+				Automaton complAcc = acc.complements();
+				//complAcc.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
+				
+				Automaton coeIntersectsComplAcc = coe.intersects(complAcc, "D");
+				//coeIntersectsComplAcc.isEmpty(utility.TreeSearch.Mode.BFS, utility.Impact.Mode.UniversallyQuantifyArguments);
+				//Automaton complCoeIntersectsComplAcc = coeIntersectsComplAcc.complements();
+				//complCoeIntersectsComplAcc.isEmpty(utility.TreeSearch.Mode.BFS, utility.Impact.Mode.UniversallyQuantifyArguments);
 				List<String> variablesNames = new ArrayList<String>();
 				List<ExpressionType> variablesTypes = new ArrayList<ExpressionType>();
 				variablesNames.add("Nf");
@@ -273,10 +279,15 @@ public class FOADA {
 				variablesTypes.add(ExpressionType.Integer);
 				variablesNames.add("Ne");
 				variablesTypes.add(ExpressionType.Integer);
-				Automaton tempQtf = temp.quantifies(variablesNames, variablesTypes);
-				//tempQtf.isEmpty(utility.TreeSearch.Mode.BFS, utility.Impact.Mode.UniversallyQuantifyArguments);
-				Automaton tempQtyCompl = tempQtf.complements();
-				tempQtyCompl.isEmpty(utility.TreeSearch.Mode.BFS, utility.Impact.Mode.UniversallyQuantifyArguments);
+				Automaton qtfCoeIntersectsComplAcc = coeIntersectsComplAcc.quantifies(variablesNames, variablesTypes);
+				qtfCoeIntersectsComplAcc.isEmpty(utility.TreeSearch.Mode.BFS, utility.Impact.Mode.UniversallyQuantifyArguments);
+				Automaton complQtfCoeIntersectsComplAcc = qtfCoeIntersectsComplAcc.complements();
+				/*if(complQtfCoeIntersectsComplAcc.isEmpty(utility.TreeSearch.Mode.BFS, utility.Impact.Mode.UniversallyQuantifyArguments)) {
+					System.out.println("Empty");
+				};*/
+				
+				//Automaton DL1 = ParserTools.buildAutomatonFromFile("examples/PhiloDL1.foada", ParserType.FOADAParser);
+				//DL1.isEmpty(utility.TreeSearch.Mode.BFS, utility.Impact.Mode.UniversallyQuantifyArguments);
 				/* *********************** */
 				
 			}

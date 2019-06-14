@@ -5,4 +5,4 @@
 
 (trans (qi ()) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool) (Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (q0 Nf Nb Nw Nh Ne Nf Nb Nw Nh Ne))
 (trans (q0 ((If Int) (Ib Int) (Iw Int) (Ih Int) (Ie Int) (Cf Int) (Cb Int) (Cw Int) (Ch Int) (Ce Int))) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool) (Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (and (q1 If Ib Iw Ih Ie Nf Nb Nw Nh Ne) (= (+ Ch Nf) (+ Ce Nb))))
-(trans (q1 ((If Int) (Ib Int) (Iw Int) (Ih Int) (Ie Int) (Cf Int) (Cb Int) (Cw Int) (Ch Int) (Ce Int))) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool) (Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (or (and (q1 If Ib Iw Ih Ie Nf Nb Nw Nh Ne) (= (+ Cw Nf) (+ Ch Nb))) (and q2 (= (+ Cw If) (+ Ch Ib)))))
+(trans (q1 ((If Int) (Ib Int) (Iw Int) (Ih Int) (Ie Int) (Cf Int) (Cb Int) (Cw Int) (Ch Int) (Ce Int))) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool) (Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (or (and (q1 If Ib Iw Ih Ie Nf Nb Nw Nh Ne) (= (+ Cw Nf) (+ Ch Nb))) (and q2 (and (= (+ Cw Nf) (+ Ch Nb)) (= (+ Nw If) (+ Nh Ib))))))
