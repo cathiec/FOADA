@@ -74,7 +74,7 @@ public class Automaton {
 	 */
 	public List<String> events;
 	
-	/** number of variables
+	/** number of input variables
 	 */
 	public int nbOfVariables;
 	
@@ -91,7 +91,58 @@ public class Automaton {
 		namesOfPredicates = new ArrayList<String>();
 		events = new ArrayList<String>();
 		nbOfVariables = 0;
-		utility.JavaSMTConfig.initJavaSMT();
+	}
+	
+	public Automaton quantifies(List<String> variablesNames, List<ExpressionType> variablesTypes)
+			throws FOADAException
+	{
+		Automaton newOne = new Automaton();
+		// initial state
+		newOne.initial = initial;
+		// final states
+		newOne.namesOfFinalStates = new ArrayList<String>();
+		newOne.namesOfFinalStates.addAll(namesOfFinalStates);
+		// rename map
+		newOne.renameMap = new LinkedHashMap<String, String>();
+		newOne.renameMap.putAll(renameMap);
+		// predicates (states)
+		newOne.namesOfPredicates = new ArrayList<String>();
+		newOne.namesOfPredicates.addAll(namesOfPredicates);
+		// event symbols
+		newOne.events = new ArrayList<String>();
+		newOne.events.addAll(events);
+		// transitions
+		List<FOADAExpression> quantifiedVariables = new ArrayList<FOADAExpression>();
+		for(int i = 0; i < variablesNames.size(); i++) {
+			FOADAExpression quantifiedVariable = new FOADAExpression(renameMap.get(variablesNames.get(i)), variablesTypes.get(i));
+			quantifiedVariables.add(quantifiedVariable);
+		}
+		newOne.transitions = new LinkedHashMap<String, FOADATransition>();
+		for(Entry<String, FOADATransition> entry : this.transitions.entrySet()) {
+			FOADATransition transition = new FOADATransition();
+			transition.left = entry.getValue().left.copy();
+			transition.event = entry.getValue().event;
+			transition.inputVariables = new ArrayList<FOADAExpression>();
+			for(FOADAExpression expression : entry.getValue().inputVariables) {
+				Boolean needToBeQuantified = false;
+				for(String nameOfVariable : variablesNames) {
+					if(expression.name.equals(renameMap.get(nameOfVariable))) {
+						needToBeQuantified = true;
+						break;
+					}
+				}
+				if(!needToBeQuantified) {
+					transition.inputVariables.add(expression.copy());
+				}
+			}
+			transition.right = new FOADAExpression(ExpressionType.Boolean, ExpressionCategory.Exists, quantifiedVariables);
+			transition.right.subData.add(entry.getValue().right.copy());
+			newOne.transitions.put(entry.getKey(), transition);
+		}
+		// number of input variables
+		newOne.nbOfVariables = nbOfVariables;
+		//System.out.println(newOne.nbOfVariables);
+		return newOne;
 	}
 	
 	public Automaton intersects(Automaton automaton, String renameChar)
@@ -247,6 +298,7 @@ public class Automaton {
 	public boolean isEmpty(utility.TreeSearch.Mode searchMode, utility.Impact.Mode transitionMode)
 			throws FOADAException
 	{
+		utility.JavaSMTConfig.initJavaSMT();
 		System.out.println(renameMap);
 		System.out.println("Predicates : " + namesOfPredicates);
 		System.out.println("Initial : " + initial);

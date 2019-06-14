@@ -1,0 +1,6 @@
+(pred (qi q0 q1))
+(event (a))
+(initial qi)
+(final (q1))
+
+(trans )

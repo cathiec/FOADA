@@ -22,12 +22,16 @@
 
 package app;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import exception.FOADAException;
 import exception.InputFileNotFoundException;
 import exception.UnknownConsoleOptionException;
 import parser.ParserTools;
 import parser.ParserTools.ParserType;
 import structure.Automaton;
+import structure.FOADAExpression.ExpressionType;
 import utility.Console;
 import utility.Console.ConsoleType;
 import utility.Solver;
@@ -256,7 +260,23 @@ public class FOADA {
 				Automaton accCompl = acc.complements();
 				//accCompl.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
 				Automaton temp = coe.intersects(accCompl, "D");
-				temp.isEmpty(utility.TreeSearch.Mode.BFS, utility.Impact.Mode.FindOccurrences);
+				//temp.isEmpty(utility.TreeSearch.Mode.BFS, utility.Impact.Mode.UniversallyQuantifyArguments);
+				List<String> variablesNames = new ArrayList<String>();
+				List<ExpressionType> variablesTypes = new ArrayList<ExpressionType>();
+				variablesNames.add("Nf");
+				variablesTypes.add(ExpressionType.Integer);
+				variablesNames.add("Nb");
+				variablesTypes.add(ExpressionType.Integer);
+				variablesNames.add("Nw");
+				variablesTypes.add(ExpressionType.Integer);
+				variablesNames.add("Nh");
+				variablesTypes.add(ExpressionType.Integer);
+				variablesNames.add("Ne");
+				variablesTypes.add(ExpressionType.Integer);
+				Automaton tempQtf = temp.quantifies(variablesNames, variablesTypes);
+				//tempQtf.isEmpty(utility.TreeSearch.Mode.BFS, utility.Impact.Mode.UniversallyQuantifyArguments);
+				Automaton tempQtyCompl = tempQtf.complements();
+				tempQtyCompl.isEmpty(utility.TreeSearch.Mode.BFS, utility.Impact.Mode.UniversallyQuantifyArguments);
 				/* *********************** */
 				
 			}
