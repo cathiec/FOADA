@@ -218,10 +218,10 @@ public class FOADA {
 			}	
 		}
 		if(automaton.isEmpty(searchMode, transitionMode)) {
-			Console.printInfo(ConsoleType.FOADA, "The automaton is empty...");
+			Console.printInfo(ConsoleType.FOADA, "The inclusion holds...");
 		}
 		else {
-			Console.printInfo(ConsoleType.FOADA, "The automaton is not empty...");
+			Console.printInfo(ConsoleType.FOADA, "The inclusion does not hold...");
 		}
 		Console.printFOADAEndOfSession();
 	}
@@ -256,12 +256,12 @@ public class FOADA {
 				Automaton coe = Philo1.intersects(Philo2, "B").intersects(Philo3, "C");
 				coe.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
 				Automaton acc = ParserTools.buildAutomatonFromFile("examples/PhiloAcc.foada", ParserType.FOADAParser);
-				//acc.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
+				acc.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
 				
 				// OK !
 				
 				Automaton complAcc = acc.complements();
-				complAcc.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
+				//complAcc.isEmpty(utility.TreeSearch.Mode.DFS, utility.Impact.Mode.FindOccurrences);
 				
 				Automaton coeIntersectsComplAcc = coe.intersects(complAcc, "D");
 				//coeIntersectsComplAcc.isEmpty(utility.TreeSearch.Mode.BFS, utility.Impact.Mode.UniversallyQuantifyArguments);

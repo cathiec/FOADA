@@ -1,0 +1,27 @@
+(pred (qi q0 q1))
+(event (a))
+(initial qi)
+(final (q1))
+
+(trans (qi ()) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool) (Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (q0 (+ Nf Nw) (+ (ite NF Nf 0) (ite NB Nb 0) (ite NW Nw 0) (ite NH Nh 0) (ite NE Ne 0))))
+(trans (q0 ((CT Int) (CS Int))) (a ((NF Bool) (NB Bool) (NW Bool) (NH Bool) (NE Bool) (Nf Int) (Nb Int) (Nw Int) (Nh Int) (Ne Int))) (or (q0 (+ CT Nf Nw) (+ CS (ite NF Nf 0) (ite NB Nb 0) (ite NW Nw 0) (ite NH Nh 0) (ite NE Ne 0))) (and q1 (= (+ CT Nf Nw) (+ CS (ite NF Nf 0) (ite NB Nb 0) (ite NW Nw 0) (ite NH Nh 0) (ite NE Ne 0))))))
+
+{qi=q0c, q0=q1c, a=e0c, NF=v0c, NB=v1c, NW=v2c, NH=v3c, NE=v4c, Nf=v5c, Nb=v6c, Nw=v7c, Nh=v8c, Ne=v9c, qi_B=q2c, q0_B=q3c, q1_B=q4c, q2_B=q5c, qi_C=q6c, q0_C=q7c, q1_C=q8c}
+Predicates : [qi, q0, q2_B, q1_B, q0_B, qi_B, q1_C, q0_C, qi_C]
+Initial : qi() /\ qi_B() /\ qi_C()
+Final : [q0, q2_B, q1_C]
+Events : [a]
+
+qi() + a : NF() NB() NW() NH() NE() Nf() Nb() Nw() Nh() Ne() ---> q0(Nf(),Nb(),Nw(),Nh(),Ne(),Nf(),Nb(),Nw(),Nh(),Ne()) /\ Nw() + Nf() = Nh() + Nb()
+
+q0(a0c(),a1c(),a2c(),a3c(),a4c(),a5c(),a6c(),a7c(),a8c(),a9c()) + a : NF() NB() NW() NH() NE() Nf() Nb() Nw() Nh() Ne() ---> q0(a0c(),a1c(),a2c(),a3c(),a4c(),Nf(),Nb(),Nw(),Nh(),Ne()) /\ Nh() + Nf() = Ne() + Nb()
+
+qi_B() + a : NF() NB() NW() NH() NE() Nf() Nb() Nw() Nh() Ne() ---> q0_B(Nf(),Nb(),Nw(),Nh(),Ne(),Nf(),Nb(),Nw(),Nh(),Ne())
+
+q0_B(a0c(),a1c(),a2c(),a3c(),a4c(),a5c(),a6c(),a7c(),a8c(),a9c()) + a : NF() NB() NW() NH() NE() Nf() Nb() Nw() Nh() Ne() ---> q1_B(a0c(),a1c(),a2c(),a3c(),a4c(),Nf(),Nb(),Nw(),Nh(),Ne()) /\ a8c() + Nf() = a9c() + Nb()
+
+q1_B(a0c(),a1c(),a2c(),a3c(),a4c(),a5c(),a6c(),a7c(),a8c(),a9c()) + a : NF() NB() NW() NH() NE() Nf() Nb() Nw() Nh() Ne() ---> q1_B(a0c(),a1c(),a2c(),a3c(),a4c(),Nf(),Nb(),Nw(),Nh(),Ne()) /\ a7c() + Nf() = a8c() + Nb() \/ q2_B() /\ a7c() + Nf() = a8c() + Nb() /\ Nw() + a0c() = Nh() + a1c()
+
+qi_C() + a : NF() NB() NW() NH() NE() Nf() Nb() Nw() Nh() Ne() ---> q0_C(Nf(),Nb(),Nw(),Nh(),Ne(),Nf(),Nb(),Nw(),Nh(),Ne())
+
+q0_C(a0c(),a1c(),a2c(),a3c(),a4c(),a5c(),a6c(),a7c(),a8c(),a9c()) + a : NF() NB() NW() NH() NE() Nf() Nb() Nw() Nh() Ne() ---> q0_C(a0c(),a1c(),a2c(),a3c(),a4c(),Nf(),Nb(),Nw(),Nh(),Ne()) /\ a9c() + a6c() + Nb() = a7c() + a5c() + Nf() \/ q1_C() /\ a9c() + a6c() + Nb() = a7c() + a5c() + Nf() /\ Ne() + Nb() + a1c() = Nw() + Nf() + a0c()
